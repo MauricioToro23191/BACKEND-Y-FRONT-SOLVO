@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/estilos_menu.css')}}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+
+
+    <title>Menu</title>
+</head>
+
+<body>
+
+    <div id="cont">
+        <ul>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropbtn">opciones</a>
+                <div class="dropdown-content">
+                    <a href="{{url_for('Usuario.AdminUser')}}">Admin users</a>
+                    <a href="{{url_for('RTS')}}">RTS</a>
+                </div>
+            </li>
+            <li style="float:right"><a href="#about">{{current_user.nombres}}</a></li>
+            <li style="float:right"><a href="{{url_for('logout')}}">Log Out</output></a></li>
+
+
+        </ul>
+    </div>
+
+    <div id="state">
+        <h1 id="demo"></h1>
+    </div>
+
+    <div id="crono">
+        <div class="cronometro">
+            <p id="hms"></p>
+        </div>
+
+        <div id="contbtn">
+            <!--<div id="buttons">-->
+            <form action="/estados/changeState" method="POST" id="buttons">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="button" class="unav" id="unav" value="Not Available">
+                <input type="button" class="ava" id="ava" value="Available">
+                <input type="button" class="lunch" id="lunch" value="Lunch">
+                <input type="button" class="break" id="break" value="Break">
+                <input type="button" class="meet" id="meet" value="Team Meeting">
+                <input type="button" class="coach" id="coach" value="Coaching">
+                <input type="hidden" class="estado" id="estado" name="estado" value="Not Available">
+
+            </form>
+            <input type="hidden" id="btnIniciar" value="">
+
+            <!--</div>-->
+        </div>
+
+        <div id="mymodal" class="modalcont">
+            <div id="modal-cont">
+                <div id="contm">
+                    <h2>¿Desea Cambiar de estado?</h2>
+                    <button class="conf" id="confirm">Confirmar</button>
+                    <button class="conf" id="cancel">cancelar</button>
+                </div>
+            </div>
+        </div>
+        {% block javascript %}
+        <script>
+            var sockets = io();
+            var socket = io.connect(null, {transports: [ "websocket","polling"],port: 5000, rememberTransport: false});
+            response = null;
+            let tiempoInicio = null;
+            let tiempoAnterior = 0;
+            const $tiempoTranscurrido = document.querySelector("#hms"),
+                $btnIniciar = document.querySelector("#btnIniciar");
+            let diferenciaTemporal = 0;
+            $(document).ready(function() {
+                $(".ava").click(function() {
+                    clickEstado("Avalable");
+                });
+                $(".break").click(function() {
+                    clickEstado("Break");
+                });
+                $(".lunch").click(function() {
+                    clickEstado("Lunch");
+                });
+                $(".unav").click(function() {
+                    clickEstado("Not Available");
+                });
+                $(".meet").click(function() {
+                    clickEstado("Meet");
+                });
+                $(".coach").click(function() {
+                    clickEstado("Coaching");
+                });
+                $("#confirm").click(function() {
+                    $('#buttons').submit();
+                });
+            });
+            $(document).on('submit', '#buttons', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/estados/changeState',
+                    data: $('form').serializeArray(),
+                    type: 'POST',
+                    response: null,
+                    success: function(response) {
+                        console.log('hola', typeof(response));
+                        cambio(response);
+                        res=JSON.stringify(response)
+                        room="{{current_user.compania['nombre']}}"
+
+                        socket.emit('chat', {
+                            message: res,
+                            room: room
+                        })
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            
+
+
+            function clickEstado(aux) {
+                if (aux == "Avalable") {
+                    document.querySelector('#estado').value = 'Available'
+                    modal();
+                } else if (aux == "Break") {
+                    console.log('hola');
+                    document.querySelector('#estado').value = 'Break';
+                    modal();
+                } else if (aux == 'Lunch') {
+                    document.querySelector('#estado').value = 'Lunch'
+                    modal();
+                } else if (aux == "Not Available") {
+                    document.querySelector('#estado').value = 'Not Available'
+                    modal();
+
+                } else if (aux == "Meet") {
+                    document.querySelector('#estado').value = 'Team Meeting'
+                    modal();
+                } else if (aux == "Coaching") {
+                    document.querySelector('#estado').value = 'Coaching'
+                    modal();
+                } else {
+                    console.log(aux);
+                }
+
+            }
+
+            function cambio(response) {
+                diferenciaTemporal = null;
+                tiempoAnterior = 0;
+                totalStates = 0;
+                tiempoInicio = null;
+                document.querySelector('#demo').innerHTML = '';
+                if (response['estado'] != null) {
+                    esta = response['estado'];
+                } else {
+                    esta = {
+                        'id': 'logout',
+                        'nombre': 'Logout'
+                    }
+                }
+                if (response['estadoactual'] != null) {
+                    actuesta = response['estadoactual'];
+                    date = new Date(convertFromStringToDate(actuesta.hora_inicio));
+                    diferenciaTemporal = new Date() - date.getTime();
+                    console.log(diferenciaTemporal)
+                }
+                if (response['totalStates'] === null) {
+                    totalStates = null;
+                    tiempoAnterior = 0;
+                    console.log('no existen totales')
+                } else {
+                    totalStates = response['totalStates']
+                    if (totalStates[esta.nombre] === null) {
+                        console.log('estado No existe')
+                        tiempoAnterior = 0
+                    } else {
+
+                        tiempoAnterior = totalStates[esta.nombre]
+
+                    }
+                }
+                
+                document.querySelector('#demo').innerHTML = esta.nombre;
+                color();
+                $btnIniciar.click();
+            }
+
+            function convertFromStringToDate(responseDate) {
+                let dateComponents = responseDate.split(' ');
+                let datePieces = dateComponents[0].split("-");
+                let timePieces = dateComponents[1].split(":");
+                return (new Date(datePieces[0], (datePieces[1] - 1), datePieces[2],
+                    timePieces[0], timePieces[1], timePieces[2]))
+            }
+
+
+            function modal() {
+                var modal = document.getElementById("mymodal");
+                var body = document.getElementsByTagName("body")[0];
+                var span = document.getElementById('confirm');
+                var demo = document.getElementById('demo');
+                modal.style.display = "block";
+                body.style.position = "static";
+                body.style.height = "100%";
+                body.style.overflow = "hidden";
+
+                span.onclick = function() {
+                    modal.style.display = "none";
+                    body.style.position = "inherit";
+                    body.style.height = "auto";
+                    body.style.overflow = "visible";
+                }
+            }
+            window.onload = init;
+
+            function init() {
+                response = JSON.parse('{{data | tojson}}');
+                cambio(response);
+                color();
+                join();
+                console.log("response",response);
+                res=JSON.stringify(response)
+                console.log("res",res)
+                room="{{current_user.compania['nombre']}}"
+                
+                socket.emit('chat', {
+                    message: res,
+                    room: room
+                })
+            }
+
+            function color() {
+                if (demo.textContent == "New-hire") {
+                    demo.style.color = "aquamarine";
+                } else if (demo.textContent == "Available") {
+                    demo.style.color = "aquamarine";
+                    disablefasle();
+                    document.getElementById('ava').disabled = true;
+                } else if (demo.textContent == "Break") {
+                    demo.style.color = "yellow";
+                    disablefasle();
+                    document.getElementById('break').disabled = true;
+                } else if (demo.textContent == "Lunch") {
+                    demo.style.color = "purple";
+                    disablefasle();
+                    document.getElementById('lunch').disabled = true;
+                } else if (demo.textContent == "Team Meeting") {
+                    demo.style.color = "green";
+                    disablefasle();
+                    document.getElementById('meet').disabled = true;
+                } else if (demo.textContent == "Not Available") {
+                    demo.style.color = "red";
+                    disablefasle();
+                    document.getElementById('unav').disabled = true;
+                } else if (demo.textContent == "Coaching") {
+                    demo.style.color = "orange";
+                    disablefasle();
+                    document.getElementById('coach').disabled = true;
+                }
+            }
+
+            function disablefasle() {
+                document.getElementById('ava').disabled = false;
+                document.getElementById('unav').disabled = false;
+                document.getElementById('lunch').disabled = false;
+                document.getElementById('break').disabled = false;
+                document.getElementById('meet').disabled = false;
+                document.getElementById('coach').disabled = false;
+            }
+
+            const agregarCeroSiEsNecesario = valor => {
+                if (valor < 10) {
+                    return "0" + valor;
+                } else {
+                    return "" + valor;
+                }
+            }
+            const milisegundosAMinutosYSegundos = (milisegundos) => {
+                const horas = parseInt(milisegundos / 1000 / 60 / 60);
+                milisegundos -= horas * 60 * 60 * 1000;
+                const minutos = parseInt(milisegundos / 1000 / 60);
+
+                milisegundos -= minutos * 60 * 1000;
+                const segundos = (milisegundos / 1000);
+                return `${agregarCeroSiEsNecesario(horas)}:${agregarCeroSiEsNecesario(minutos)}:${agregarCeroSiEsNecesario(segundos.toFixed())}`;
+            };
+
+            const iniciar = () => {
+                diferenciaTemporal += Number(tiempoAnterior);
+
+                const ahora = new Date();
+                console.log(ahora)
+                tiempoInicio = new Date(ahora.getTime() - diferenciaTemporal);
+                console.log(tiempoInicio)
+                setInterval(refrescarTiempo, 100);
+            };
+
+            const refrescarTiempo = () => {
+                const ahora = new Date();
+                const diferencia = ahora.getTime() - tiempoInicio.getTime();
+                $tiempoTranscurrido.textContent = milisegundosAMinutosYSegundos(diferencia);
+            };
+
+            const init1 = () => {
+                $tiempoTranscurrido.textContent = "00:00:00";
+            };
+
+            init1;
+            $btnIniciar.onclick = iniciar;
+            
+        function join() {
+            room="{{current_user.compania['nombre']}}"
+            socket.emit('join', {
+                room: room
+            })
+        }
+
+        function leave() {
+            room="{{current_user.compania['nombre']}}"
+
+            socket.emit('leave', {
+                room: room
+            })
+        }
+            
+        sockets.on('connect', function() {
+            console.log('conectado');
+            sockets.on('event', function(res) {
+                document.getElementById('holi').innerHTML = res
+                console.log(res);
+            });
+        });
+        sockets.on('disconnect', function() {
+            console.log('desconectados');
+        });
+        socket.on('leave', function(message) {
+            console.log("leave " + message)
+        }),
+        socket.on('join', function(message) {
+            console.log("join " + message)
+        });
+        socket.on('chat', function(message) {
+            j=JSON.parse(message)
+            console.log("chat " )
+            console.log(j['estadoactual'])
+        });
+
+        </script>
+        {% endblock %}
+
+    </div>
+</body>
+
+</html>

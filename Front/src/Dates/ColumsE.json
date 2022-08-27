@@ -1,0 +1,42 @@
+[
+    {
+        "name": "solid",
+        "label": "Sol ID"
+    },
+    {
+        "name": "name",
+        "label": "First name"
+    },
+    {
+        "name": "Lname",
+        "label": "Last name"
+    },
+    {
+        "name": "supervisor",
+        "label": "Supervisor"
+    },
+    {
+        "name": "ava",
+        "label": "Available"
+    },
+    {
+        "name": "personal",
+        "label": "Personal"
+    },
+    {
+        "name": "break",
+        "label": "Break"
+    },
+    {
+        "name": "lunch",
+        "label": "Lunch"
+    },
+    {
+        "name": "meet",
+        "label": "Meeting"
+    },
+    {
+        "name": "coach",
+        "label": "Coach"
+    }
+]
