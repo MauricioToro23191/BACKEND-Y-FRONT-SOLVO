@@ -1,17 +1,24 @@
-import React,{ Component, useState } from "react";
+import React,{ useState,useContext,useEffect } from "react";
+import { SocketContext } from "../Context/socketio";
 const API=process.env.REACT_APP_BACKEND
 export default function Statebtn(props){
+  const socket=useContext(SocketContext);
   var {response}=props
   var tiempoInicio = null;
   var tiempoAnterior = 0;
   var diferenciaTemporal = 0;
+
+  useEffect(()=>{
+
+  },[])
+
+
   function enableBtn(){
     const btt=document.querySelectorAll('.btns');
     for(var i=0;i<btt.length;i++){
       btt[i].disabled=false; 
     }
    }
-
   const cambiarestado=async(id)=>{
     const res =await fetch(`${API}/estados/changeState`,{
       method: "POST",
@@ -25,10 +32,12 @@ export default function Statebtn(props){
       })
     })
     const data =await res.json()
+    console.log(data)
+
     //document.getElementById('demo').textContent=data.estado.nombre;
     response=data;
-
     cambio(response);
+    socket.emit('chat',{'message':response,'room':JSON.parse(sessionStorage.getItem('user'))['compania']['id']});
     }
   const [stateS,setstateS] = useState("");
 
@@ -40,7 +49,6 @@ export default function Statebtn(props){
 
   function confirm(){
     if(stateS!=""){
-      
       if(stateS === "ava"){
         close();
         enableBtn()
@@ -49,7 +57,7 @@ export default function Statebtn(props){
       }else if(stateS === "unav"){
         close();
         enableBtn()
-        cambiarestado(4);
+        cambiarestado(9);
         document.getElementById("unav").disabled="true";
       }else if(stateS === "break"){
         close();
@@ -134,6 +142,7 @@ export default function Statebtn(props){
         timePieces[0], timePieces[1], timePieces[2]))
   }
   function cambio(response) {
+    console.log(response['sup'])
     diferenciaTemporal = null;
     tiempoAnterior = 0;
     let totalStates = 0;

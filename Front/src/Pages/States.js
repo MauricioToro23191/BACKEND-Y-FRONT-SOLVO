@@ -1,17 +1,18 @@
-import React ,{useCallback, useState,useEffect, useContext} from 'react';
-import { CircularProgressbar,buildStyles } from 'react-circular-progressbar';
+import React ,{useCallback, useState,useEffect, useContext} from 'react'; 
+//import { CircularProgressbar,buildStyles } from 'react-circular-progressbar';
 import Statebtn from '../Component/statebtn';
 import { useNavigate } from 'react-router-dom';
 import '../styles/states.scss';
-import {SocketContext} from '../Context/socketio'
+import {socket, SocketContext} from '../Context/socketio'
 const API =process.env.REACT_APP_BACKENT
 
 export default function States() {
   const btt=document.querySelectorAll('.btns');
   const Navigate = useNavigate();
   const logOUT = useCallback(() => Navigate('/',{replace:true}),[Navigate]);
-  const [Response,setdate]=useState("");
+  const Response={};
   const [bool,setbool]=useState("");
+  const [nombre,setNombre]=useState("");
   //const socket=usecontext(SocketContext);
   const logout=async(e)=>{
     e.preventDefault();
@@ -21,6 +22,7 @@ export default function States() {
         console.log(sessionStorage.getItem('user'));
         sessionStorage.removeItem('user');
         console.log(sessionStorage.getItem('user'));
+        cambiarestado(1)
         logOUT();
       }else{
         logOUT();
@@ -29,6 +31,24 @@ export default function States() {
       console.log('false');
     }
   }
+  const cambiarestado=async(id)=>{
+    const res =await fetch(`${API}/estados/changeState`,{
+      method: "POST",
+      headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body:JSON.stringify({
+          idestado:id,
+          user:JSON.stringify(sessionStorage.getItem('user'))
+      })
+    })
+    //const data =await res.json()
+    //document.getElementById('demo').textContent=data.estado.nombre;
+    //response=data;
+    //cambio(response);
+    //socket.emit('chat',{'message':response});
+    }
   
   const pedirdatos=async()=>{
     const res= await fetch(`${API}/estados/menu`,{
@@ -42,10 +62,12 @@ export default function States() {
       })
     })
     const response= await res.json();
-    setdate(response);
+    Response=response
   }
   useEffect(()=>{
-    pedirdatos();
+    pedirdatos
+    let l=JSON.parse(sessionStorage.getItem('user'))
+    setNombre(l['nombres']+" "+l['apellidos'])
   },[])
  
   
@@ -55,7 +77,7 @@ export default function States() {
       <div id="PerfilUsers">
         <div id="infoUserS">
           <p id="imaUserS"></p>
-          <h2>Juan Jose Fernández Ruiz</h2>
+          <h2>{nombre}</h2>
           <p id='textCustom'>Hola Mundo Hola MundoHola Mundo</p>
           <p id='SolvIcon'></p>
         </div>
@@ -70,10 +92,10 @@ export default function States() {
         <div id="PanelState">
           <div id="state">
           
-            <h1 id="demo">Log out</h1>
+            <h2 id="demo" >Log out</h2>
             <div id="crono">  
-              <div className='cronometro'>
-                <p id="hms">00:00:00</p>
+              <div className='cronometro'style={{ padding:"30%",backgroundColor:"gray", borderRadius:"5%"}}>
+                <h1 id="hms" style={{textAlign: "center",borderRadius:"30%",backgroundColor:"white"}} >00:00:00</h1>
               </div> 
             </div> 
           </div>

@@ -1,12 +1,12 @@
 import flask 
 from flask import  request,jsonify
-from models.ModelUser import ModelUser
 from models.ModelState import ModelState
-from flask_login import current_user
+from models.entities.User import User
 estados=flask.Blueprint('menu',__name__,url_prefix='/estados')
+import json
 
 #direccionamiento a Pagina de estados 
-@estados.route('/menu',methods=['POST'])
+"""@estados.route('/menu',methods=['POST'])
 def menu():
     from app import getdb
     db=getdb()
@@ -25,7 +25,7 @@ def menu():
         'id': 0,
         'sup':sup
     }
-    return jsonify(response)
+    return jsonify(response)"""
 #Cambios de estado
 @estados.route('/changeState',methods=['POST'])
 def changeState():
@@ -34,22 +34,20 @@ def changeState():
     response=None
     if request.method == 'POST':
         state=request.json['idestado']  
-        id=request.json['user']
-        
-        usuario=ModelUser.get_by_id(db,id)
-        state1=ModelState.get_by_id(db,state)
-        ModelState.call_procedure(db,usuario,usuario,state1.id)
-        estadoactual=ModelState.estadoActual(db,usuario)
+        u = json.loads(request.json['user'])
+        usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
+        ModelState.call_procedure(db,usuario,usuario,state)
+        estadoactual=ModelState.estadoActual(db,usuario.id)
         if(estadoactual!=None):
             state1=ModelState.get_by_id(db,estadoactual.id_estado)
-        totalStates=ModelState.totalStates(db,usuario)  
-        print(totalStates)
+        totalStates=ModelState.totalStates(db,usuario.id)  
         response={
             'estado':state1.__dict__,
             'estadoactual':estadoactual.__dict__,
             'totalStates':totalStates,
             'logout': False,
             'id':0,
+            'sup':usuario.namesupervisor
             }  
         return jsonify(response)
     return None

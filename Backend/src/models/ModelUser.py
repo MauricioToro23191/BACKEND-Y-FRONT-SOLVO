@@ -6,15 +6,15 @@ class ModelUser():
     def login(self,db,user):
         try:
             cursor = db.connection.cursor()
-            sql = """SELECT ID_USUARIO,CORREO_SOLVO,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,perfil,ESTADO,ID_SUPERVISOR,id_compania,id_ciudad FROM usuario 
-                    WHERE CORREO_SOLVO = '{}'""".format(user.correo_solvo)
+            sql = """SELECT u1.ID_USUARIO,u1.CORREO_SOLVO,u1.CONTRASENA,u1.ID_SOLVO,u1.NOMBRES,u1.APELLIDOS,u1.perfil,u1.ESTADO,u1.ID_SUPERVISOR,u1.id_compania,u1.id_ciudad,u2.NOMBRES FROM usuario 
+             as u1 INNER JOIN usuario as u2 on u1.id_supervisor=u2.ID_USUARIO where u1.CORREO_SOLVO = '{}'""".format(user.correo_solvo)
             cursor.execute(sql)
             row = cursor.fetchone()
             if row != None:
                 compania=ModelUser.get_by_id_compania(db,row[9])
                 ciudad=ModelUser.get_by_id_ciudad(db,row[10])
                 
-                user = User(row[0], row[1],compania,ciudad, User.check_password(row[2], user.contrasena), row[3],row[4],row[5],row[6],row[7],row[8])
+                user = User(row[0], row[1],compania,ciudad, User.check_password(row[2], user.contrasena), row[3],row[4],row[5],row[6],row[7],row[8],row[11])
                 return user
             else:
                 return None
@@ -66,13 +66,14 @@ class ModelUser():
     def get_by_id(self,db,id):
         try:
             cursor = db.connection.cursor()
-            sql = "SELECT ID_USUARIO,CORREO_SOLVO,ID_SOLVO,NOMBRES,APELLIDOS,perfil,ESTADO,ID_SUPERVISOR,id_compania,id_ciudad FROM usuario WHERE ID_USUARIO = {}".format(id)
+            sql = """SELECT u1.ID_USUARIO,u1.CORREO_SOLVO,u1.ID_SOLVO,u1.NOMBRES,u1.APELLIDOS,u1.perfil,u1.ESTADO,u1.ID_SUPERVISOR,u1.id_compania,u1.id_ciudad,u2.NOMBRES FROM usuario 
+             as u1 INNER JOIN usuario as u2 on u1.id_supervisor=u2.ID_USUARIO WHERE u1.ID_USUARIO = {}""".format(id)
             cursor.execute(sql)
             row = cursor.fetchone()
             if row != None:
                 compania=ModelUser.get_by_id_compania(db,row[8])
                 ciudad=ModelUser.get_by_id_ciudad(db,row[9])
-                Usuario=User(row[0], row[1],compania,ciudad,None,row[2],row[3],row[4],row[5],row[6],row[7])
+                Usuario=User(row[0], row[1],compania,ciudad,None,row[2],row[3],row[4],row[5],row[6],row[7],row[10])
                 return Usuario
             else:
                 db.close()

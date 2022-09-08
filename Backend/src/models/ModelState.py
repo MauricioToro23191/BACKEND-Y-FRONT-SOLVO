@@ -12,14 +12,12 @@ class ModelState():
     def estadoActual(self,db,user):
         try:
             cursor = db.connection.cursor()
-            sql = """SELECT ID_HISTORIAL,ID_USUARIO,RESPONSABLE,HORA_INICIO,ID_ESTADO 
-            FROM HISTORIAL WHERE ID_USUARIO={} AND TEMP_BOOLEAN=1 """.format(user.id)
+            sql = "SELECT h.ID_HISTORIAL,h.ID_USUARIO,h.RESPONSABLE,h.HORA_INICIO,h.ID_ESTADO FROM HISTORIAL as h where h.ID_USUARIO={} AND h.TEMP_BOOLEAN=1".format(user)
             cursor.execute(sql)
             row = cursor.fetchone()
-            if row != None:  
+            if row != None:
                 user=ModelUser.get_by_id(db,int(row[1]))
                 historial = Historial(row[0],user.__dict__,row[2],row[3].strftime('%Y-%m-%d %H:%M:%S'),None,row[4])
-                
                 return historial
             else:
                                
@@ -43,6 +41,24 @@ class ModelState():
             return lestados
         except Exception as ex:
             raise Exception(ex)
+    
+    @classmethod      
+    def listCompania(self,db):
+        try:
+            
+            lcompanias=[]
+            companias=[]
+            cursor = db.connection.cursor()
+            sql = "SELECT * FROM compania "
+            cursor.execute(sql)
+            companias=list(cursor.fetchall())
+            for compania in companias :
+                h={'id':compania[0],'nombre':compania[1]}
+                lcompanias.append(h)
+            return lcompanias
+        except Exception as ex:
+            raise Exception(ex)
+        
         
     @classmethod       
     def call_procedure(self,db,user1,user2,estado):  
@@ -94,7 +110,7 @@ class ModelState():
             raise Exception(ex)
         
     @classmethod 
-    def totalStates(self,db, user):
+    def totalStates(self,db, userid):
         try:
             
             lHistor=[]
@@ -103,7 +119,7 @@ class ModelState():
             cursor = db.connection.cursor()
             sql = """SELECT ID_HISTORIAL,ID_USUARIO,RESPONSABLE,HORA_INICIO,HORA_FINAL,ID_ESTADO 
                     FROM historial
-                    where ID_USUARIO={} and ID_ESTADO <> 1 and HORA_INICIO like '%{}%' and HORA_FINAL <> 'null' order by id_estado  """.format(user.id,today.strftime("%Y-%m-%d"))
+                    where ID_USUARIO={} and ID_ESTADO <> 1 and HORA_INICIO like '%{}%' and HORA_FINAL <> 'null' order by id_estado  """.format(userid,today.strftime("%Y-%m-%d"))
             cursor.execute(sql)
             estados=list(cursor.fetchall())#
             for estado in estados :
@@ -147,21 +163,21 @@ class ModelState():
         try:
             lHistor=[]
             estados=[]
-            today = datetime.now() 
             cursor = db.connection.cursor()
-            sql = """SELECT ID_HISTORIAL,ID_USUARIO,RESPONSABLE,HORA_INICIO,ID_ESTADO 
-                    FROM historial
-                    where TEMP_BOOLEAN = 1 and ID_ESTADO <> 1 and ID_ESTADO <> 3  """
+            sql = """SELECT h.ID_HISTORIAL, h.ID_USUARIO,u.id_solvo,concat(u.nombres,' ',u.apellidos) as nombre,ciu.nombre_ciudad,sup.nombres as supervisor,
+                h.ID_ESTADO, es.nombre_estado,h.HORA_INICIO ,comp.id_compania,comp.nombre_compania FROM historial AS h
+                INNER JOIN estados AS es ON h.id_estado=ES.id_estado
+                INNER JOIN usuario AS u ON h.id_usuario=u.id_usuario
+                INNER JOIN ciudad AS ciu ON u.id_ciudad=ciu.id_ciudad
+                INNER JOIN compania as comp ON u.id_compania=comp.id_compania
+                INNER JOIN usuario AS sup ON u.id_supervisor=sup.id_usuario
+                WHERE h.TEMP_BOOLEAN = 1 and h.ID_ESTADO <> 1 and h.ID_ESTADO <> 3 and h.ID_ESTADO <> 4 and comp.id_compania={}""".format(compania)
             cursor.execute(sql)
             estados=list(cursor.fetchall())#
             for estado in estados :
-                user=ModelUser.get_by_id(db,int(estado[1]))
-                supervisor=ModelUser.get_by_id(db,int(user.id_supervisor))
-                state=ModelState.get_by_id(db,estado[4])
-                totest=ModelState.totalStates(db,user)
-                if(compania==user.compania['nombre']):
-                    Hist={'id':user.id,'id_solvo':user.id_solvo,'Firts Name':user.nombres+" "+user.apellidos,'Ciudad':user.ciudad['nombre'],'Supervisor':supervisor.nombres,'state':state.nombre,'time':estado[3].strftime('%Y-%m-%d %H:%M:%S'),'totest':totest[state.nombre]}
-                    lHistor.append(Hist) 
+                totest=ModelState.totalStates(db,estado[1])
+                Hist={'id':estado[1],'id_solvo':estado[2],'Name':estado[3],'Ciudad':estado[4],'Supervisor':estado[5],'id estado':estado[6],'state':estado[7],'time':"00:00:00",'date':estado[8].strftime('%Y-%m-%d %H:%M:%S'),'totest':totest[estado[7]],'compania':estado[10]}
+                lHistor.append(Hist) 
             if not lHistor:
                 
                 return None
@@ -178,7 +194,6 @@ class ModelState():
             else:
                 inicio=fechainicio+" 00:00:00"
                 fin=fechafin+" 23:59:59"
-            print(inicio)
             dict={}
             li=[]
             cursor = db.connection.cursor()

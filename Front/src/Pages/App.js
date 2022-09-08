@@ -8,7 +8,7 @@ import States from './States';
 import Rta from './RTA';
 import {SocketContext,socket} from '../Context/socketio'
 
-export default function App() {
+export default function App() { 
   return (
     <>
     <SocketContext.Provider value={socket}>

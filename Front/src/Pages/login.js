@@ -28,12 +28,13 @@ const Login = ()=>{
             if(r['bool']){
                 if(r['usuario'].perfil==4){
                     console.log('interprete');
-                    sessionStorage.setItem("user",JSON.stringify(r['usuario']['id']));
+                    sessionStorage.setItem("user",JSON.stringify(r['usuario']));
+                    sessionStorage.setItem("perfil",r['usuario'].perfil);
                     changePageState();
                 }else{
                     console.log('admin');
-                    sessionStorage.setItem("user", r['usuario']['id']);
-                    sessionStorage.setItem("perfil",JSON.stringify(r['usuario']));
+                    sessionStorage.setItem("user", JSON.stringify(r['usuario']));
+                    sessionStorage.setItem("perfil",r['usuario'].perfil);
                     changePageMenu();
                 }
             }else{
@@ -56,8 +57,6 @@ const Login = ()=>{
                     <form onSubmit={handelSubmit}>
                     <input type="email" placeholder="email" id="user" onChange={(e)=>setuser(e.target.value)}></input>
                     <input type="password" id="pass" placeholder="Password" onChange={(e)=>setpass(e.target.value)}></input>
-                    <span>{user}</span>
-                    <span>{pass}</span>
                     <input type="submit"  value="Ingresar"/>
                     
                     </form>

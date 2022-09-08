@@ -1,9 +1,10 @@
 import {Outlet,Link,useNavigate} from "react-router-dom";
-import React,{useCallback} from "react";
+import React,{useCallback, useState,useEffect} from "react";
 import '../styles/layout.scss';
 const API=process.env.REACT_APP_BACKEND;
 
 const Layout = () =>{
+  const[nombre,setNombre]=useState("");
     const Navigate = useNavigate();
     const logOUT = useCallback(() => Navigate('/',{replace:true}),[Navigate]);
     const logout=async(e)=>{
@@ -11,9 +12,9 @@ const Layout = () =>{
         const res=await fetch(`${API}/logout`,{})
         if(res){
           if(sessionStorage.getItem('user') != null){
-            console.log(sessionStorage.getItem('user'));
+            //console.log(sessionStorage.getItem('user'));
             sessionStorage.removeItem('user');
-            console.log(sessionStorage.getItem('user'));
+            //console.log(sessionStorage.getItem('user'));
             logOUT();
           }else{
             logOUT();
@@ -23,6 +24,12 @@ const Layout = () =>{
         }
         
       }
+      useEffect(()=>{
+        let l=JSON.parse(sessionStorage.getItem('user'))
+        setNombre(l['nombres']+" "+l['apellidos'])
+      },[])
+      
+     
     return(
         <>
         <div id="menu">
@@ -38,7 +45,7 @@ const Layout = () =>{
         <div id="ContAll">
         <div id="infoUser">
             <p id="imaUser"></p>
-            <h2>Juan José Fernández Ruiz</h2>
+            <h2>{nombre}</h2>
             <ul>
                 <li>Perfil</li>
                 <li onClick={logout}>Out</li>

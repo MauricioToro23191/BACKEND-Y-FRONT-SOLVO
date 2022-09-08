@@ -5,14 +5,15 @@ from flask import redirect, url_for,jsonify,request
 from flask_cors import CORS
 #from flask_json import FlaskJSON
 from flask_socketio import SocketIO,emit,join_room,leave_room
+import json
 #controlador de Base de datos 
 
 # Models:
-from models.ModelUser import ModelUser
 from models.ModelState import ModelState
-from init import init_app2
+from models.entities.User import User
+from init import init_app
 #asignacion de variables generales 
-app,db=init_app2()
+app,db=init_app()
 CORS(app)
 #csrf = CSRFProtect(app)
 
@@ -23,22 +24,25 @@ socket=SocketIO(app,cors_allowed_origins="*",async_handlers=True)
 
 @app.route('/RTS',methods=['GET', 'POST'])
 def RTS():
-    rqus=request.json['user']
-    usuario=ModelUser.get_by_id(db,rqus)
-    listRT=ModelState.listRTS(db,usuario.compania['nombre'])
-    return jsonify({'compania':usuario.compania['nombre'] ,'listRTS':listRT})
+    compania=0
+    if request.json['compania']!="":
+        compania=request.json['compania']
+    listComp=ModelState.listCompania(db)
+    #u = json.loads(request.json['user'])
+    #usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
+    listRT=ModelState.listRTS(db,compania)
+    
+    return jsonify({'compania':listRT[0]['compania'] ,'listRTS':listRT,'companiList':listComp})
 
 @app.route('/reporte1',methods=['GET', 'POST'])
 def reporte():
     lista=ModelState.reporte1(db,request.json['FechaInicio'],request.json['Fechafin'])
-    print("lista")
     return jsonify({'listRTS':lista})
 
 @app.route('/reporte2',methods=['GET', 'POST'])
 def reporte2():
     #request.json['FechaInicio']
     lista=ModelState.reporte2(db,request.json['FechaInicio'])
-    print(lista)
     return jsonify({'listRTS':lista})
 #Respuestas a error por no estar autorizado para acceder a la pagina   
 def status_401(error):
@@ -51,17 +55,18 @@ def status_404(error):
 
 @socket.on('chat')
 def chat(message):    
-    print("chat "+str(message))
-    emit('chat', message, broadcast=True)
+    print(message['room'])
+    #print("chat "+str(message['message']))
+    emit('chat', message['message'], to=message['room'])
    
 @socket.on('join')
 def join(room):
+    
     #print(room)
-    username="mauro"  
     print("Join")
-    #print (room['room'])
+    print (room['room'])
     join_room(room['room'])
-    emit('join', username+" se unio a la habitacion", to=room['room'])
+    emit('join'," se unio a la habitacion", to=room['room'])
     
 @socket.on('leave')
 def leave(room):
