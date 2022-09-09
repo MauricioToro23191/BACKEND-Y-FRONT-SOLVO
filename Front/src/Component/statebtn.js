@@ -8,9 +8,6 @@ export default function Statebtn(props){
   var tiempoAnterior = 0;
   var diferenciaTemporal = 0;
 
-  useEffect(()=>{
-
-  },[])
 
 
   function enableBtn(){

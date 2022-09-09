@@ -46,6 +46,7 @@ def changeState():
             'estadoactual':estadoactual.__dict__,
             'totalStates':totalStates,
             'logout': False,
+            'room':usuario.compania['id'],
             'id':0,
             'sup':usuario.namesupervisor
             }  

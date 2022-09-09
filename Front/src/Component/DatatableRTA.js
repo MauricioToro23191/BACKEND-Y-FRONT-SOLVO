@@ -1,15 +1,49 @@
 import MUIDataTable from "mui-datatables";
-import React,{useEffect, useState} from "react";
+import Users from "../Dates/TimeS.json";
 
 
-
-class DatatableRTA extends React.Component{
-     
+const Columns = [
     
-    render(){
-        
-        let {Compania}=this.props
-        let {Lista}=this.props
+    {
+    name: "solid",
+    label: "Sol ID"},
+    {
+    name:"name",
+    label: "Firts Name"
+    },
+    {name:"lname",
+    label:"Last Name"
+    },
+
+    {name:"ciudad",
+    label:"Ciudad"
+    },
+    {
+    name:"status",
+    label:"Status"
+    },
+    {name:"time",
+    label:"Status Time"
     }
+]
+
+const Option ={
+    download: false,
+    filterType: "multiselect",
+    print: false,
+    searchPlaceholder:"Search..",
+    selectableRows:'multiple',
+    selectableRowsOnClick:true,
+    selectableRowsHideCheckboxes:true
 }
-export default DatatableRTA;
+export const DatatableRTA =() => {
+    return(
+        <>
+            <MUIDataTable
+            title={"RTA"}
+            columns={Columns}
+            data={Users}
+            options={Option} />
+        </> 
+    )
+}

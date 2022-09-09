@@ -1,6 +1,6 @@
 import React,{useState,useEffect,useContext} from "react";
 //import DatatableRTA  from "../Component/DatatableRTA";
-import MUIDataTable, { ExpandButton } from "mui-datatables";
+import MUIDataTable from "mui-datatables";
 //import clsx from 'clsx';
 
 import {SocketContext} from "../Context/socketio"
@@ -9,7 +9,7 @@ const API=process.env.REACT_APP_BACKEND;
 
 
 const Option ={
-    download: false,
+    download: false, 
     filterType: "multiselect",
     print: false, 
     searchPlaceholder:"Search..",

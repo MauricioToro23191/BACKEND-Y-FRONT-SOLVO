@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import DataTableE  from "../Component/DataTableE";
+import {DataTableE}  from "../Component/DataTableE";
 const API=process.env.REACT_APP_BACKEND;
 
 export default function Export(){

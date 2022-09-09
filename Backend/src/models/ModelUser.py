@@ -8,7 +8,7 @@ class ModelUser():
             cursor = db.connection.cursor()
             sql = """SELECT u1.ID_USUARIO,u1.CORREO_SOLVO,u1.CONTRASENA,u1.ID_SOLVO,u1.NOMBRES,u1.APELLIDOS,u1.perfil,u1.ESTADO,u1.ID_SUPERVISOR,u1.id_compania,u1.id_ciudad,u2.NOMBRES FROM usuario 
              as u1 INNER JOIN usuario as u2 on u1.id_supervisor=u2.ID_USUARIO where u1.CORREO_SOLVO = '{}'""".format(user.correo_solvo)
-            cursor.execute(sql)
+            cursor.execute(sql) 
             row = cursor.fetchone()
             if row != None:
                 compania=ModelUser.get_by_id_compania(db,row[9])
@@ -115,7 +115,26 @@ class ModelUser():
         except Exception as ex:
             raise Exception(ex)
         
-   
+    @classmethod
+    def ListUser(self,db):
+        try:
+            lUser=[]
+            usuarios=[]
+            cursor = db.connection.cursor()
+            sql = """SELECT U.ID_USUARIO,U.ID_SOLVO,U.NOMBRES,U.APELLIDOS,U.CORREO_SOLVO,PER.NOMBRE_PERFIL,SUP.NOMBRES as SUP,CIU.NOMBRE_CIUDAD from USUARIO AS U
+                        INNER JOIN USUARIO as SUP on U.ID_SUPERVISOR=SUP.ID_USUARIO
+                        INNER JOIN PERFILES AS PER ON U.PERFIL=PER.ID_PERFIL
+                        INNER JOIN CIUDAD AS CIU ON U.ID_CIUDAD=CIU.ID_CIUDAD"""
+            cursor.execute(sql)
+            usuarios=list(cursor.fetchall())#
+            for user in usuarios :
+                u={"id":user[0],"SolID":user[1], "Name":user[2], "LastN":user[3], "Email":user[4], "Perfil":user[5], "Supervisor":user[6], "Location":user[7]}
+                lUser.append(u) 
+            if not lUser:
+                return None
+            return lUser
+        except Exception as ex:
+            raise Exception(ex)
            
            
     

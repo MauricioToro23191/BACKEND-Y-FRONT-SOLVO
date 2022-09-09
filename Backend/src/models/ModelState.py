@@ -176,7 +176,7 @@ class ModelState():
             estados=list(cursor.fetchall())#
             for estado in estados :
                 totest=ModelState.totalStates(db,estado[1])
-                Hist={'id':estado[1],'id_solvo':estado[2],'Name':estado[3],'Ciudad':estado[4],'Supervisor':estado[5],'id estado':estado[6],'state':estado[7],'time':"00:00:00",'date':estado[8].strftime('%Y-%m-%d %H:%M:%S'),'totest':totest[estado[7]],'compania':estado[10]}
+                Hist={'id':estado[1],'id_solvo':estado[2],'Name':estado[3],'Ciudad':estado[4],'Supervisor':estado[5],'id estado':estado[6],'state':estado[7],'time':"00:00:00",'date':estado[8].strftime('%Y-%m-%d %H:%M:%S'),'totest':totest[estado[7]],'compania':estado[10],'idcompania':estado[9]}
                 lHistor.append(Hist) 
             if not lHistor:
                 

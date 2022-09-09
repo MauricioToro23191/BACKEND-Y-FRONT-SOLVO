@@ -1,7 +1,6 @@
 
-from flask import render_template, request, redirect, url_for, flash,jsonify
+from flask import render_template, request,jsonify
 #from flask_json import FlaskJSON
-from flask_login import  login_user, logout_user, login_required,current_user
 import flask
 #from flask_cors import CORS
 #controlador de configuracion 
@@ -10,12 +9,8 @@ from models.ModelUser import ModelUser
 from models.ModelState import ModelState
 # Entities:
 from models.entities.User import User
-
-import socket
 #ruta raiz de la pagina
 usuarios=flask.Blueprint('Usuario',__name__,url_prefix="/usuario")
-#db=mysqlconnect()
-#db=MySQLdb(app)
 #Direccionamiento a pagina de pagina de administracion de usuarios 
 @usuarios.route('/AdminUser',methods=['GET', 'POST'])
 def AdminUser():
@@ -39,12 +34,18 @@ def login():
                 return jsonify({'bool':True,'response':'Login succesfully','usuario':logged_user.__dict__})
             else:
                 #contraseña incorrecta
-                flash("Invalid password...")
                 return jsonify({'bool':False,'response':'Invalid password...','usuario':None})
         else:
             #usuario no existe
-            flash("User not found...")
             return jsonify({'bool':False,'response':'User not found...','usuario':None})
     else:
         return render_template('proto_Solvo.html')
+
+
+@usuarios.route('/ListUser')
+def listUser():
+    from app import getdb
+    db=getdb()
+    l=ModelUser.ListUser(db)
+    return jsonify({'LisUser':l})
  

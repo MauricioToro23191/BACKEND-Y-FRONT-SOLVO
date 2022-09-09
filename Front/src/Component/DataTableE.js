@@ -6,12 +6,11 @@ import React from "react";
 const Option ={
     download: true,
     filter: true,
-    filterType: "dropdown",
+    filterType: "dropdown", 
     print: false,
     searchPlaceholder:"Search..",
     selectableRows:'multiple',
     selectableRowsOnClick:true,
-    responsive: 'simple',
     selectableRowsHideCheckboxes:true,
     enableNestedDataAccess : ',',
     downloadOptions: {

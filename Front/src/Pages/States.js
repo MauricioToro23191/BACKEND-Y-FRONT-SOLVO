@@ -1,17 +1,13 @@
-import React ,{useCallback, useState,useEffect, useContext} from 'react'; 
-//import { CircularProgressbar,buildStyles } from 'react-circular-progressbar';
+import React ,{useCallback, useState,useEffect} from 'react'; 
 import Statebtn from '../Component/statebtn';
 import { useNavigate } from 'react-router-dom';
 import '../styles/states.scss';
-import {socket, SocketContext} from '../Context/socketio'
 const API =process.env.REACT_APP_BACKENT
 
 export default function States() {
-  const btt=document.querySelectorAll('.btns');
   const Navigate = useNavigate();
-  const logOUT = useCallback(() => Navigate('/',{replace:true}),[Navigate]);
+  const logOUT = useCallback(() => Navigate('/',{replace:true}),[Navigate]); 
   const Response={};
-  const [bool,setbool]=useState("");
   const [nombre,setNombre]=useState("");
   //const socket=usecontext(SocketContext);
   const logout=async(e)=>{

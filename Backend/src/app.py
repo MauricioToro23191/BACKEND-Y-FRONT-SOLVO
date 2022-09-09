@@ -1,7 +1,7 @@
 # Controlador principal de la pagina web
 #importaciones necesarias de flask
 
-from flask import redirect, url_for,jsonify,request
+from flask import redirect, url_for,jsonify,request,redirect,url_for
 from flask_cors import CORS
 #from flask_json import FlaskJSON
 from flask_socketio import SocketIO,emit,join_room,leave_room
@@ -25,14 +25,16 @@ socket=SocketIO(app,cors_allowed_origins="*",async_handlers=True)
 @app.route('/RTS',methods=['GET', 'POST'])
 def RTS():
     compania=0
+    listComp=[]
+    listRT=[]
     if request.json['compania']!="":
         compania=request.json['compania']
     listComp=ModelState.listCompania(db)
-    #u = json.loads(request.json['user'])
-    #usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
     listRT=ModelState.listRTS(db,compania)
-    
-    return jsonify({'compania':listRT[0]['compania'] ,'listRTS':listRT,'companiList':listComp})
+    if listRT==None or listComp==None:
+        return jsonify({'compania':listComp[int(compania)-1]['nombre'],'listRTS':[],'companiList':listComp})
+    else:
+        return jsonify({'compania':listRT[0]['compania'] ,'listRTS':listRT,'companiList':listComp})
 
 @app.route('/reporte1',methods=['GET', 'POST'])
 def reporte():
@@ -55,30 +57,23 @@ def status_404(error):
 
 @socket.on('chat')
 def chat(message):    
-    print(message['room'])
-    #print("chat "+str(message['message']))
+    #print('Chat to room: ',message['room'])
+    print('\n','chat', message['message'], 'to= ',message['room'])
     emit('chat', message['message'], to=message['room'])
    
 @socket.on('join')
 def join(room):
-    
-    #print(room)
     print("Join")
-    print (room['room'])
+    print (" se unio a la habitacion", room['room'])
     join_room(room['room'])
     emit('join'," se unio a la habitacion", to=room['room'])
     
 @socket.on('leave')
 def leave(room):
-    username="mauro"   
-    print("leave")
+    print("abandono la habitacion","leave",room['room'])
     leave_room(room['room'])
-    emit('leave', username+" abandono la habitacion", to=room['room'])
+    emit('leave', " abandono la habitacion", to=room['room'])
  
-@socket.on('event')
-def event(json):
-    #print ('estamos en evento',json)
-    emit('event',json,broadcast=True)
 
 @socket.on('connect')
 def test_connect():
@@ -91,16 +86,11 @@ def test_disconnect():
     return True
 
 #Cerrar sesion    
-@app.route('/logout')
+@app.route('/logout',methods=['GET', 'POST'])
 def logout():
-    #user=request.json('user')
-    #c={'room': user.compania['nombre']}
-    #ModelState.call_procedure(db,user,user,1)
-    #join(c)
-    #message=dict({'message':{'logout':True,'id':user.id}})
-    #socket.emit('chat',json.dumps(message['message']),to =c['room'])    #elimina la sesion iniciada 
-    #leave(c)
-    #logout_user()
+    u = json.loads(request.json['user'])
+    usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
+    ModelState.call_procedure(db,usuario,usuario,1)
     return jsonify({'logout':True})
 
 #inicio de la pagina 
