@@ -1,0 +1,11 @@
+$cols  : 12;
+$gap  : 24px;
+
+.container{
+    width: 100%;
+    margin: 0 auto;
+    padding-left: $gap/2;
+    padding-right: $gap/2;
+
+    height: 100vh;  
+}

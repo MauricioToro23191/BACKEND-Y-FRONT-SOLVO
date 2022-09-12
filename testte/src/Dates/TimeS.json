@@ -1,0 +1,39 @@
+[
+    {"id":1,
+     "solid":"SolID125",
+     "name":"Juan",
+     "lname":"Fernandez",
+     "ciudad":"Medellín",
+     "status":"Available",
+     "time": "00:20"
+    },
+    {"id":2,
+     "solid":"SolID126",
+     "name":"Edwin",
+     "lname":"Toro",
+     "ciudad":"Barranquilla",
+     "status":"Lunch",
+     "time": "1:05"
+    },
+
+    {"id":3,
+     "solid":"SolID127",
+     "name":"Danelly",
+     "lname":"Monsalve",
+     "ciudad":"Bogota",
+     "status":"Break",
+     "time": "00:11"
+    },
+
+    {"id":4,
+     "solid":"SolID128",
+     "name":"Edgar",
+     "lname":"Sarmiento",
+     "ciudad":"Medellín",
+     "status":"Meeting",
+     "time": "00:45"
+    }
+]
+
+
+    

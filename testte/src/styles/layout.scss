@@ -1,0 +1,137 @@
+#ContAll {
+    min-width: 1200px;
+    position: absolute;
+    top: 0;
+    width: 97%;
+    height: auto;
+    overflow: hidden;
+    margin-left: 3.5%;
+}
+
+/*superior*/
+#infoUser {
+    display: grid;
+    grid-template-areas:
+    'iconUs name '
+    'iconUs option ';
+    grid-template-columns: 20% 50%;
+    margin: 1% 2.5%;
+    width: 50%;
+    height: 10vh;
+
+    #imaUser {
+        grid-area: iconUs;
+        background-color: gray;
+        margin:0;
+        background-image: url('../img/user.svg');
+        width: 70%;
+        height: 100%;
+        justify-self: center;
+        background-size: 50%;
+        background-repeat: no-repeat;
+        background-position: center;
+        border-radius: 50%;
+    }
+
+    h2 {
+        grid-area: name;
+        color: black;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0 5%;
+        text-align: left;
+    }
+
+    ul {
+        grid-area: option;
+        list-style-type: none;
+        width: 50%;
+        color: gray;
+        padding: 0;
+        margin:0 5%;
+    }
+}
+
+#menu {
+    min-width: 50px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: white;
+    height: 100vh;
+    width: 3.5%;
+    box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.4);
+}
+
+#menu button {
+    display: block;
+    width: 100%;
+    height: 6vh;
+    border: none;
+    background-color: white;
+    margin-top: 0vh;
+    font-size: 1vw;
+    cursor: pointer;
+}
+
+#menu button:hover {
+    box-shadow: 0 0 5px black;
+}
+
+#btnss {
+    position: relative;
+    top: 6vh;
+    background: white;
+}
+
+#btnss button {
+    margin-top: 2vh;
+    display: block;
+    width: 100%;
+    height: 8vh;
+    border: none;
+    background-color: white;
+    margin-top: 1vh;
+    font-size: 1vw;
+    cursor: pointer;
+}
+
+/*iconos menu lateral*/
+#RT {
+    background-image: url('../img/rta.svg');
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#REP {
+    background-image: url('../img/report.svg');
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#USERS {
+    background-image: url('../img/users.svg');
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#DESP {
+    background-image: url('../img/menu.png');
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    top: 0;
+}
+
+#hidden {
+    background-image: url('../img/cerca.png');
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: none;
+}

@@ -1,0 +1,169 @@
+/*animation Change state*/
+.animationTest {
+    grid-column: 1/4;
+    grid-row: 1/4;
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    border-radius: 50%;
+    overflow: hidden;
+    .Animation {
+        position: relative;
+        background-size:contain;
+        background-repeat: no-repeat;
+        animation: AnimationDrop 1.5s linear infinite;
+        float: left;
+        top: -100px;
+    }
+    .Animation:nth-child(1){
+        width: 85%;
+        height: 20%;
+        left: 5%;
+        animation-delay: 1s;
+    }
+    .Animation:nth-child(2){
+        width: 100%;
+        height: 25%;
+        left: 25%;
+        transform: rotate(45deg);
+        animation-delay: 5s;
+    }
+    .Animation:nth-child(3){
+        width: 85%;
+        height: 20%;
+        left: 50%;
+        transform: rotate(320deg);
+        animation-delay: 3s;
+    }
+    .Animation:nth-child(4){
+        width: 100%;
+        height: 25%;
+        left: 50%;
+        transform: rotate(145deg);
+        animation-delay: 2s;
+    }
+    @keyframes AnimationDrop {
+        0% {
+            top: 0;
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0;
+            top: 100%;
+        }
+    }
+
+    .avaA{
+        background-image: url('../img/avaA.svg');
+    }
+    .breakA{
+        background-image: url(('../img/breakA.svg'));
+    }
+    .lunchA{
+        background-image: url('../img/lunchA.svg');
+    }
+    .personalA{
+        background-image: url('../img/personalA.svg');
+    }
+    .meetA{
+        background-image: url('../img/meetA.svg');
+    }
+    .coachA{
+        background-image: url('../img/coachA.svg');
+    }
+}
+
+/*animation Icons*/
+#unav:hover {
+    animation: changeIconP 0.2s linear;
+    animation-fill-mode: both;
+}
+
+#lunch:hover {
+    animation: changeIconL 0.2s linear;
+    animation-fill-mode: both;
+}
+
+#break:hover {
+    animation: changeIconB 0.2s linear;
+    animation-fill-mode: both;
+}
+
+#meet:hover {
+    animation: changeIconM 0.2s linear;
+    animation-fill-mode: both;
+}
+
+#coach:hover {
+    animation: changeIconC 0.2s linear;
+    animation-fill-mode: both;
+}
+
+@keyframes changeIconP {
+    from {
+        font-size: 0;
+        background-size: 0;
+    }
+
+    to {
+        font-size: 0;
+        background-size: 40%;
+        background-image: url('../img/personal.svg');
+    }
+}
+
+@keyframes changeIconL {
+    from {
+        font-size: 0;
+        background-size: 0;
+    }
+
+    to {
+        font-size: 0;
+        background-size: 40%;
+        background-image: url('../img/lunch.svg');
+    }
+}
+
+@keyframes changeIconB {
+    from {
+        font-size: 0;
+        background-size: 0;
+    }
+
+    to {
+        font-size: 0;
+        background-size: 40%;
+        background-image: url('../img/break.svg');
+    }
+}
+
+@keyframes changeIconM {
+    from {
+        font-size: 0;
+        background-size: 0;
+    }
+
+    to {
+        font-size: 0;
+        background-size: 40%;
+        background-image: url('../img/meet.svg');
+    }
+}
+
+@keyframes changeIconC {
+    from {
+        font-size: 0;
+        background-size: 0;
+    }
+
+    to {
+        font-size: 0;
+        background-size: 40%;
+        background-image: url('../img/coach.svg');
+    }
+}

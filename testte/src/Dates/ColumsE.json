@@ -1,0 +1,30 @@
+[
+    {
+        "name": "solid",
+        "label": "Sol ID"
+    },
+    {
+        "name": "name",
+        "label": "First name"
+    },
+    {
+        "name": "Lname",
+        "label": "Last name"
+    },
+    {
+        "name": "shour",
+        "label": "Start Hour"
+    },
+    {
+        "name": "ehour",
+        "label": "End Hour"
+    },
+    {
+        "name": "state",
+        "label": "State"
+    },
+    {
+        "name": "tstate",
+        "label": "Time In State"
+    }
+]
