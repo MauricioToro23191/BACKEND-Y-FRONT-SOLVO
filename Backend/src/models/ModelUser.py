@@ -111,7 +111,7 @@ class ModelUser():
                 ciudad={'id':row[0],'nombre':row[1]}
                 return ciudad
             else:
-                return ciudad
+                return ciudad 
         except Exception as ex:
             raise Exception(ex)
         
