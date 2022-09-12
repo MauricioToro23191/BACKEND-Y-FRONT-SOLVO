@@ -39,6 +39,8 @@ export default function Rta(){
     const [Compania,setcompania]=useState("");
     const [Lista,setlista]=useState([]);
     const [lstCompania,setlstCompania]=useState([])
+    const [vandera,setvandera]=useState(0);
+
     const obtenerDatos=async()=>{
         const res = await fetch(`${API}/RTS`,{
           method: "POST",
@@ -55,17 +57,18 @@ export default function Rta(){
         setcompania(data.compania);
         setlista(data.listRTS);
         setlstCompania(data.companiList);
-        console.log(data)
         socket.emit('join',{'room':sessionStorage.getItem('idComp')});
-        return true
+        return data.listRTS
     }
    useEffect(() => {
-        if(obtenerDatos()){
-            console.log("Cargado");
-            setTimeout(printh(),5000)
+    let data=obtenerDatos()
+        if(data.length!=0){
+            document.getElementById('lstCompania').value=sessionStorage.getItem('idComp')
         }
-        document.getElementById('lstCompania').value=sessionStorage.getItem('idComp')
+
     }, []);
+    printh()
+   
     socket.on('chat',(message)=>{
             let estado=message['estado']
             let esAct=message['estadoactual']
@@ -117,18 +120,15 @@ export default function Rta(){
     
     
     function printh(){
-        if(Lista.length!=0){
-            console.log("Comenzar")
-            for(const a in Lista){
-                if(Lista[a]['id']!=null){
-                    intervalo(Lista[a]['id']);
+            console.log(Lista)
+            if(Lista.length!=0){
+                console.log("Comenzar")
+                for (const a in Lista){
+                    if(Lista[a]['id']!=null){
+                        intervalo(Lista[a]['id']);
+                    }
                 }
             }
-            return true
-        }else{
-            setTimeout(printh,2000)
-        }
-        return false
     }
     function convertFromStringToDate(responseDate) {
         let dateComponents = responseDate.split(' ');
@@ -213,7 +213,6 @@ export default function Rta(){
           },]
 
     function Actualizar(){
-        //socket.emit('leave',{'room':sessionStorage.getItem('idComp')})
         socket.emit('leave',{'room':sessionStorage.getItem('idComp')})
         let id=document.getElementById('lstCompania').value
         sessionStorage.setItem('idComp',id)
@@ -227,8 +226,8 @@ export default function Rta(){
         <div>
             <div id="eje3">
                 <select id="lstCompania" onChange={Actualizar}>
-                    {lstCompania.map(comp =>
-                    <option key={comp['id']} value={comp['id']}>{comp['nombre']}</option>
+                    {lstCompania.map(comp => 
+                        <option key={comp['id']} value={comp['id']}>{comp['nombre']}</option>
                     )}
                 </select>
                 <MUIDataTable
