@@ -61,14 +61,13 @@ class ModelState():
         
         
     @classmethod       
-    def call_procedure(self,db,user1,user2,estado):  
-        if user2==None:
-            user2=user1      
+    def call_procedure(self,db,user1,responsable,estado):  
+         
         try:
             
             today = datetime.now()
             cursor = db.connection.cursor()
-            cursor.callproc('UPDATEHISTORIAL', (user1.id,user2.nombres,today,estado))
+            cursor.callproc('UPDATEHISTORIAL', (user1.id,responsable,today,estado))
             results = list(cursor.fetchall())
             
             return results
@@ -159,7 +158,7 @@ class ModelState():
 
         
     @classmethod
-    def listRTS(self,db,compania):
+    def listRTA(self,db,compania):
         try:
             lHistor=[]
             estados=[]
@@ -202,19 +201,22 @@ class ModelState():
             id=0
             user=User(0,None,None,None,None)
             for result in results:
-                dict={'solvoid':result[1],'name':result[2],'Lastname':result[3],'supervisor':result[4],
-                      'Responsable':result[5],'HORA_INICIO':result[6].strftime('%Y-%m-%d %H:%M:%S'),'HORA_FINAL':result[7].strftime('%Y-%m-%d %H:%M:%S'),'ID_ESTADO':result[8],'time':round(result[9]/60)}
+                dict={'Date':result[6].strftime('%Y-%m-%d'),'Solvo id':result[1],'Name':result[2],'Last Name':result[3],'Supervisor':result[4],
+                      'By':result[5],'Start Time':result[6].strftime('%Y-%m-%d %H:%M:%S'),'Final Time':result[7].strftime('%Y-%m-%d %H:%M:%S'),'State':result[8],'Time':round(result[9]/60)}
                 li.append(dict)
             return li
         except Exception as ex:
             raise Exception(ex)
+    #definicion del metodo reporte 2(consolidado)
     @classmethod       
     def reporte2(self,db,fechainicio):  
         try:
+            #si la fecha esta vacia asigne la fecha actual + el rango de hora
             if fechainicio=="":
                 inicio=date.today().strftime('%Y-%m-%d')+" 00:00:00"
                 fin=date.today().strftime('%Y-%m-%d')+" 23:59:59"
             else:
+            #sino asigne el rango a la de horas a la fecha 
                 inicio=fechainicio+" 00:00:00"
                 fin=fechainicio+" 23:59:59"
             cursor = db.connection.cursor()
@@ -227,12 +229,13 @@ class ModelState():
             for res in result:
                 if id!=res[0]:
                     if(inicio==False):
+                        di['Date']=fechainicio
                         lis.append(di)
                         di={}
                         inicio=False
                     di['Solvo id']=res[1]
-                    di['Nombre']=res[2]
-                    di['Apellidos']=res[3]
+                    di['Name']=res[2]
+                    di['Last Name']=res[3]
                     di['Supervisor']=res[4]
                     di['Available']=0
                     di['Not Available']=0
@@ -242,9 +245,7 @@ class ModelState():
                     di['Coaching']=0
                     id=res[0]
                     inicio=False
-                    
-                else:
-                    di[res[6]] =res[7]
+                di[res[6]] =res[7]
             return lis
         except Exception as ex:
             raise Exception(ex)

@@ -11,9 +11,9 @@ import json
 # Models:
 from models.ModelState import ModelState
 from models.entities.User import User
-from init import init_app
+from init import init_app2
 #asignacion de variables generales 
-app,db=init_app()
+app,db=init_app2()
 CORS(app)
 #csrf = CSRFProtect(app)
 
@@ -22,30 +22,33 @@ def getdb():
 # sockets
 socket=SocketIO(app,cors_allowed_origins="*",async_handlers=True)
 
-@app.route('/RTS',methods=['GET', 'POST'])
-def RTS():
+@app.route('/RTA',methods=['GET', 'POST'])
+def RTA():
     compania=0
     listComp=[]
     listRT=[]
     if request.json['compania']!="":
         compania=request.json['compania']
     listComp=ModelState.listCompania(db)
-    listRT=ModelState.listRTS(db,compania)
+    listRT=ModelState.listRTA(db,compania)
     if listRT==None or listComp==None:
         return jsonify({'compania':listComp[int(compania)-1]['nombre'],'listRTS':[],'companiList':listComp})
     else:
-        return jsonify({'compania':listRT[0]['compania'] ,'listRTS':listRT,'companiList':listComp})
+        return jsonify({'compania':listRT[0]['compania'] ,'listRTA':listRT,'companiList':listComp})
 
 @app.route('/reporte1',methods=['GET', 'POST'])
 def reporte():
     lista=ModelState.reporte1(db,request.json['FechaInicio'],request.json['Fechafin'])
-    return jsonify({'listRTS':lista})
+    return jsonify({'listExport':lista})
 
 @app.route('/reporte2',methods=['GET', 'POST'])
 def reporte2():
     #request.json['FechaInicio']
-    lista=ModelState.reporte2(db,request.json['FechaInicio'])
-    return jsonify({'listRTS':lista})
+    if request.method == 'POST':
+        lista=ModelState.reporte2(db,request.json['FechaInicio'])
+    else:
+        lista=ModelState.reporte2(db,"")
+    return jsonify({'listExport':lista})
 #Respuestas a error por no estar autorizado para acceder a la pagina   
 def status_401(error):
     return redirect(url_for('Usuario.login'))
@@ -55,11 +58,21 @@ def status_404(error):
     return "<h1>Página no encontrada</h1>", 404
 
 
-@socket.on('chat')
+@socket.on('Cambio')
 def chat(message):    
     #print('Chat to room: ',message['room'])
-    print('\n','chat', message['message'], 'to= ',message['room'])
-    emit('chat', message['message'], to=message['room'])
+    print('\n','Cambio', message['message'], 'to= ',message['room'])
+    emit('Cambio', message['message'], to=message['room'])
+
+
+@socket.on('logoutUser')
+def chat(message):    
+    print('\n','LogoutUSER', message['message'], 'to= ',message['room'])
+    emit('logoutUser', message['message'], to=message['room'])
+@socket.on('ChangeStateSuptoUser')
+def chat(message):    
+    print('\n','ChangeStateSuptoUser', message['message'], 'to= ',message['room'])
+    emit('ChangeStateSuptoUser', message['message'], to=message['room'])
    
 @socket.on('join')
 def join(room):
