@@ -18,14 +18,14 @@ export const DataTableE =() => {
     const [ChangeStyle, setChangeStyle] = useState(sessionStorage.getItem('reporte'));
     const Option = {
         download: true,
-        ilter: true,
+        filter: true,
         filterType: "multiselect",
         print: false,
         searchPlaceholder: "Search..",
         selectableRows: 'multiple',
         selectableRowsOnClick: true,
         selectableRowsHideCheckboxes: true,
-        responsive: "standard",
+        responsive: "simple",
         fixedHeader: false,
         enableNestedDataAccess : ',',
         rowsPerPage:100,

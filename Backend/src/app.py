@@ -11,9 +11,9 @@ import json
 # Models:
 from models.ModelState import ModelState
 from models.entities.User import User
-from init import init_app2
+from init import init_app
 #asignacion de variables generales 
-app,db=init_app2()
+app,db=init_app()
 CORS(app)
 #csrf = CSRFProtect(app)
 
@@ -61,29 +61,29 @@ def status_404(error):
 @socket.on('Cambio')
 def chat(message):    
     #print('Chat to room: ',message['room'])
-    print('\n','Cambio', message['message'], 'to= ',message['room'])
+    #print('\n','Cambio', message['message'], 'to= ',message['room'])
     emit('Cambio', message['message'], to=message['room'])
 
 
 @socket.on('logoutUser')
 def chat(message):    
-    print('\n','LogoutUSER', message['message'], 'to= ',message['room'])
+    #print('\n','LogoutUSER', message['message'], 'to= ',message['room'])
     emit('logoutUser', message['message'], to=message['room'])
 @socket.on('ChangeStateSuptoUser')
 def chat(message):    
-    print('\n','ChangeStateSuptoUser', message['message'], 'to= ',message['room'])
+    ##print('\n','ChangeStateSuptoUser', message['message'], 'to= ',message['room'])
     emit('ChangeStateSuptoUser', message['message'], to=message['room'])
    
 @socket.on('join')
 def join(room):
-    print("Join")
-    print (" se unio a la habitacion", room['room'])
+    #print("Join")
+    #print (" se unio a la habitacion", room['room'])
     join_room(room['room'])
     emit('join'," se unio a la habitacion", to=room['room'])
     
 @socket.on('leave')
 def leave(room):
-    print("abandono la habitacion","leave",room['room'])
+    #print("abandono la habitacion","leave",room['room'])
     leave_room(room['room'])
     emit('leave', " abandono la habitacion", to=room['room'])
  

@@ -13,11 +13,16 @@ const API=process.env.REACT_APP_BACKEND;
 
 const Option ={
     download: false, 
-    filterType: "multiselect", 
-    print: false, 
-    searchPlaceholder:"Search..",
-    selectableRows:'multiple',
-    selectableRowsOnClick:false,
+    filter: true,
+    filterType: "checkbox",
+    print: false,
+    searchPlaceholder: "Search..",
+    selectableRows: 'multiple',
+    selectableRowsHideCheckboxes:true,
+    fixedHeader: false,
+    fixedSelectColumn:false,
+    selectableRowsOnClick: false,
+    selectableRowsHideCheckboxes: false,
     rowsPerPage:100,
     responsive:'simple',
     setRowProps: (row) => {
@@ -63,84 +68,85 @@ export default function Rta(){
         return data.listRTA
     }
    useEffect(() => {
-    let data=obtenerDatos()
-    if(data.length!=0){
-        socket.on('Cambio',(message)=>{
-            let estado=message['estado']
-            let esAct=message['estadoactual']
-            let user=message['estadoactual']['user']
-            let totes=message['totalStates']
-            let sup=message['sup']
-            var bool=true
-            let l={'Ciudad':user['ciudad']['nombre'],
-                'Name': user['nombres']+" "+user['apellidos'],
-                'Supervisor':sup,
-                'compania':user['compania']['nombre'],
-                'date':esAct['hora_inicio'],
-                'id':user['id'],
-                'id_solvo':user['id_solvo'],
-                'idcompania':user['compania']['id'],
-                'state':estado['nombre'],
-                'time':'00:00:00',
-                'totest':totes[estado['nombre']]}
-                console.log(Lista)
-            const newlist=Lista.map((litem)=>{
-                if(litem['id']==l['id']){
-                    bool=false
-                    return {
-                    'Ciudad':litem['Ciudad'],
-                    'Supervisor':litem['Supervisor'],
-                    'id':litem['id'],
-                    'compania':litem['compania'],
-                    'id_solvo':litem['id_solvo'],
-                    'idcompania':user['compania']['id'],
-                    'Name':litem['Name'],
-                    'state':l['state'],
-                    'totest':l['totest'],
-                    'time':l['time'],
-                    'date':l['date']
-                    }
-                }
-                return litem
-                
-            })
-            if(bool===true){
-                setlista([...newlist, l])
-                printh;
-                bool=false
-            }else{
-                setlista(newlist);
-                printh;
-            }
-    })
-    socket.on('logoutUser',(message)=>{
-        let logout=message['logout']
-        let id=message['id']
-        let indexRemove=-1
-        if(logout){  
-            const newlist=Lista.map((litem,index)=>{
-                if(litem['id']==id){
-                    indexRemove=index       
-                }else{
-                    return litem
-                }
-            })
-            setlista(newlist);
-            if(indexRemove!=-1){
-                newlist.pop(indexRemove)
-            }    
-            setlista(newlist);
-            printh;
-        }
-        })
-    }
-    
+    obtenerDatos();
     return () => {
         socket.off('logoutUser');
         socket.off('Cambio');
     }
     }, [socket]);
     printh()
+    socket.on('Cambio',(message)=>{
+        let estado=message['estado']
+        let esAct=message['estadoactual']
+        let user=message['estadoactual']['user']
+        let totes=message['totalStates']
+        let sup=message['sup']
+        var bool=true
+        let Lis=Lista
+        console.log(Lista)
+        let l={'Ciudad':user['ciudad']['nombre'],
+            'Name': user['nombres']+" "+user['apellidos'],
+            'Supervisor':sup,
+            'compania':user['compania']['nombre'],
+            'date':esAct['hora_inicio'],
+            'id':user['id'],
+            'id_solvo':user['id_solvo'],
+            'idcompania':user['compania']['id'],
+            'state':estado['nombre'],
+            'time':'00:00:00',
+            'totest':totes[estado['nombre']]}
+        const newlist=Lis.map((litem)=>{
+            if(litem['id']==l['id']){
+                bool=false
+                return {
+                'Ciudad':litem['Ciudad'],
+                'Supervisor':litem['Supervisor'],
+                'id':litem['id'],
+                'compania':litem['compania'],
+                'id_solvo':litem['id_solvo'],
+                'idcompania':user['compania']['id'],
+                'Name':litem['Name'],
+                'state':l['state'],
+                'totest':l['totest'],
+                'time':l['time'],
+                'date':l['date']
+                }
+            }else{
+                return litem
+            }
+            
+        })
+        if(bool===true){
+            setlista([...newlist, l])
+            printh;
+            bool=false
+        }else{
+            setlista(newlist);
+            printh;
+        }
+})
+socket.on('logoutUser',(message)=>{
+    let logout=message['logout']
+    let Lis=getLista()
+    console.log(Lis)
+    let id=message['id']
+    let indexRemove=-1
+    if(logout){  
+        const newlist=Lis.map((litem,index)=>{
+            if(litem['id']==id){
+                indexRemove=index       
+            }else{
+                return litem
+            }
+        })
+        setlista(newlist);
+        if(indexRemove!=-1){
+            newlist.pop(indexRemove)
+        }    
+        setlista(newlist);
+        printh;
+    }
+})
    
     
     
@@ -233,7 +239,6 @@ export default function Rta(){
         document.getElementsByTagName('th')[4].style.position='sticky';
         document.getElementsByTagName('th')[5].style.position='sticky';
         document.getElementsByTagName('th')[6].style.position='sticky';
-        document.getElementsByTagName('th')[7].style.position='sticky';
         document.getElementById("MyModal1").style.display = 'none';
     }
   
@@ -276,7 +281,7 @@ export default function Rta(){
                         document.getElementsByTagName('th')[4].style.position='static'
                         document.getElementsByTagName('th')[5].style.position='static'
                         document.getElementsByTagName('th')[6].style.position='static'
-                        document.getElementsByTagName('th')[7].style.position='static'}}}/>
+                        }}}/>
 
                         <div id="MyModal1" className="modalcont1">
                         <div id="modal-cont1">

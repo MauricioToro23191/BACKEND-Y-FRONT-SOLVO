@@ -17,6 +17,10 @@ def menu():
         estadoactual=ModelState.estadoActual(db,usuario.id)
         if(estadoactual!=None):
             state1=ModelState.get_by_id(db,estadoactual.id_estado)
+        else:
+            ModelState.call_procedure(db,usuario,usuario.nombres,4)   
+            estadoactual=ModelState.estadoActual(db,usuario.id)
+            state1=ModelState.get_by_id(db,estadoactual.id_estado)
         totalStates=ModelState.totalStates(db,usuario.id)  
         response={
             'estado':state1.__dict__,
@@ -55,7 +59,5 @@ def changeState():
             'id':0,
             'sup':usuario.namesupervisor
             }  
-        print("cambio")
-
         return jsonify(response)
     return None
