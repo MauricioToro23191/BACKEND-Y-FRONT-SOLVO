@@ -14,30 +14,33 @@ export default function States() {
   const [nombre,setNombre]=useState("");
   const logout=async(e)=>{
     e.preventDefault();
-    const res=await fetch(`${API}/logout`,{
-          method: "POST",
-          headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-          },
-          body:JSON.stringify({
-              user:sessionStorage.getItem('user')
-          })
-    })
-    const data =await res.json()
-    if(data['logout']){
-      clearInterval(sessionStorage.getItem('idinterval'))
-     if(sessionStorage.getItem('user') != null){
-        socket.emit('logoutUser',{'message':{'logout':true,'id':JSON.parse(sessionStorage.getItem('user'))['id']},'room':sessionStorage.getItem('idComp')});
-        sessionStorage.removeItem('user');
-        alert("fue posible cerrar la session")
-        logOUT();
-      }else{
-        logOUT();
-      }
+    let rest=confirm('Are you sure you want to log out?')
+    if(rest){
+      const res=await fetch(`${API}/logout`,{
+        method: "POST",
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body:JSON.stringify({
+            user:sessionStorage.getItem('user')
+        })
+  })
+  const data =await res.json()
+  if(data['logout']){
+    clearInterval(sessionStorage.getItem('idinterval'))
+   if(sessionStorage.getItem('user') != null){
+      socket.emit('logoutUser',{'message':{'logout':true,'id':JSON.parse(sessionStorage.getItem('user'))['id']},'room':sessionStorage.getItem('idComp')});
+      sessionStorage.removeItem('user');
+      logOUT();
     }else{
-      alert("no fue posible cerrar la session")
+      logOUT();
     }
+  }else{
+    alert("no fue posible cerrar la session")
+  }
+    }
+    
   }
  
   useEffect(()=>{
@@ -65,6 +68,7 @@ export default function States() {
             <h1 id="demo" ></h1>
             <div id="crono">
               <p id="hms">00:00:00</p>
+              <label id="hmsAcum" >00:00:00</label>
               <div className='animationTest'>
                 <div className='Animation'></div>
                 <div className='Animation'></div>

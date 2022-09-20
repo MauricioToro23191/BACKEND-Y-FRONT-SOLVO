@@ -46,7 +46,7 @@ const Layout = () => {
                     <h2>{nombre}</h2>
                     <ul>
                         <li>Perfil</li>
-                        <li onClick={logout}>Log Out</li>
+                        <li onClick={logOUT}>Log Out</li>
                     </ul>
                 </div>
                 <Outlet />

@@ -1,4 +1,5 @@
 import React, { useState,useContext,useEffect } from "react";
+import { useFetcher } from "react-router-dom";
 import { SocketContext } from "../Context/socketio";
 
 const API=process.env.REACT_APP_BACKEND
@@ -7,28 +8,33 @@ export default function Statebtn() {
   const socket=useContext(SocketContext);
   const [stateS, setstateS] = useState("");
   const [classA, setClassA] = useState("Animation")
-  const [newClass, setNewClass] = useState("");
   var [response,setResponse]=useState({})
   var tiempoInicio = null;
+  var tiempoInicioActual=null;
   var tiempoAnterior = 0;
   var diferenciaTemporal = 0;
   
   useEffect(()=>{
+    
     getState();
     socket.emit('join',{'room':sessionStorage.getItem('idComp')});
     socket.on('ChangeStateSuptoUser',(message)=>{
-      console.log("Hola")
+     
       let idUdser=message['iduser']
       let idestado=message['newStateid']
       if(JSON.parse(sessionStorage.getItem('user')).id==parseInt(idUdser)){
         console.log(message['responsable'])
         cambiarestado(idestado,message['responsable'])
-        document.getElementById('changeState').innerHTML='El estado ha sido cambiado desde la ventana de RTA'
+        document.getElementById('changeState').innerHTML='the State has been change by '+ message['responsable'] 
         setTimeout(() => {
           document.getElementById('changeState').innerHTML=''
-        }, 5000);
+        }, 10000);
       }
     })
+    if(sessionStorage.getItem('AnimateDefault')!=null){
+      changeAnimation(sessionStorage.getItem('AnimateDefault'));
+    }
+    
     return () => {
       socket.off('ChangeStateSuptoUser');
     }
@@ -59,9 +65,11 @@ export default function Statebtn() {
     })
     const data =await res.json()
     response=data;
+    sessionStorage.setItem('diferenciaState',0)
     cambio(response);
     socket.emit('Cambio',{'message':data,'room':sessionStorage.getItem('idComp')});
   }
+  
   
 
   const getState=async()=>{
@@ -86,58 +94,63 @@ export default function Statebtn() {
   function OpenModal(btns) {
     setstateS(btns);
     modal(); 
-    setNewClass(btns);
-    
   }
-  function changeAnimation() {
+  function changeAnimation(clss) {
     const arrayA = document.querySelectorAll("." + classA + "")
     for (var i = 0; i < arrayA.length; i++) {
-      arrayA[i].className = "Animation " + newClass;
+      arrayA[i].className = "Animation " + clss;
     }
   }
   function confirm() {
+    sessionStorage.setItem('diferenciaState',0)
     if (stateS === "avaA") {
       close();
       enableBtn();
       cambiarestado(2,"");
       document.getElementById("ava").disabled = "true";
-      changeAnimation();
+      changeAnimation(stateS);
       setClassA("avaA");
+      sessionStorage.setItem('AnimateDefault',stateS)
     } else if (stateS === "personalA") {
       close();
       enableBtn()
       cambiarestado(9,"");
       document.getElementById("unav").disabled = "true";
-      changeAnimation();
+      changeAnimation(stateS);
       setClassA("personalA");
+      sessionStorage.setItem('AnimateDefault',stateS)
     } else if (stateS === "breakA") {
       close();
       enableBtn()
       cambiarestado(5,"");
       document.getElementById("break").disabled = "true";
-      changeAnimation();
+      changeAnimation(stateS);
       setClassA("breakA");
+      sessionStorage.setItem('AnimateDefault',stateS)
     } else if (stateS === "lunchA") {
       close();
       enableBtn()
       cambiarestado(6,"");
       document.getElementById("lunch").disabled = "true";
-      changeAnimation();
+      changeAnimation(stateS);
       setClassA("lunchA");
+      sessionStorage.setItem('AnimateDefault',stateS)
     } else if (stateS === "meetA") {
       close();
       enableBtn()
       cambiarestado(7,"");
       document.getElementById("meet").disabled = "true";
-      changeAnimation();
+      changeAnimation(stateS);
       setClassA("meetA");
+      sessionStorage.setItem('AnimateDefault',stateS)
     } else if (stateS === "coachA") {
       close();
       enableBtn()
       cambiarestado(8,"");
       document.getElementById("coach").disabled = "true";
-      changeAnimation();
+      changeAnimation(stateS);
       setClassA("coachA");
+      sessionStorage.setItem('AnimateDefault',stateS)
     }
   }
 
@@ -176,14 +189,22 @@ export default function Statebtn() {
   };
   function refrescarTiempo () {
     const ahora = new Date();
+    const diferencia1=ahora.getTime()- tiempoInicioActual.getTime()
     const diferencia = ahora.getTime() - tiempoInicio.getTime();
-    document.getElementById('hms').textContent=milisegundosAMinutosYSegundos(diferencia);
+    document.getElementById('hms').textContent=milisegundosAMinutosYSegundos(diferencia1)
+    document.getElementById('hmsAcum').textContent=milisegundosAMinutosYSegundos(diferencia);
+    sessionStorage.setItem('diferenciaState',diferencia1)
+
   };
 
   function iniciar () {
       diferenciaTemporal += Number(tiempoAnterior);
       const ahora = new Date();
       tiempoInicio = new Date(ahora.getTime() - diferenciaTemporal);
+      tiempoInicioActual=new Date(ahora.getTime()-0);
+      if(sessionStorage.getItem('diferenciaState')!=null){
+        tiempoInicioActual=new Date(ahora.getTime() - parseInt(sessionStorage.getItem('diferenciaState')));
+      }
       if(sessionStorage.getItem('user') != null){
         clearInterval(sessionStorage.getItem('idinterval'))}
       var idint=setInterval(refrescarTiempo, 1000);
@@ -215,11 +236,12 @@ export default function Statebtn() {
     }
     if (response.estadoactual != null) {
         let actuesta = response.estadoactual;
+
         let date = new Date(convertFromStringToDate(actuesta.hora_inicio));
         diferenciaTemporal = new Date() - date.getTime();
     }
     if (response.totalStates === null) {
-      totalStates = null;
+        totalStates = null;
         tiempoAnterior = 0;
         console.log('no existen totales')
     } else {
@@ -231,6 +253,7 @@ export default function Statebtn() {
             tiempoAnterior = totalStates[esta.nombre]
         }
     }
+
     document.querySelector('#demo').innerHTML = esta.nombre;
     iniciar();
   }
@@ -238,16 +261,14 @@ export default function Statebtn() {
   return (
     <>
       <div id="Mymodal" className="modalcont">
-        <div id="modal-cont">
           <div id="contm">
             <div className="infomodal">
-              <h2>¿Desea Cambiar de estado?</h2>
+              <h2>Do you want to change your state?</h2>
             </div>
             <div className="btnmodal">
               <button className="conf" id="confirm" onClick={confirm}>Confirmar</button>
               <button className="conf" id="cancel" onClick={close}>cancelar</button>
             </div>
-          </div>
         </div>
       </div>
       <div className="layoutBtn">

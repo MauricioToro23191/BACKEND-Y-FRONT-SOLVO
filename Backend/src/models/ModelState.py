@@ -62,7 +62,8 @@ class ModelState():
         
     @classmethod       
     def call_procedure(self,db,user1,responsable,estado):  
-         
+        if responsable=="":
+            responsable=user1.nombres
         try:
             
             today = datetime.now()
@@ -229,10 +230,9 @@ class ModelState():
             for res in result:
                 if id!=res[0]:
                     if(inicio==False):
-                        di['Date']=fechainicio
                         lis.append(di)
                         di={}
-                        inicio=False
+                    di['Date']=fechainicio
                     di['Solvo id']=res[1]
                     di['Name']=res[2]
                     di['Last Name']=res[3]
@@ -246,6 +246,7 @@ class ModelState():
                     id=res[0]
                     inicio=False
                 di[res[6]] =res[7]
+            lis.append(di)
             return lis
         except Exception as ex:
             raise Exception(ex)

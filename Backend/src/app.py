@@ -11,9 +11,9 @@ import json
 # Models:
 from models.ModelState import ModelState
 from models.entities.User import User
-from init import init_app
+from init import init_app2
 #asignacion de variables generales 
-app,db=init_app()
+app,db=init_app2()
 CORS(app)
 #csrf = CSRFProtect(app)
 

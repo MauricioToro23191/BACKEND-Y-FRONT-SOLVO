@@ -21,14 +21,15 @@ const Login = () => {
       },
       body:JSON.stringify({
           idestado:id,
-          user:user
+          user:user,
+          responsable:""
       })
     })
     const data =await res.json()
     console.log(data)
     socket.emit('Cambio',{'message':data,'room':sessionStorage.getItem('idComp')});
   }
-    
+        
     const Navigate = useNavigate();
     const changePageMenu = useCallback(() => Navigate('/Layout', { replace: true }), [Navigate]);
     const changePageState = useCallback(() => Navigate('/states', { replace: true }), [Navigate]);
@@ -54,6 +55,7 @@ const Login = () => {
                     sessionStorage.setItem("perfil",r['usuario'].perfil);
                     sessionStorage.setItem("idComp",r['usuario']['compania']['id']);
                     cambiarestado(4,JSON.stringify(r['usuario']));
+                    sessionStorage.setItem('diferenciaState',0);
                     //setStyle("sideLEX"); 
                     setTimeout(changePageState, 1500);
                 }else{

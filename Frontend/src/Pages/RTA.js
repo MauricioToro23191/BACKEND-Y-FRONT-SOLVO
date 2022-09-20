@@ -11,42 +11,13 @@ import {SocketContext} from "../Context/socketio"
 const API=process.env.REACT_APP_BACKEND;
 
 
-const Option ={
-    download: false, 
-    filter: true,
-    filterType: "checkbox",
-    print: false,
-    searchPlaceholder: "Search..",
-    selectableRows: 'multiple',
-    selectableRowsHideCheckboxes:true,
-    fixedHeader: false,
-    fixedSelectColumn:false,
-    selectableRowsOnClick: false,
-    selectableRowsHideCheckboxes: false,
-    rowsPerPage:100,
-    responsive:'simple',
-    setRowProps: (row) => {
-        if (row[4] === "Lunch" || row[4] === "Break" || row[4] === "Personal" ||row[4]==="Not Available") {
-            return {
-                style: { backgroundColor: "red" }
-            }
-        }else if(row[4] === "Coaching"|| row[4] === "Team Meeting"){
-            return {
-                style: { backgroundColor: "yellow"}
-            }
-        }else{
-            return {
-                style: { backgroundColor: "white" }
-            }
-        }
-    },
-    
-}
+
 
 export default function Rta(){
     const socket=useContext(SocketContext);
     const [Lista,setlista]=useState([]);
     const [lstCompania,setlstCompania]=useState([])
+    const [cont,setCont]=useState(0);
 
     const obtenerDatos=async()=>{
         const res = await fetch(`${API}/RTA`,{
@@ -65,16 +36,23 @@ export default function Rta(){
         setlista(data.listRTA);
         setlstCompania(data.companiList);
         socket.emit('join',{'room':sessionStorage.getItem('idComp')});
+        
+        
         return data.listRTA
     }
+    
+    
    useEffect(() => {
-    obtenerDatos();
-    return () => {
-        socket.off('logoutUser');
-        socket.off('Cambio');
-    }
+        obtenerDatos();
+        console.log("Hola")
+        return () => {
+            socket.off('logoutUser');
+            socket.off('Cambio');
+        }
     }, [socket]);
-    printh()
+
+
+    printh();
     socket.on('Cambio',(message)=>{
         let estado=message['estado']
         let esAct=message['estadoactual']
@@ -83,7 +61,6 @@ export default function Rta(){
         let sup=message['sup']
         var bool=true
         let Lis=Lista
-        console.log(Lista)
         let l={'Ciudad':user['ciudad']['nombre'],
             'Name': user['nombres']+" "+user['apellidos'],
             'Supervisor':sup,
@@ -118,17 +95,16 @@ export default function Rta(){
         })
         if(bool===true){
             setlista([...newlist, l])
-            printh;
             bool=false
         }else{
             setlista(newlist);
-            printh;
         }
+        printh;
+
 })
 socket.on('logoutUser',(message)=>{
     let logout=message['logout']
     let Lis=getLista()
-    console.log(Lis)
     let id=message['id']
     let indexRemove=-1
     if(logout){  
@@ -139,27 +115,140 @@ socket.on('logoutUser',(message)=>{
                 return litem
             }
         })
-        setlista(newlist);
         if(indexRemove!=-1){
             newlist.pop(indexRemove)
         }    
         setlista(newlist);
-        printh;
     }
+    printh
+
 })
-   
+
+
+const Option ={
+    download: false, 
+    filter: true,
+    filterType: "dropdown",
+    print: false,
+    searchPlaceholder: "Search..",
+    selectableRows: 'multiple',
+    fixedHeader: true,
+    viewColumns:false,
+    fixedSelectColumn:false,
+    selectableRowsOnClick: false,
+    selectableRowsHideCheckboxes: true,
+    rowsPerPage:100,
+    responsive:'simple',
+    setRowProps: (row) => {
+        function calcDif(date){
+            let ini=new Date(convertFromStringToDate(date));
+            let dif=new Date() - ini.getTime();
+            let n = new Date();
+            let ti = new Date(n.getTime() - dif);
+            let ah = new Date();
+            let dif1 = ah.getTime() - ti.getTime();
+            return dif1
+        }
+        if (row[4] === "Lunch") {
+            let d=calcDif(row[5])
+            if(d>3600000){
+                return {
+                    style: { backgroundColor: "red"}
+                }
+            }else{
+                return {
+                    style: { backgroundColor: "#C8EBFF"}
+                }
+            }
+        }else if(row[4] === "Break"){
+            let d=calcDif(row[5])
+            if(d>900000){
+                return {
+                    style: { backgroundColor: "red"}
+                }
+            }else{
+                return {
+                    style: { backgroundColor: "#C8EBFF"}
+                }
+            }
+        }else if(row[4]==="Not Available"){
+                let d=calcDif(row[5])
+                if(d>900000){
+                    return {
+                        style: { backgroundColor: "red"}
+                    }
+                }else{
+                    return {
+                        style: { backgroundColor: "#C8EBFF"}
+                    }
+                }
+        }else if(row[4] === "Personal"){
+            let d=calcDif(row[5])
+            if(d>900000){
+                return {
+                    style: { backgroundColor: "red"}
+                }
+            }else{
+                return {
+                    style: { backgroundColor: "#C8EBFF"}
+                }
+            }
+        
+        }else if(row[4] === row[4] === "Team Meeting"){
+            let d=calcDif(row[5])
+            if(d>7200000){
+                return {
+                    style: { backgroundColor: "red"}
+                }
+            }else{
+                return {
+                    style: { backgroundColor: "#C8EBFF"}
+                }
+            }
+        
+        }else if(row[4] === "Coaching"){
+            let d=calcDif(row[5])
+            if(d>900000){
+                return {
+                    style: { backgroundColor: "red"}
+                }
+            }else{
+                return {
+                    style: { backgroundColor: "#FFF2B9"}
+                }
+            }
+            
+        }else{
+            return {
+                style: { backgroundColor: "#36FA0F"}
+            }
+
+        }
+    },
     
-    
-    
+}
     function printh(){
-        if(Lista.length!=0){
-            for (const a in Lista){
-                if(Lista[a]['id']!=null){
-                    intervalo(Lista[a]['id']);
+        
+        if(Lista!=null){
+            if(Lista.length!=0){
+                if(sessionStorage.getItem('idLista')!=null){clearInterval(sessionStorage.getItem('idLista'))}
+                sessionStorage.setItem('idLista',setInterval(() => {
+                    let newl=Lista.map((litem)=>{
+                        return litem
+                    })
+               setlista([...newl])
+                    console.log(newl)
+                }, 5000))
+                for (const a in Lista){
+                    if(Lista[a]['id']!=null){
+                        intervalo(Lista[a]['id'])
+                        
+                    }
                 }
             }
         }
     }
+
     function convertFromStringToDate(responseDate) {
         let dateComponents = responseDate.split(' ');
         let datePieces = dateComponents[0].split("-");
@@ -183,10 +272,9 @@ socket.on('logoutUser',(message)=>{
         const segundos = (milisegundos / 1000);
         return `${agregarCeroSiEsNecesario(horas)}:${agregarCeroSiEsNecesario(minutos)}:${agregarCeroSiEsNecesario(segundos.toFixed())}`;
     };
-    function iniciar(data,tot){
+    function iniciar(data){
         let inicio=new Date(convertFromStringToDate(data));
         let diferencia=new Date() - inicio.getTime();
-        diferencia += Number(tot);
         let now = new Date();
         let tiempoInicio = new Date(now.getTime() - diferencia);
         let ahora1 = new Date();
@@ -197,38 +285,41 @@ socket.on('logoutUser',(message)=>{
     function intervalo(id){
         var a=document.getElementById(id)
         if(a!=null){clearInterval(a.value)}
-        var idin=setInterval(()=>{
-            if(a!=null){
-            let t=a.innerHTML
-            let tiempo=t.split(":");
-            let h=parseInt(tiempo[0])
-            let m=parseInt(tiempo[1])
-            let s=parseInt(tiempo[2])
-            s=s+5
-            if(s>=55){
-                s=(s-55)
-                m++
-                if(m==60){
-                    m=0
-                    h++
+            var idin=setInterval(()=>{
+                if(a!=null){
+                    let t=a.innerHTML
+                    let tiempo=t.split(":");
+                    let h=parseInt(tiempo[0])
+                    let m=parseInt(tiempo[1])
+                    let s=parseInt(tiempo[2])
+                    s=s+5
+                    if(s>=55){
+                        s=(s-55)
+                        m++
+                        if(m==60){
+                            m=0
+                            h++
+                        }
+                    }
+                    a.innerHTML=agregarCeroSiEsNecesario(h)+":"+agregarCeroSiEsNecesario(m)+":"+agregarCeroSiEsNecesario(s)
+                
                 }
-            }
-            a.innerHTML=agregarCeroSiEsNecesario(h)+":"+agregarCeroSiEsNecesario(m)+":"+agregarCeroSiEsNecesario(s)
-        }
-
-        },5000)
-        if(a!=null){
-            a.value=idin}
+                
+            },6000)
+            if(a!=null){
+                a.value=idin}
+        
+       
     }
     function updateStateUser(idState){
         
-        let a=confirm('Esta seguro que desea cambiar el estado de este usuario:')
+        let a=confirm('Are you sure you want to change the status of this user?')
         if(a){
            socket.emit('ChangeStateSuptoUser',{'message':{'iduser':document.getElementById('id1').value,'newStateid':idState,'responsable':JSON.parse(sessionStorage.getItem('user'))['nombres']},'room':sessionStorage.getItem('idComp')})
-            alert('Actualizado con exito')
+            alert('Updated successfully')
             close();
         }else{
-            alert(' no se pudo Actualizar')
+            alert('could not update')
         }
     }
     function close() {
@@ -245,7 +336,9 @@ socket.on('logoutUser',(message)=>{
     const Columns = [{name:"id_solvo", style:""},
         {name:"Name"},{name:"Supervisor"},
         {name:"Ciudad"},{name:"state",
-        },{
+        },{name:"date",options: {
+            display:false
+        }},{
             name: "Time",
             label: "",
             options: {
@@ -253,9 +346,8 @@ socket.on('logoutUser',(message)=>{
             customBodyRenderLite: (dataIndex) => {
                 var texto="00:00:00"
                 if(Lista.length!=0){
-                    texto=iniciar(Lista[dataIndex].date,Lista[dataIndex].totest)
+                    texto=iniciar(Lista[dataIndex].date)
                 }
-                //let idint=intervalo(Lista[dataIndex].id)
                 
                 return(<p id={Lista[dataIndex].id} value={0}>{texto}</p>)},
             }
@@ -289,7 +381,7 @@ socket.on('logoutUser',(message)=>{
                             <div className="infomodal1">
                                 <button style={{float:"right", border:"none", backgroundColor:"white"}} onClick={close}>X</button>
                                 <center>
-                                <h1 id="titleModal1">¿Desea Cambiar de estado?</h1>
+                                <h1 id="titleModal1"></h1>
                                 </center>
                                 <div className="layoutBtn1">
                                     <div id="btn11" className="btn1"><input id="id1" type="hidden"></input></div>

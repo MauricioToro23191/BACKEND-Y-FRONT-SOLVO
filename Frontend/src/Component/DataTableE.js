@@ -23,7 +23,7 @@ export const DataTableE =() => {
         print: false,
         searchPlaceholder: "Search..",
         selectableRows: 'multiple',
-        selectableRowsOnClick: true,
+        selectableRowsOnClick: false,
         selectableRowsHideCheckboxes: true,
         responsive: "simple",
         fixedHeader: false,
