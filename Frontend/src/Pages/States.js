@@ -32,6 +32,7 @@ export default function States() {
    if(sessionStorage.getItem('user') != null){
       socket.emit('logoutUser',{'message':{'logout':true,'id':JSON.parse(sessionStorage.getItem('user'))['id']},'room':sessionStorage.getItem('idComp')});
       sessionStorage.removeItem('user');
+      sessionStorage.clear();
       logOUT();
     }else{
       logOUT();

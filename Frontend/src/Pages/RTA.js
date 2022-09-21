@@ -36,8 +36,6 @@ export default function Rta(){
         setlista(data.listRTA);
         setlstCompania(data.companiList);
         socket.emit('join',{'room':sessionStorage.getItem('idComp')});
-        
-        
         return data.listRTA
     }
     
@@ -231,14 +229,16 @@ const Option ={
         
         if(Lista!=null){
             if(Lista.length!=0){
-                if(sessionStorage.getItem('idLista')!=null){clearInterval(sessionStorage.getItem('idLista'))}
+                if(sessionStorage.getItem('idLista')!=null){
+                    clearInterval(sessionStorage.getItem('idLista'))
+                }   
                 sessionStorage.setItem('idLista',setInterval(() => {
-                    let newl=Lista.map((litem)=>{
-                        return litem
-                    })
-               setlista([...newl])
-                    console.log(newl)
-                }, 5000))
+                let newl=Lista.map((litem)=>{
+                    return litem
+                })
+                setlista([...newl])
+            }, 5000))
+                
                 for (const a in Lista){
                     if(Lista[a]['id']!=null){
                         intervalo(Lista[a]['id'])
@@ -412,6 +412,9 @@ const Option ={
         let id=document.getElementById('lstCompania').value
         sessionStorage.setItem('idComp',id)
         obtenerDatos();
+        if(sessionStorage.getItem('idLista')!=null){
+            setInterval(sessionStorage.getItem('idLista'))
+        }
 
         //document.getElementById('RT').click()
     }  

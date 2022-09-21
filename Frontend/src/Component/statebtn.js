@@ -201,7 +201,7 @@ export default function Statebtn() {
       diferenciaTemporal += Number(tiempoAnterior);
       const ahora = new Date();
       tiempoInicio = new Date(ahora.getTime() - diferenciaTemporal);
-      tiempoInicioActual=new Date(ahora.getTime()-0);
+      tiempoInicioActual=new Date(ahora.getTime());
       if(sessionStorage.getItem('diferenciaState')!=null){
         tiempoInicioActual=new Date(ahora.getTime() - parseInt(sessionStorage.getItem('diferenciaState')));
       }

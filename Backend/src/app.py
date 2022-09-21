@@ -106,6 +106,10 @@ def logout():
     ModelState.call_procedure(db,usuario,usuario,1)
     return jsonify({'logout':True})
 
+@app.route('/logoutAdmin')
+def logoutAdmin():
+    return jsonify({'logout':True})
+
 #inicio de la pagina 
 if __name__ == '__main__':
     socket.run(app,host='0.0.0.0',port=5000)

@@ -1,4 +1,4 @@
-import React, { useState, useCallback,useContext } from "react";
+import React, { useState, useCallback,useContext} from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/login.scss';
 import { SocketContext } from "../Context/socketio";
@@ -9,9 +9,6 @@ const Login = () => {
     const [user, setuser] = useState("");
     const [pass, setpass] = useState("");
     const [style, setStyle] = useState("sideL");
-    sessionStorage.setItem('startDate',new Date(Date.now()))
-    sessionStorage.setItem('endDate',new Date(Date.now()))
-    sessionStorage.setItem('reporte',true)
     const cambiarestado=async(id,user)=>{
     const res =await fetch(`${API}/estados/changeState`,{
       method: "POST",
@@ -63,7 +60,9 @@ const Login = () => {
                     sessionStorage.setItem("user", JSON.stringify(r['usuario']));
                     sessionStorage.setItem("perfil",r['usuario'].perfil);
                     sessionStorage.setItem("idComp",r['usuario']['compania']['id']);
-
+                    sessionStorage.setItem('startDate',new Date(Date.now()))
+                    sessionStorage.setItem('endDate',new Date(Date.now()))
+                    sessionStorage.setItem('reporte',true)
                     //setStyle("sideLEX"); 
                     setTimeout(changePageMenu, 1500);
                 }

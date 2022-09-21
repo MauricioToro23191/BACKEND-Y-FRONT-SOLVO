@@ -2,6 +2,7 @@ import { Outlet, Link, useNavigate } from "react-router-dom";
 import React, { useCallback,useState,useEffect } from "react";
 import '../styles/layout.scss';
 
+const API=process.env.REACT_APP_BACKEND
 
 const Layout = () => {
     const[nombre,setNombre]=useState("");
@@ -9,10 +10,10 @@ const Layout = () => {
     const logOUT = useCallback(() => Navigate('/', { replace: true }), [Navigate]);
     const logout=async(e)=>{
         e.preventDefault();
-        const res=await fetch(`${API}/logout`,{})
+        const res=await fetch(`${API}/logoutAdmin`,{})
         if(res){
           if(sessionStorage.getItem('user') != null){
-            sessionStorage.removeItem('user');
+            sessionStorage.clear();
             logOUT();
           }else{
             
@@ -46,7 +47,7 @@ const Layout = () => {
                     <h2>{nombre}</h2>
                     <ul>
                         <li>Perfil</li>
-                        <li onClick={logOUT}>Log Out</li>
+                        <li onClick={logout}>Log Out</li>
                     </ul>
                 </div>
                 <Outlet />

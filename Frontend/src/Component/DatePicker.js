@@ -104,7 +104,7 @@ export default function DateRange(props) {
         <Popper id={id} open={open} anchorEl={anchorEl}>
           <Box sx={{ border: 1, p: 1, bgcolor: "background.paper" }}>
             <div style={estilosTest}>
-              <div style={{ gridColum: "1/2" }}onClick={handleClick}>
+              <div style={{ gridColum: "1/2" }}onChange={handleClick}>
                 <DatePicker
                   selected={new Date(sessionStorage.getItem('startDate'))}
                   onChange={(date) => {setStartDate(date),sessionStorage.setItem('startDate',date)}}
@@ -120,7 +120,7 @@ export default function DateRange(props) {
                   <div></div>
                 ) : 
                 (
-                  <div style={{ gridColumn: "2/3", marginLeft: "5%" }} onClick={handleClick} >
+                  <div style={{ gridColumn: "2/3", marginLeft: "5%" }} onChange={handleClick} >
                       <DatePicker
                         selected={new Date(sessionStorage.getItem('endDate'))}
                         onChange={(date) => {setEndDate(date),sessionStorage.setItem('endDate',date)}}
