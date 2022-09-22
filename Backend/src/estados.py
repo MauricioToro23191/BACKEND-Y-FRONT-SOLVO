@@ -8,6 +8,7 @@ import json
 #direccionamiento a Pagina de estados 
 @estados.route('/getState',methods=['POST'])
 def menu():
+    
     from app import getdb
     db=getdb()
     response=None

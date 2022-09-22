@@ -112,9 +112,10 @@ def logoutAdmin():
 
 #inicio de la pagina 
 if __name__ == '__main__':
-    socket.run(app,host='0.0.0.0',port=5000)
     app.register_error_handler(401, status_401)
     app.register_error_handler(404, status_404)
+    socket.run(app,host='0.0.0.0',port=5000)
+    
     
 
     

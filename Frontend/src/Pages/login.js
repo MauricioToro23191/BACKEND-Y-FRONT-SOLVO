@@ -53,7 +53,7 @@ const Login = () => {
                     sessionStorage.setItem("idComp",r['usuario']['compania']['id']);
                     cambiarestado(4,JSON.stringify(r['usuario']));
                     sessionStorage.setItem('diferenciaState',0);
-                    //setStyle("sideLEX"); 
+                    setStyle("sideLEX"); 
                     setTimeout(changePageState, 1500);
                 }else{
                     console.log('admin');
@@ -63,7 +63,7 @@ const Login = () => {
                     sessionStorage.setItem('startDate',new Date(Date.now()))
                     sessionStorage.setItem('endDate',new Date(Date.now()))
                     sessionStorage.setItem('reporte',true)
-                    //setStyle("sideLEX"); 
+                    setStyle("sideLEX"); 
                     setTimeout(changePageMenu, 1500);
                 }
             }else{

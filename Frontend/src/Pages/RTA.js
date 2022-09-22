@@ -42,7 +42,6 @@ export default function Rta(){
     
    useEffect(() => {
         obtenerDatos();
-        console.log("Hola")
         return () => {
             socket.off('logoutUser');
             socket.off('Cambio');
@@ -192,7 +191,7 @@ const Option ={
                 }
             }
         
-        }else if(row[4] === row[4] === "Team Meeting"){
+        }else if(row[4]  === "Team Meeting"){
             let d=calcDif(row[5])
             if(d>7200000){
                 return {
@@ -200,7 +199,7 @@ const Option ={
                 }
             }else{
                 return {
-                    style: { backgroundColor: "#C8EBFF"}
+                    style: { backgroundColor: "#FFF2B9"}
                 }
             }
         
@@ -228,10 +227,10 @@ const Option ={
     function printh(){
         
         if(Lista!=null){
+            if(sessionStorage.getItem('idLista')!=null){
+                clearInterval(sessionStorage.getItem('idLista'))
+            } 
             if(Lista.length!=0){
-                if(sessionStorage.getItem('idLista')!=null){
-                    clearInterval(sessionStorage.getItem('idLista'))
-                }   
                 sessionStorage.setItem('idLista',setInterval(() => {
                 let newl=Lista.map((litem)=>{
                     return litem
@@ -333,7 +332,7 @@ const Option ={
         document.getElementById("MyModal1").style.display = 'none';
     }
   
-    const Columns = [{name:"id_solvo", style:""},
+    const Columns = [{name:"id_solvo", label:"Solvo ID", style:""},
         {name:"Name"},{name:"Supervisor"},
         {name:"Ciudad"},{name:"state",
         },{name:"date",options: {
