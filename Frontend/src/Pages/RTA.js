@@ -311,7 +311,6 @@ const Option ={
        
     }
     function updateStateUser(idState){
-        
         let a=confirm('Are you sure you want to change the status of this user?')
         if(a){
            socket.emit('ChangeStateSuptoUser',{'message':{'iduser':document.getElementById('id1').value,'newStateid':idState,'responsable':JSON.parse(sessionStorage.getItem('user'))['nombres']},'room':sessionStorage.getItem('idComp')})
