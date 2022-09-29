@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/adduser.css')}}">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="cont">
+        <ul>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropbtn">opciones</a>
+                <div class="dropdown-content">
+                    <a href="{{url_for('menu.menu')}}">- H O M E -</a>
+                    <a href="{{url_for('Show')}}">Users List</a>
+                    <a href="#">Servicio 03</a>
+                </div>
+            </li>
+            <li style="float:right"><a href="{{url_for('logout')}}">Log out</a></li>
+        </ul>
+    </div>
+
+    
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <br /> {% for message in messages %}
+    <div class="alert alert-primary alert-dismissible" role="alert" style="text-align:center;">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %} {% endif %} {% endwith %}
+    
+    <div class="w3-container">
+        <hr>
+        <div class="w3-center">
+            <h2>Edit User</h2>
+        </div>
+                
+        {% for user in users %}
+            <form action="/Update" method="POST" id="form" class="w3-row">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="w3-row w3-container m2 ">
+                    <label for="">ID</label>
+                    <input type="number" name="userid" id="userid" value="{{ user [0] }}"  readonly
+                    style="color: #a3a2a2; border: 1px solid #a3a2a2; background-color: #f5f4f4; border-radius: 3px;">
+
+                    <label for="">SOLVO ID</label>
+                    <input type="text" name="solvoid" id="solvoid" value="{{ user [1] }}" placeholder="Id Solvo">
+
+                    <label for="">FIRTS NAME</label>
+                    <input type="text" name="name" id="name" value="{{ user [2] }}" placeholder="Name">
+                </div>
+                <div class="w3-row w3-container m2 ">
+                    <label for="">LAST NAME</label>
+                    <input type="text" name="lastname" id="lastname" value="{{ user [3] }}" placeholder="Last Name">
+
+                    <label for="">CORP EMAIL</label>
+                    <input type="text" name="email" id="email" value="{{ user [4] }}" placeholder="Email">
+                    
+                    <label for="perfil">PERFIL</label>
+                    <select type="text" name="perfil" id="perfil">
+                        <option disabled> SELECT </option>
+                    {% for perfil in ListPerfil%}
+                        {% if perfil.0 == user [8] %}
+                            <option name="perfil" id="perfil" value="{{perfil.0}}" selected>{{perfil.1}}</option>
+                        {% else %}
+                            <option disabled name="perfil" value="{{perfil.0}}">{{perfil.1}}</option>
+                        {% endif %}
+                    {%endfor%}  
+                    </select>
+                </div>
+                <div class="w3-row w3-container m2 ">
+                    <label for="">ADMINISTRATOR</label>
+                    <select type="text" name="administrator" id="administrator">
+                        <option> SELECT </option>
+                    {% for administrator in ListAdmin%}
+                        {% if administrator.0 == user [5] %}
+                            <option name="administrator" value="{{administrator.0}}" selected>{{administrator.1}} {{administrator.2}}</option>
+                        {% else %}
+                            <option name="administrator" value="{{administrator.0}}">{{administrator.1}} {{administrator.2}}</option>
+                        {% endif %}
+                    {%endfor%}  
+                    </select>
+                    
+                    <label for="">SUPERVISOR</label>
+                    <select type="text" name="supervisor" id="supervisor">
+                        <option> SELECT </option>
+                    {% for sup in ListSup%}
+                        {% if sup.0 == user [5] %}
+                            <option name="sup" value="{{sup.0}}" selected>{{sup.1}} {{sup.2}}</option>
+                        {% else %}
+                            <option name="sup" value="{{sup.0}}">{{sup.1}} {{sup.2}}</option>
+                        {% endif %}
+                    {%endfor%}  
+                    </select>
+
+                    <label for="teamleader">TEAM LEADER</label>
+                    <select type="text" name="teamleader" id="teamleader">
+                        <option> SELECT </option>
+                    {% for teamleader in ListTeam%}
+                        {% if teamleader.0 == user [5] %}
+                            <option name="teamleader" value="{{teamleader.0}}" selected>{{teamleader.1}} {{teamleader.2}}</option>
+                        {% else %}
+                            <option name="teamleader" value="{{teamleader.0}}">{{teamleader.1}} {{teamleader.2}}</option>
+                        {% endif %}
+                    {%endfor%}  
+                    </select>
+                </div>
+                <div class="w3-row w3-container m2 ">
+                    <label for="">COMPANY</label>
+                    <select type="number" name="ciu" id="ciu">
+                        <option> SELECT </option>
+                    {% for company in companys %}
+                        {% if company.0 == user[7] %}
+                            <option name="company" value="{{ company.0 }}" selected>{{ company.1 }}</option>
+                        {% else %}
+                            <option name="company" value="{{ company.0 }}" >{{ company.1 }}</option>
+                        {% endif %}
+                    {%endfor%}  
+                    </select>
+
+                    <label for="">CITY</label>
+                    <select type="number" name="comp" id="comp">
+                        <option> SELECT </option>
+                    {% for city in citys %}
+                        {% if city.0 == user [6] %}
+                            <option name="city" value="{{ city.0 }}" selected>{{ city.1 }}</option>
+                        {% else %}
+                            <option name="city" value="{{ city.0 }}" >{{ city.1 }}</option>
+                        {% endif %}
+                    {%endfor%}  
+                    </select>
+
+                    <br><br>
+                    <div style="padding-left: 10%;">
+                        <input type="submit" value="ACTUALIZAR" id="actualizar">
+                        <input type="button" value="REGRESAR" onClick="history.go(-1);">
+                    </div>
+                </div>
+            </form>
+        {%endfor%}
+    </div>
+
+    <script>
+        $("#perfil").change(function() {
+            
+            switch ($('#perfil').val()) {
+                case "1":
+                    $('#administrator').prop('disabled', 'disabled');
+                    $('#supervisor').prop('disabled', 'disabled');
+                    $('#teamleader').prop('disabled', 'disabled');
+                    break;
+            
+                case "2":
+                    $('#supervisor').prop('disabled', 'disabled');
+                    $('#teamleader').prop('disabled', 'disabled');
+                    $('#administrator').prop('disabled', false);
+                    break;
+
+                case "3":
+                    $('#administrator').prop('disabled', 'disabled');
+                    $('#teamleader').prop('disabled', 'disabled');
+                    $('#supervisor').prop('disabled', false);
+                    break;
+
+                case "4": 
+                    $('#administrator').prop('disabled', 'disabled');
+                    $('#supervisor').prop('disabled', 'disabled');
+                    $('#teamleader').prop('disabled', false);
+                    break;
+
+                default:
+                    $('#administrator').prop('disabled', 'disabled');
+                    $('#supervisor').prop('disabled', 'disabled');
+                    $('#teamleader').prop('disabled', 'disabled');  
+                    break;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -63,12 +63,11 @@ class ModelState():
     @classmethod       
     def call_procedure(self,db,user1,responsable,estado):  
         if responsable=="":
-            responsable=user1.nombres
+            responsable=user1['Name']
         try:
-            
             today = datetime.now()
             cursor = db.connection.cursor()
-            cursor.callproc('UPDATEHISTORIAL', (user1.id,responsable,today,estado))
+            cursor.callproc('UPDATEHISTORIAL', (user1['id'],responsable,today,estado))
             results = list(cursor.fetchall())
             
             return results

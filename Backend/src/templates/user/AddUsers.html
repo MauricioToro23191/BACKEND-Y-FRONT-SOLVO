@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/adduser.css')}}">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="cont">
+        <ul>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropbtn">opciones</a>
+                <div class="dropdown-content">
+                    <a href="{{url_for('menu.menu')}}">- H O M E -</a>
+                    <a href="{{url_for('Show')}}">Users List</a>
+                    <a href="{{url_for('ShowCompCity')}}">Company City</a>
+                </div>
+            </li>
+            <li style="float:right"><a href="{{url_for('logout')}}">Log out</a></li>
+        </ul>
+    </div>
+    <div class="w3-container">
+        <hr>
+        <div class="w3-center">
+            <h2>Add User</h2>
+        </div>
+
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <br /> {% for message in messages %}
+        <div class="alert alert-primary alert-dismissible" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+        
+        <form action="/addInterp" method="POST" id="form" class="w3-row">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="w3-row w3-container m2 ">
+                <label for="solvoid">SOLVO ID *</label>
+                <input type="text" name="solvoid" id="solvoid" placeholder="ID" required> 
+
+                <label for="name">FIRTS NAME *</label>
+                <input type="text" name="name" id="name" placeholder="Name" required>
+
+                <label for="lastname">LAST NAME *</label>
+                <input type="text" name="lastname" id="lastname" placeholder="Last Name" required>
+            </div>
+            <div class="w3-row w3-container m2 ">
+                <label for="email">CORP EMAIL *</label>
+                <input type="text" name="email" id="email" placeholder="Email" required>
+
+                <label for="perfil">PERFIL *</label>
+                <select type="text" name="perfil" id="perfil" >
+                    <option> SELECT </option> 
+                {% for perfil in ListPerfil%}
+                    <option name="perfil" value="{{perfil.0}}">{{perfil.1}}</option>
+                {%endfor%}  
+                </select>
+
+                <label for="administrator">ADMINISTRATOR *</label>
+                <select type="text" name="administrator" id="administrator">
+                    <option> SELECT </option>
+                {% for administrator in ListAdmin%}
+                    <option name="administrator" value="{{administrator.0}}">{{administrator.1}} {{administrator.2}}</option>
+                {%endfor%}  
+                </select>
+            </div>
+            <div class="w3-row w3-container m2 ">
+                <label for="supervisor">SUPERVISOR *</label>
+                <select type="text" name="supervisor" id="supervisor">
+                    <option> SELECT </option>
+                {% for sup in ListSup%}
+                    <option name="sup" value="{{sup.0}}">{{sup.1}} {{sup.2}}</option>
+                {%endfor%}  
+                </select>
+                
+                <label for="teamleader">TEAM LEADER *</label>
+                <select type="text" name="teamleader" id="teamleader">
+                    <option> SELECT </option> 
+                {% for teamleader in ListTeam%}
+                    <option name="teamleader" value="{{teamleader.0}}">{{teamleader.1}}</option>
+                {%endfor%}  
+                </select>
+
+                <label for="">COMPANY *</label>
+                <select type="text" name="comp" id="comp" required>
+                    <option> SELECT </option> 
+                {% for company in companys%}
+                    <option name="company" value="{{company.0}}"> {{company.1}} </option>
+                {%endfor%}  
+                </select>
+            </div>
+            <div class="w3-row w3-container m2 ">
+                <label for="">CITY *</label>
+                <select type="text" name="ciu" id="ciu" required>
+                    <option> SELECT </option> 
+                {% for city in citys%}
+                    <option name="city" value="{{city.0}}"> {{city.1}} </option>
+                {%endfor%}  
+                </select>
+
+                <label for="">PASSWORD *</label>
+                <input type="text" name="pass" id="pass" placeholder="Password" required>
+            
+                <br><br><br>
+                <div style="padding-left: 10%;">
+                    <input type="submit" value="INGRESAR" id="ingresar">
+                    <input type="button" value="REGRESAR" onClick="history.go(-1);">
+                </div>
+            </div>
+        </div>
+    </form>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>
+
+            $("#perfil").change(function() {
+                
+                switch ($('#perfil').val()) {
+                    case "1":
+                        $('#administrator').prop('disabled', 'disabled');
+                        $('#supervisor').prop('disabled', 'disabled');
+                        $('#teamleader').prop('disabled', 'disabled');
+                        break;
+                
+                    case "2":
+                        $('#supervisor').prop('disabled', 'disabled');
+                        $('#teamleader').prop('disabled', 'disabled');
+                        $('#administrator').prop('disabled', false);
+                        break;
+
+                    case "3":
+                        $('#administrator').prop('disabled', 'disabled');
+                        $('#teamleader').prop('disabled', 'disabled');
+                        $('#supervisor').prop('disabled', false);
+                        break;
+
+                    case "4": 
+                        $('#administrator').prop('disabled', 'disabled');
+                        $('#supervisor').prop('disabled', 'disabled');
+                        $('#teamleader').prop('disabled', false);
+                        break;
+
+                    default:
+                        $('#administrator').prop('disabled', 'disabled');
+                        $('#supervisor').prop('disabled', 'disabled');
+                        $('#teamleader').prop('disabled', 'disabled');  
+                        break;
+                }
+            });
+        </script>
+
+</body>
+
+</html>
