@@ -46,7 +46,7 @@ export default function States() {
  
   useEffect(()=>{
     let l=JSON.parse(sessionStorage.getItem('user'))
-    setNombre(l['nombres']+" "+l['apellidos'])
+    setNombre(l['Name']+" "+l['LastN'])
   },[])
   
   return (

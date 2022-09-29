@@ -49,7 +49,7 @@ export default function Statebtn() {
  
   const cambiarestado=async(id,responsable)=>{
     if(responsable==""){
-      responsable=JSON.parse(sessionStorage.getItem('user'))['nombres']
+      responsable=JSON.parse(sessionStorage.getItem('user'))['Name']
     }
     const res =await fetch(`${API}/estados/changeState`,{
       method: "POST",

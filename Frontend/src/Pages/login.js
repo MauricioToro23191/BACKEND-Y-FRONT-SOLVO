@@ -46,11 +46,11 @@ const Login = () => {
             })
             const r=await res.json();
             if(r['bool']){
-                if(r['usuario'].perfil==4){
+                if(r['usuario']['idPerfil']==4){
                     console.log('interprete');
                     sessionStorage.setItem("user",JSON.stringify(r['usuario']));
-                    sessionStorage.setItem("perfil",r['usuario'].perfil);
-                    sessionStorage.setItem("idComp",r['usuario']['compania']['id']);
+                    sessionStorage.setItem("perfil",r['usuario']['idPerfil']);
+                    sessionStorage.setItem("idComp",r['usuario']['idCompany']);
                     cambiarestado(4,JSON.stringify(r['usuario']));
                     sessionStorage.setItem('diferenciaState',0);
                     //setStyle("sideLEX"); 
@@ -58,8 +58,8 @@ const Login = () => {
                 }else{
                     console.log('admin');
                     sessionStorage.setItem("user", JSON.stringify(r['usuario']));
-                    sessionStorage.setItem("perfil",r['usuario'].perfil);
-                    sessionStorage.setItem("idComp",r['usuario']['compania']['id']);
+                    sessionStorage.setItem("perfil",r['usuario']['idPerfil']);
+                    sessionStorage.setItem("idComp",r['usuario']['idCompany']);
                     sessionStorage.setItem('startDate',new Date(Date.now()))
                     sessionStorage.setItem('endDate',new Date(Date.now()))
                     sessionStorage.setItem('reporte',true)

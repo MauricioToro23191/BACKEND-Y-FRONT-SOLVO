@@ -44,20 +44,22 @@ def login():
         return render_template('proto_Solvo.html')
 
 
-@usuarios.route('/ListUser')
+@usuarios.route('/ListUser', methods=['GET', 'POST'])
 def listUser():
     from app import getdb
     db=getdb()
-    users=ModelUser.ListUser(db)
-    admins = ModelUser.ListAdmin(db)
-    perfils = ModelUser.perfil(db)
-    sups = ModelUser.ListSup(db)
-    teams = ModelUser.ListTeam(db)
-    citys = ModelCompanyCity.ListCity(db)
-    companys = ModelCompanyCity.ListCompany(db)
-    citycompanys = ModelUser.getCompCiuTodos(db)
-    return jsonify({'LisUser':users, 'Admins':admins, 'Perfils':perfils, 'Sups':sups, 'Teams':teams, 'Citys':citys, 'Companys':companys, 'Citycompanys':citycompanys})
- 
+    if request.method == 'POST':
+        idCompania = request.json['company']
+        users=ModelUser.ListUser(db, idCompania)
+        admins = ModelUser.ListAdmin(db)
+        perfils = ModelUser.perfil(db)
+        sups = ModelUser.ListSup(db)
+        teams = ModelUser.ListTeam(db)
+        citys = ModelCompanyCity.ListCity(db)
+        companys = ModelCompanyCity.ListCompany(db)
+        citycompanys = ModelUser.getCompCiuTodos(db)
+        return jsonify({'LisUser':users, 'Admins':admins, 'Perfils':perfils, 'Sups':sups, 'Teams':teams, 'Citys':citys, 'Companys':companys, 'Citycompanys':citycompanys})
+    
 @usuarios.route('/AdminUser',methods=['GET', 'POST'])
 def AdminUser():
     from app import getdb

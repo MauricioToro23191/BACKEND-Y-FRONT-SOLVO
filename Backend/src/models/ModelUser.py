@@ -1,4 +1,4 @@
-from asyncio.windows_events import NULL
+
 from .entities.User import User
 from werkzeug.security import generate_password_hash
 class ModelUser():
@@ -276,7 +276,7 @@ class ModelUser():
             raise Exception(ex)
 
     @classmethod
-    def ListUser(self,db):
+    def ListUser(self,db, idComp):
         try:
             lUser=[]
             usuarios=[]
@@ -288,7 +288,7 @@ class ModelUser():
                     INNER JOIN perfiles as p ON u.PERFIL=p.ID_PERFIL
                     INNER JOIN compania as comp ON u.ID_COMPANIA=comp.ID_COMPANIA
                     INNER JOIN ciudad as ciu ON u.ID_CIUDAD=ciu.ID_CIUDAD
-                    WHERE u.PERFIL=1 and u.estado=1"""
+                    WHERE u.PERFIL=1 and u.estado=1 and u.id_compania = {}""".format(idComp)
             cursor.execute(sql)
             usuarios=list(cursor.fetchall())#
             for row in usuarios :
@@ -303,7 +303,7 @@ class ModelUser():
                     INNER JOIN compania as comp ON u.ID_COMPANIA=comp.ID_COMPANIA
                     INNER JOIN ciudad as ciu ON u.ID_CIUDAD=ciu.ID_CIUDAD
                     INNER JOIN usuario as sup ON u.id_supervisor=sup.ID_USUARIO
-                    WHERE u.PERFIL<>1 and u.estado=1"""
+                    WHERE u.PERFIL<>1 and u.estado=1 and u.id_compania = {}""".format(idComp)
             cursor.execute(sql)
             usuarios=list(cursor.fetchall())#
             for row in usuarios :
