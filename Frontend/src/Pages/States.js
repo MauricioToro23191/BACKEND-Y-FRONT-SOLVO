@@ -23,7 +23,7 @@ export default function States() {
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:sessionStorage.getItem('user')
+            user:JSON.parse(sessionStorage.getItem('user'))
         })
   })
   const data =await res.json()

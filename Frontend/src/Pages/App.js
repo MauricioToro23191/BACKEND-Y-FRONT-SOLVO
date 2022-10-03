@@ -15,17 +15,17 @@ export default function App() {
   }
   return (
     <SocketContext.Provider value={socket}>
-        <BrowserRouter >
-            <Routes onunload={confirmar}>
-                <Route exact path='/' element={<Login />}/>
-                <Route path='/Layout' element={<Layout />}>
-                    <Route index element={<Users />}/>
-                    <Route path='/Layout/Export' element={<Export/>}/>
-                    <Route path='/Layout/RTA' element={<Rta/>}/>
-                </Route>
-                <Route path='/states' element={<States/>}/>
-                </Routes>
-        </BrowserRouter>
+          <BrowserRouter >
+              <Routes onunload={confirmar}>
+                  <Route exact path='/' element={<Login />}/>
+                  <Route path='/Layout' element={<Layout />}>
+                      <Route index element={<Users />}/>
+                      <Route path='/Layout/Export' element={<Export/>}/>
+                      <Route path='/Layout/RTA' element={<Rta/>}/>
+                  </Route>
+                  <Route path='/states' element={<States/>}/>
+                  </Routes>
+          </BrowserRouter>
       </SocketContext.Provider>
   )
 }

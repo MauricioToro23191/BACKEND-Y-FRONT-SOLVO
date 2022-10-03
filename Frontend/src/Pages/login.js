@@ -2,14 +2,15 @@ import React, { useState, useCallback,useContext} from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/login.scss';
 import { SocketContext } from "../Context/socketio";
+import { useUsuario } from "../Context/ContextUser";
 
 const API=process.env.REACT_APP_BACKEND
 const Login = () => {
     const socket=useContext(SocketContext);
-    const [user, setuser] = useState("");
+    const [Email, setEmail] = useState("");
     const [pass, setpass] = useState("");
     const [style, setStyle] = useState("sideL");
-    const cambiarestado=async(id,user)=>{
+    const cambiarestado=async(id,u)=>{
     const res =await fetch(`${API}/estados/changeState`,{
       method: "POST",
       headers: {
@@ -18,7 +19,7 @@ const Login = () => {
       },
       body:JSON.stringify({
           idestado:id,
-          user:user,
+          user:u,
           responsable:""
       })
     })
@@ -32,23 +33,13 @@ const Login = () => {
     const changePageState = useCallback(() => Navigate('/states', { replace: true }), [Navigate]);
     const Handlesesion =async (e)=> {
         e.preventDefault();
-        if(user!="" || pass!=""){
-            const res=await fetch(`${API}/usuario/login`,{
-                method: "POST",
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body:JSON.stringify({
-                    user,
-                    pass
-                })
-            })
-            const r=await res.json();
+        if(Email!="" || pass!=""){
+            const r= await login(Email,pass)
             if(r['bool']){
                 if(r['usuario']['idPerfil']==4){
                     console.log('interprete');
                     sessionStorage.setItem("user",JSON.stringify(r['usuario']));
+                    setUser(JSON.stringify(r['usuario']))
                     sessionStorage.setItem("perfil",r['usuario']['idPerfil']);
                     sessionStorage.setItem("idComp",r['usuario']['idCompany']);
                     cambiarestado(4,JSON.stringify(r['usuario']));
@@ -88,6 +79,23 @@ const Login = () => {
         document.getElementById("formulario2").style.display = "none";
         setStyle("sideL");
     }
+    const login = async(email,pass)=>{
+        const res=await fetch(`${API}/usuario/login`,{
+            method: "POST",
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+                user:email,
+                pass
+            })
+           
+        })
+        const data=await res.json()
+        return data
+
+    }
 
     return (
         <>
@@ -108,7 +116,7 @@ const Login = () => {
                     <div className="contForm" id="contForm">
                         <form className="Formulario">
                             <label>Log In</label>
-                            <input placeholder="User" type="email" id="user" onChange={(e) => setuser(e.target.value)}></input>
+                            <input placeholder="User" type="email" id="user" onChange={(e) => setEmail(e.target.value)}></input>
                             <input type="password" id="pass" placeholder="Pass" onChange={(e) => setpass(e.target.value)}></input>
                             <label id="forgePass" onClick={handleForgot}>Forgot your Password?</label>
                             <input type="submit"onClick={Handlesesion} className="buttonEx" value="Login" />

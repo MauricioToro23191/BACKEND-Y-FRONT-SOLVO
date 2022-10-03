@@ -5,15 +5,14 @@ from flask import redirect, url_for,jsonify,request,redirect,url_for
 from flask_cors import CORS
 #from flask_json import FlaskJSON
 from flask_socketio import SocketIO,emit,join_room,leave_room
-import json
 #controlador de Base de datos 
 
 # Models:
 from models.ModelState import ModelState
 from models.entities.User import User
-from init import init_app2
+from init import init_app
 #asignacion de variables generales 
-app,db=init_app2()
+app,db=init_app()
 CORS(app)
 #csrf = CSRFProtect(app)
 
@@ -39,7 +38,8 @@ def RTA():
 @app.route('/reporte1',methods=['GET', 'POST'])
 def reporte():
     lista=ModelState.reporte1(db,request.json['FechaInicio'],request.json['Fechafin'])
-    return jsonify({'listExport':lista})
+    listComp=ModelState.listCompania(db)
+    return jsonify({'listExport':lista,'listcomp':listComp})
 
 @app.route('/reporte2',methods=['GET', 'POST'])
 def reporte2():
@@ -48,7 +48,8 @@ def reporte2():
         lista=ModelState.reporte2(db,request.json['FechaInicio'])
     else:
         lista=ModelState.reporte2(db,"")
-    return jsonify({'listExport':lista})
+    listComp=ModelState.listCompania(db)
+    return jsonify({'listExport':lista,'listcomp':listComp})
 #Respuestas a error por no estar autorizado para acceder a la pagina   
 def status_401(error):
     return redirect(url_for('Usuario.login'))
@@ -101,9 +102,8 @@ def test_disconnect():
 #Cerrar sesion    
 @app.route('/logout',methods=['GET', 'POST'])
 def logout():
-    u = json.loads(request.json['user'])
-    usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
-    ModelState.call_procedure(db,usuario,usuario,1)
+    u =request.json['user']
+    ModelState.call_procedure(db,u,"",1)
     return jsonify({'logout':True})
 
 @app.route('/logoutAdmin')

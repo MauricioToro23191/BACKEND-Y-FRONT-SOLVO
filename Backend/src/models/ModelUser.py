@@ -36,9 +36,13 @@ class ModelUser():
                 if row != None:
                     u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
                         'Company':row[9],'idCity':row[10],'City':row[11], 'pass':User.check_password(row[12],user['pass'])}
+                    cursor.close()
                     return u
+                cursor.close()
+
         except Exception as ex: 
             raise Exception(ex)
+
         
     @classmethod
     def ExistsUser(self,db,correo_solvo):
@@ -54,6 +58,8 @@ class ModelUser():
                 return False
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
         
 
     @classmethod
@@ -66,6 +72,8 @@ class ModelUser():
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
         
     @classmethod
     def addSup(self, db, user):
@@ -77,6 +85,8 @@ class ModelUser():
             db.connection.commit() 
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def showUser(self,db,id):
@@ -102,6 +112,8 @@ class ModelUser():
                 return None
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def get_by_id(self,db,id):
@@ -120,6 +132,8 @@ class ModelUser():
                 return None
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
     
     @classmethod
     def get_by_id_compania(self,db,id):
@@ -137,6 +151,9 @@ class ModelUser():
                 return compania
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
+
     
     @classmethod
     def get_by_id_ciudad(self,db,id):
@@ -154,7 +171,8 @@ class ModelUser():
                 return ciudad 
         except Exception as ex:
             raise Exception(ex)
-
+        finally:
+            cursor.close()
     @classmethod
     def perfil(self, db):
         try:
@@ -169,13 +187,14 @@ class ModelUser():
             return perfil
         except Exception as ex:
             raise Exception(ex)
-        
+        finally:
+            cursor.close()
     @classmethod
     def ListAdmin(self,db):
         try:
             admins = []
             cursor = db.connection.cursor()
-            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 1 and ESTADO = 'ACTIVO'"
+            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 1 and ESTADO = 1"
             cursor.execute(sql)
             lista = cursor.fetchall()
             for item in lista:
@@ -184,13 +203,15 @@ class ModelUser():
             return admins
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def ListSup(self,db):
         try:
             Sups =[]
             cursor = db.connection.cursor()
-            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 2 and ESTADO = 'ACTIVO'"
+            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 2 and ESTADO = 1"
             cursor.execute(sql)
             lista = cursor.fetchall()
             for item in lista:
@@ -205,7 +226,7 @@ class ModelUser():
         try:
             Teams = []
             cursor = db.connection.cursor()
-            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 3 and ESTADO = 'ACTIVO'"
+            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 3 and ESTADO = 1"
             cursor.execute(sql)
             lista = cursor.fetchall()
             for item in lista:
@@ -214,7 +235,8 @@ class ModelUser():
             return Teams
         except Exception as ex:
             raise Exception(ex)
-
+        finally:
+            cursor.close()
     @classmethod
     def UpdateAdmin(self, db, user):
         try:
@@ -229,15 +251,17 @@ class ModelUser():
     def UpdateSup(self, db, user):
         try:
             cursor = db.connection.cursor()
-            if user['Perfil'] == 1:
-                user['Supervisor'] = NULL
-            sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=%s, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s WHERE ID_USUARIO=%s"
-            cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],user['Supervisor'],user['Company'],user['City'],user['Perfil'],user['id']))
-
+            if user['Supervisor']==0:
+                sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=NULL, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s WHERE ID_USUARIO=%s"
+                cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],user['Company'],user['City'],user['Perfil'],user['id']))
+            else:
+                sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=%s, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s WHERE ID_USUARIO=%s"
+                cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],user['Supervisor'],user['Company'],user['City'],user['Perfil'],user['id']))
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
-
+        finally:
+            cursor.close()
     @classmethod
     def traerEstado(self, db, id):
         try: 
@@ -257,7 +281,8 @@ class ModelUser():
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
-        
+        finally:
+            cursor.close()
     @classmethod
     def getCompCiuTodos(self,db):
         try:
@@ -274,7 +299,8 @@ class ModelUser():
             return lista
         except Exception as ex:
             raise Exception(ex)
-
+        finally:
+            cursor.close()
     @classmethod
     def ListUser(self,db, idComp):
         try:
@@ -310,12 +336,11 @@ class ModelUser():
                 u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
                 'Company':row[9],'idCity':row[10],'City':row[11], 'idSupervisor':row[12], 'Supervisor':row[13]}
                 lUser.append(u) 
-            if not lUser:
-                return None
+            cursor.close()    
             return lUser
         except Exception as ex:
             raise Exception(ex)
-           
+       
            
     
       

@@ -23,7 +23,11 @@ class ModelState():
                                
                 return None
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
+        finally:
+            cursor.close() 
+
         
     @classmethod      
     def listState(self,db):
@@ -40,23 +44,31 @@ class ModelState():
                 lestados.append(h)
             return lestados
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
-    
+        finally:
+            cursor.close()
+
+
     @classmethod      
     def listCompania(self,db):
         try:
-            
             lcompanias=[]
             companias=[]
             cursor = db.connection.cursor()
             sql = "SELECT * FROM compania "
             cursor.execute(sql)
             companias=list(cursor.fetchall())
+            cursor.close()
+
             for compania in companias :
                 h={'id':compania[0],'nombre':compania[1]}
                 lcompanias.append(h)
+            
             return lcompanias
         except Exception as ex:
+            db.connection.close()
+
             raise Exception(ex)
         
         
@@ -69,10 +81,13 @@ class ModelState():
             cursor = db.connection.cursor()
             cursor.callproc('UPDATEHISTORIAL', (user1['id'],responsable,today,estado))
             results = list(cursor.fetchall())
-            
             return results
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
+        finally:
+            cursor.close()
+
         
     @classmethod       
     def get_by_name(self,db,nombre):
@@ -90,7 +105,10 @@ class ModelState():
                 
                 return None
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
+        finally:
+            cursor.close()
         
     @classmethod       
     def get_by_id(self,db,id):
@@ -106,7 +124,11 @@ class ModelState():
             else:
                 return None
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
+        finally:
+            cursor.close()
+
         
     @classmethod 
     def totalStates(self,db, userid):
@@ -154,7 +176,11 @@ class ModelState():
                 
                 return dic
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
+        finally:
+            cursor.close()
+
 
         
     @classmethod
@@ -182,7 +208,11 @@ class ModelState():
                 return None
             return lHistor
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
+        finally:
+            cursor.close()
+
         
     @classmethod       
     def reporte1(self,db,fechainicio,fechafin):  
@@ -206,7 +236,11 @@ class ModelState():
                 li.append(dict)
             return li
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
+        finally:
+            cursor.close()
+
     #definicion del metodo reporte 2(consolidado)
     @classmethod       
     def reporte2(self,db,fechainicio):  
@@ -246,7 +280,9 @@ class ModelState():
                     inicio=False
                 di[res[6]] =res[7]
             lis.append(di)
+            cursor.close()
             return lis
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
         

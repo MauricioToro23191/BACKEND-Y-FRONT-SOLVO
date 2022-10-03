@@ -417,19 +417,29 @@ const Option ={
         }
 
         //document.getElementById('RT').click()
-    }  
+    } 
+    const cambiComp=()=>{
+        sessionStorage.setItem('idComp',documemt.getElementById('listComp').value)
+    } 
     const TitleChange = () =>{
-        return(
-        <>
-        <strong style={{fontSize: "150%"}}>RTA </strong>
-        <select id="lstCompania" value={sessionStorage.getItem('idComp')}onChange={Actualizar}>
-        {lstCompania.map(comp => 
-            <option key={comp['id']} value={comp['id']}>{comp['nombre']}</option>
-        )}
-        
-    </select>
-    </>
-    )
+
+        if(sessionStorage.getItem('perfil')==1){
+            console.log(true)
+            return(
+                <><br/>
+                <strong style={{fontSize: "150%"}} >RTA</strong> <br/><br/>
+                <select value={sessionStorage.getItem('idComp')} id="listComp" onChange={cambiComp}>
+                    {lstCompania.map(comp => 
+                        <option key={comp['id']} value={comp['id']}>{comp['nombre']}</option>
+                    )}
+                </select>
+            </>)
+        }else{
+            console.log(false)
+
+            return (<><strong style={{fontSize: "150%"}} > RTA </strong> <br/><br/></>)
+        }
+       
     }
     
     return(

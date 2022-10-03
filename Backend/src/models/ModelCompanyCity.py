@@ -1,5 +1,3 @@
-from os import curdir
-from colorama import Cursor
 from .entities.CompanyCity import CompanyCity
 from .entities.Company import Company
 from .entities.City import City
@@ -20,6 +18,8 @@ class ModelCompanyCity():
                 return None
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def addCompany(self, db, company):
@@ -31,6 +31,8 @@ class ModelCompanyCity():
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def ListCompany(self, db):
@@ -45,6 +47,8 @@ class ModelCompanyCity():
             return companys
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def EditCompany(self, db, id):
@@ -55,6 +59,8 @@ class ModelCompanyCity():
             return cursor.fetchall()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def updaCompany(self, db, company):
@@ -65,6 +71,8 @@ class ModelCompanyCity():
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def deleteCompany(seld, db, id):
@@ -75,6 +83,8 @@ class ModelCompanyCity():
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
     
 #-------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------------
@@ -94,6 +104,8 @@ class ModelCompanyCity():
                 return None
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
     
     @classmethod
     def addCity(self, db, city):
@@ -105,6 +117,8 @@ class ModelCompanyCity():
             db.connection.commit() 
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def ListCity(self, db):
@@ -119,6 +133,8 @@ class ModelCompanyCity():
             return citys
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
         
     @classmethod
     def EditCity(self, db, id):
@@ -129,6 +145,8 @@ class ModelCompanyCity():
             return cursor.fetchall()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def updaCity(self, db, city):
@@ -139,6 +157,8 @@ class ModelCompanyCity():
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def deleteCity(seld, db, id):
@@ -149,6 +169,8 @@ class ModelCompanyCity():
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
     
 #-------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------------
@@ -170,6 +192,8 @@ class ModelCompanyCity():
                 return None
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
     
     @classmethod
     def addCompanyCity(self, db, companyCity):
@@ -181,6 +205,8 @@ class ModelCompanyCity():
             db.connection.commit() 
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def EditCompanyCity(self, db, id):
@@ -191,6 +217,8 @@ class ModelCompanyCity():
             return cursor.fetchall()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def updaCompanyCity(self, db, companyCity):
@@ -201,6 +229,8 @@ class ModelCompanyCity():
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 
     @classmethod
     def deleteCompanyCity(seld, db, id):
@@ -211,4 +241,6 @@ class ModelCompanyCity():
             db.connection.commit()
         except Exception as ex:
             raise Exception(ex)
+        finally:
+            cursor.close()
 

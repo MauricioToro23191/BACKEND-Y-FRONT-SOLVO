@@ -1,31 +1,21 @@
 from flask import render_template, request,jsonify
 #from flask_json import FlaskJSON
 import flask
-#from flask_cors import CORS
 #controlador de configuracion 
 # Models:
 from models.ModelUser import ModelUser
 from models.ModelState import ModelState
 from models.ModelCompanyCity import ModelCompanyCity
 # Entities:
-from models.entities.User import User
-import json
 #ruta raiz de la pagina
 usuarios=flask.Blueprint('Usuario',__name__,url_prefix="/usuario")
-#Direccionamiento a pagina de pagina de administracion de usuarios 
-# @usuarios.route('/AdminUser',methods=['GET', 'POST'])
-# def AdminUser():
-#     from app import getdb
-#     db=getdb()
-#     return render_template('AddUsers.html',ListSup=ModelUser.ListSup(db))
-#     #creacion de usuario interprete y supervisor
-
     
 #Validacion de Inicio de sesion
 @usuarios.route('/login',methods=['GET', 'POST'])
 def login():
     from app import getdb
     db=getdb()
+    print("aaaaaaaaaaaaaaaaaaaaaaaaaa")
     if request.method == 'POST':
         # user = User(0, request.json['user'],None,None, request.json['pass'])
         user = {'email':request.json['user'], 'pass':request.json['pass']}
@@ -58,6 +48,8 @@ def listUser():
         citys = ModelCompanyCity.ListCity(db)
         companys = ModelCompanyCity.ListCompany(db)
         citycompanys = ModelUser.getCompCiuTodos(db)
+        if None==users:
+            users=[]
         return jsonify({'LisUser':users, 'Admins':admins, 'Perfils':perfils, 'Sups':sups, 'Teams':teams, 'Citys':citys, 'Companys':companys, 'Citycompanys':citycompanys})
     
 @usuarios.route('/AdminUser',methods=['GET', 'POST'])
@@ -131,14 +123,6 @@ def editUsers(id):
 #Edita el usuario seleccionado en la vista
 
 
-@usuarios.route('/Update1', methods=['GET', 'POST'])
-def Update1():
-    if request.method == 'POST':
-        u = request.json['user']
-        perfil = request.json['perfil']
-        #Editar Administrador
-        print(u, perfil)
-        return jsonify({'bool':True})
 
 @usuarios.route('/Update', methods=['GET', 'POST'])
 def Update():

@@ -26,11 +26,12 @@ export const DataTable = (props) => {
     const [LastN, setLastN] = useState("")
     const [Email, setEmail] = useState("")
     const [Perfil, setPerfil] = useState(4)
-    const [ListaSupervisor, setListSupervisor] = useState(listSup)
-    const [Supervisor, setSupervisor] = useState(5)
+    const [ListaSupervisor, setListSupervisor] = useState([])
+    const [Supervisor, setSupervisor] = useState(0)
     const [Company, setCompany] = useState(1)
-    const [City, setCity] = useState(1)
-    const [compActual, setCompActual] = useState(1)
+
+    const [city, setCity] = useState(1)
+
 
     const Columns = ["SolID", "Name", "LastN", "Email", "Perfil", "Supervisor", "Company", "City", 
     {
@@ -87,16 +88,23 @@ export const DataTable = (props) => {
     }
 
     const TitleChange = () =>{
-        return(
-        <><br/>
-        <strong style={{fontSize: "150%"}} > List Users </strong> <br/><br/>
-        <select value={sessionStorage.getItem('idComp')} id="listComp" onChange={cambiComp}>
-            {listCompanys.map(comp => 
-                <option key={comp['id']} value={comp['id']}>{comp['nombre']}</option>
-            )}
-        </select>
-    </>
-    )
+        if(sessionStorage.getItem('perfil')==1){
+            console.log(true)
+            return(
+                <><br/>
+                <strong style={{fontSize: "150%"}} > List Users </strong> <br/><br/>
+                <select value={sessionStorage.getItem('idComp')} id="listComp" onChange={cambiComp}>
+                    {listCompanys.map(comp => 
+                        <option key={comp['id']} value={comp['id']}>{comp['nombre']}</option>
+                    )}
+                </select>
+            </>)
+        }else{
+            console.log(false)
+
+            return (<><strong style={{fontSize: "150%"}} > List Users </strong> <br/><br/></>)
+        }
+       
     }
 
     const Inactivate = async(Id)=>{
@@ -138,7 +146,7 @@ export const DataTable = (props) => {
         setListSupervisor(listTeam)
         document.getElementById('sup').value='Team Leader'
         setPerfil(listPerfil[0]['id'])
-        setSupervisor(ListaSupervisor[0]['id'])
+        setSupervisor(0)
         document.getElementById('company').value=1;
         setCompany(listCompanys[0]['id'])
         document.getElementById('city').value=1;
@@ -225,12 +233,17 @@ export const DataTable = (props) => {
         }
         if (Perfil==2){
             document.getElementById('sup').innerHTML="Administrador"
+            console.log(listAdmin)
             setListSupervisor(listAdmin)
         }else if(Perfil==3){
             document.getElementById('sup').innerHTML="Supervisor"
+            console.log(listSup)
+
             setListSupervisor(listSup)
         }else if(Perfil==4){
             document.getElementById('sup').innerHTML="Team Leader"
+            console.log(listTeam)
+
             setListSupervisor(listTeam)
         }
         document.getElementById('perfil').value=Perfil
