@@ -146,7 +146,6 @@ export const DataTable = (props) => {
         setListSupervisor(listTeam)
         document.getElementById('sup').value='Team Leader'
         setPerfil(listPerfil[0]['id'])
-        setSupervisor(0)
         document.getElementById('company').value=1;
         setCompany(listCompanys[0]['id'])
         document.getElementById('city').value=1;
@@ -189,6 +188,8 @@ export const DataTable = (props) => {
     }
 
     const Add = async ()=>{
+        setSupervisor(document.getElementById('supervisor').value)
+        console.log({'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':parseInt(document.getElementById('supervisor').value), 'City':city, 'Company':Company})
         const respuesta = await fetch(`${API}/usuario/addUser`,{
         method: "POST",
         headers: {
@@ -196,16 +197,16 @@ export const DataTable = (props) => {
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':Supervisor, 'City':City, 'Company':Company},
+            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':parseInt(document.getElementById('supervisor').value), 'City':city, 'Company':Company},
             perfil:Perfil
         })}
         )
-        const data = await respuesta.json();
         props.obtenerDatos()
         close()
     }
 
     const Update = async ()=>{
+        console.log({'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':document.getElementById('supervisor').value, 'City':city, 'Company':Company})
         const respuesta = await fetch(`${API}/usuario/Update`,{
         method: "POST",
         headers: {
@@ -213,7 +214,7 @@ export const DataTable = (props) => {
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':Supervisor, 'City':City, 'Company':Company},
+            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':document.getElementById('supervisor').value, 'City':city, 'Company':Company},
             perfil:Perfil
         })}
         )

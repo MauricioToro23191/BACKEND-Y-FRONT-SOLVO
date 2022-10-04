@@ -36,16 +36,17 @@ def RTA():
 
 @app.route('/reporte1',methods=['GET', 'POST'])
 def reporte():
-    lista=ModelState.reporte1(db,request.json['FechaInicio'],request.json['Fechafin'])
-    listComp=ModelState.listCompania(db)
-    return jsonify({'listExport':lista,'listcomp':listComp})
+     if request.method == 'POST':
+        lista=ModelState.reporte1(db,request.json['FechaInicio'],request.json['Fechafin'],request.json['company'])
+        listComp=ModelState.listCompania(db)
+        return jsonify({'listExport':lista,'listcomp':listComp})
 
 @app.route('/reporte2',methods=['GET', 'POST'])
 def reporte2():
     if request.method == 'POST':
-        lista=ModelState.reporte2(db,request.json['FechaInicio'])
+        lista=ModelState.reporte2(db,request.json['FechaInicio'],request.json['company'])
     else:
-        lista=ModelState.reporte2(db,"")
+        lista=ModelState.reporte2(db,"",1)
     listComp=ModelState.listCompania(db)
     return jsonify({'listExport':lista,'listcomp':listComp})
 #Respuestas a error por no estar autorizado para acceder a la pagina   

@@ -86,15 +86,15 @@ def addUser():
             return jsonify({'AddUser':False})
             # return redirect(url_for('Show'))
         else:
-            print(type(u['Perfil']))
+            print(int(u['Perfil']))
             #valida si el desea crear administrador, supervisor, team leader o interprete
-            if u['Perfil']==1 :
+            if int(u['Perfil'])==1 :
                 #crea el administrador
                 ModelUser.addAdmin(db, u) 
                 #envia mensaje de confirmacion
                 print('Administrator created successfully')             
                 return jsonify({'AddUser':True})
-            elif u['Perfil']==2 or u['Perfil']==3 or u['Perfil']==4:
+            elif int(u['Perfil'])==2 or int(u['Perfil'])==3 or int(u['Perfil'])==4:
                 #crea el supervisor
                 ModelUser.addSup(db, u) 
                 #envia mensaje de confirmacion
@@ -130,7 +130,6 @@ def Update():
     db=getdb()
     if request.method == 'POST':
         u = request.json['user']
-        perfil = request.json['perfil']
         if u!=None:
             ModelUser.UpdateSup(db, u)
             print('User Interpreter edit successfuly')

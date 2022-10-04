@@ -19,6 +19,7 @@ class ModelUser():
                     WHERE u.CORREO_SOLVO='{}'""".format(user['email'])
             cursor.execute(sql) 
             row = cursor.fetchone()
+            cursor.close()
             if row != None:
                 u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
                     'Company':row[9],'idCity':row[10],'City':row[11],'idSupervisor':row[12], 'Supervisor':row[13], 'pass':User.check_password(row[14],user['pass'])}
@@ -33,15 +34,13 @@ class ModelUser():
                         WHERE u.CORREO_SOLVO='{}'""".format(user['email'])
                 cursor.execute(sql)
                 row = cursor.fetchone()
+                cursor.close()
                 if row != None:
                     u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
                         'Company':row[9],'idCity':row[10],'City':row[11], 'pass':User.check_password(row[12],user['pass'])}
-                    cursor.close()
                     return u
-                cursor.close()
-
         except Exception as ex: 
-            db.connection.closer()
+            db.connection.close()
             raise Exception(ex)
 
         
@@ -53,41 +52,44 @@ class ModelUser():
                     WHERE CORREO_SOLVO = '{}'""".format(correo_solvo)        
             cursor.execute(sql)
             row = cursor.fetchone()
+            cursor.close()
             if row != None:
                 return True
             else:
                 return False
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+       
         
 
     @classmethod
     def addAdmin(self, db, user):
         try:
             cursor = db.connection.cursor()
-            sql = """INSERT INTO USUARIO (CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ESTADO)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],0))
+            sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ESTADO)
+                VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],1))
             db.connection.commit()
+            cursor.close()
+
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+        
         
     @classmethod
     def addSup(self, db, user):
         try:
+            print(user)
             cursor = db.connection.cursor()
-            sql = """INSERT INTO USUARIO (CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ESTADO,ID_SUPERVISOR)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],0,user['Supervisor']))
+            sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ESTADO,ID_SUPERVISOR)
+                VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],1,int(user['Supervisor'])))
             db.connection.commit() 
+            cursor.close()
+
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+    
 
     @classmethod
     def showUser(self,db,id):
@@ -104,7 +106,7 @@ class ModelUser():
                     WHERE u.ID_USUARIO = {}""".format(id)
             cursor.execute(sql)
             row = cursor.fetchone()
-            print(row)
+            cursor.close()
             if row != None:
                 Usuario={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
                 'Company':row[9],'idCity':row[10],'City':row[11],'idSupervisor':row[12], 'Supervisor':row[13]}
@@ -113,9 +115,7 @@ class ModelUser():
                 return None
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
-
+      
     @classmethod
     def get_by_id(self,db,id):
         try:
@@ -124,6 +124,7 @@ class ModelUser():
              as u1 INNER JOIN usuario as u2 on u1.id_supervisor=u2.ID_USUARIO WHERE u1.ID_USUARIO = {}""".format(id)
             cursor.execute(sql)
             row = cursor.fetchone()
+            cursor.close()
             if row != None:
                 compania=ModelUser.get_by_id_compania(db,row[8])
                 ciudad=ModelUser.get_by_id_ciudad(db,row[9])
@@ -133,13 +134,11 @@ class ModelUser():
                 return None
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+   
     
     @classmethod
     def get_by_id_compania(self,db,id):
         try:
-            
             compania={}
             cursor = db.connection.cursor()
             sql = """select * from compania where ID_compania={}""".format(id)
@@ -152,8 +151,7 @@ class ModelUser():
                 return compania
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+     
 
     
     @classmethod
@@ -172,8 +170,7 @@ class ModelUser():
                 return ciudad 
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+     
     @classmethod
     def perfil(self, db):
         try:
@@ -182,14 +179,14 @@ class ModelUser():
             sql = "SELECT ID_PERFIL, NOMBRE_PERFIL FROM perfiles"
             cursor.execute(sql)
             lista = cursor.fetchall()
+            cursor.close()
             for item in lista:
                 p = {"id": item[0], "nombre":item[1]}
                 perfil.append(p)
             return perfil
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+      
     @classmethod
     def ListAdmin(self,db):
         try:
@@ -198,14 +195,14 @@ class ModelUser():
             sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 1 and ESTADO = 1"
             cursor.execute(sql)
             lista = cursor.fetchall()
+            cursor.close()
             for item in lista:
                 p = {"id": item[0], "nombre":item[1]+" "+item[2]}
                 admins.append(p)
             return admins
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+        
 
     @classmethod
     def ListSup(self,db):
@@ -215,6 +212,7 @@ class ModelUser():
             sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 2 and ESTADO = 1"
             cursor.execute(sql)
             lista = cursor.fetchall()
+            cursor.close()
             for item in lista:
                 p = {"id": item[0], "nombre":item[1]+" "+item[2]}
                 Sups.append(p)
@@ -230,14 +228,14 @@ class ModelUser():
             sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 3 and ESTADO = 1"
             cursor.execute(sql)
             lista = cursor.fetchall()
+            cursor.close()
             for item in lista:
                 p = {"id": item[0], "nombre":item[1]+" "+item[2]}
                 Teams.append(p)
             return Teams
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+        
     @classmethod
     def UpdateAdmin(self, db, user):
         try:
@@ -245,6 +243,8 @@ class ModelUser():
             sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s WHERE ID_USUARIO=%s"
             cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],user['Company'],user['City'],user['Perfil'],user['id']))
             db.connection.commit()
+            cursor.close()
+
         except Exception as ex:
             raise Exception(ex)
 
@@ -252,24 +252,29 @@ class ModelUser():
     def UpdateSup(self, db, user):
         try:
             cursor = db.connection.cursor()
-            if user['Supervisor']==0:
+            print(user['Supervisor'])
+            if int(user['Supervisor'])==0:
                 sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=NULL, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s WHERE ID_USUARIO=%s"
                 cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],user['Company'],user['City'],user['Perfil'],user['id']))
             else:
                 sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=%s, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s WHERE ID_USUARIO=%s"
-                cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],user['Supervisor'],user['Company'],user['City'],user['Perfil'],user['id']))
+                cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],int(user['Supervisor']),user['Company'],user['City'],user['Perfil'],user['id']))
             db.connection.commit()
+            cursor.close()
+
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+        
     @classmethod
     def traerEstado(self, db, id):
         try: 
             cursor = db.connection.cursor()
             sql = "SELECT ESTADO FROM usuario WHERE ID_USUARIO={}".format(id)
             cursor.execute(sql)
-            return cursor.fetchone()
+            estado=cursor.fetchone()
+            cursor.close()
+            return estado
+
         except Exception as ex:
             raise Exception(ex)
 
@@ -280,10 +285,11 @@ class ModelUser():
             sql  = "UPDATE usuario SET ESTADO=0 WHERE ID_USUARIO={}".format(id)
             cursor.execute(sql)
             db.connection.commit()
+            cursor.close()
+
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+        
     @classmethod
     def getCompCiuTodos(self,db):
         try:
@@ -295,13 +301,14 @@ class ModelUser():
                     inner join ciudad as ciu on CC.ID_CIUDAD=ciu.id_ciudad"""
             cursor.execute(sql)
             compCiu=list(cursor.fetchall())
+            cursor.close()
+
             for row in compCiu :
                 lista.append({'id':row[0],'compania':{'id':row[1],'nombre':row[2]},'ciudad':{'id':row[3],'nombre':row[4]}})
             return lista
         except Exception as ex:
             raise Exception(ex)
-        finally:
-            cursor.close()
+        
     @classmethod
     def ListUser(self,db, idComp):
         try:
@@ -333,13 +340,14 @@ class ModelUser():
                     WHERE u.PERFIL<>1 and u.estado=1 and u.id_compania = {}""".format(idComp)
             cursor.execute(sql)
             usuarios=list(cursor.fetchall())#
+            cursor.close()
             for row in usuarios :
                 u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
                 'Company':row[9],'idCity':row[10],'City':row[11], 'idSupervisor':row[12], 'Supervisor':row[13]}
                 lUser.append(u) 
-            cursor.close()    
             return lUser
         except Exception as ex:
+            db.connection.close()
             raise Exception(ex)
        
            

@@ -15,6 +15,7 @@ class ModelState():
             sql = "SELECT h.ID_HISTORIAL,h.ID_USUARIO,h.RESPONSABLE,h.HORA_INICIO,h.ID_ESTADO FROM HISTORIAL as h where h.ID_USUARIO={} AND h.TEMP_BOOLEAN=1".format(user)
             cursor.execute(sql)
             row = cursor.fetchone()
+            cursor.close()
             if row != None:
                 user=ModelUser.get_by_id(db,int(row[1]))
                 historial = Historial(row[0],user.__dict__,row[2],row[3].strftime('%Y-%m-%d %H:%M:%S'),None,row[4])
@@ -37,6 +38,7 @@ class ModelState():
             sql = "SELECT * FROM estados where NOMBRE_ESTADO<>'Log out' and NOMBRE_ESTADO <> 'New-hire' order by NOMBRE_ESTADO LIMIT 100;"
             cursor.execute(sql)
             estados=list(cursor.fetchall())
+            cursor.close()
             for estado in estados :
                 h={'id':estado[0],'nombre':estado[1]}
                 lestados.append(h)
@@ -74,6 +76,7 @@ class ModelState():
             cursor = db.connection.cursor()
             cursor.callproc('UPDATEHISTORIAL', (idUser,responsable,today,estado))
             results = list(cursor.fetchall())
+            cursor.close()
             return results
         except Exception as ex:
             raise Exception(ex)
@@ -107,8 +110,10 @@ class ModelState():
             sql = "SELECT ID_ESTADO,NOMBRE_ESTADO FROM estados WHERE ID_ESTADO = '{}'".format(id)
             cursor.execute(sql)
             row = cursor.fetchone()
+            cursor.close()
             if row != None:
                 estado={'id':row[0],'nombre':row[1]}
+                
                 return estado
             else:
                 return None
@@ -130,6 +135,7 @@ class ModelState():
                     where ID_USUARIO={} and ID_ESTADO <> 1 and HORA_INICIO like '%{}%' and HORA_FINAL <> 'null' order by id_estado  """.format(userid,today.strftime("%Y-%m-%d"))
             cursor.execute(sql)
             estados=list(cursor.fetchall())#
+            cursor.close()
             for estado in estados :
                 #user=ModelUser.get_by_id(db,int(estado[1]))
                 
@@ -183,6 +189,7 @@ class ModelState():
                 WHERE h.TEMP_BOOLEAN = 1 and h.ID_ESTADO <> 1 and h.ID_ESTADO <> 3 and h.ID_ESTADO <> 4 and comp.id_compania={}""".format(compania)
             cursor.execute(sql)
             estados=list(cursor.fetchall())#
+            cursor.close()
             for estado in estados :
                 totest=ModelState.totalStates(db,estado[1])
                 Hist={'id':estado[1],'id_solvo':estado[2],'Name':estado[3],'Ciudad':estado[4],'Supervisor':estado[5],'id estado':estado[6],'state':estado[7],'time':"00:00:00",'date':estado[8].strftime('%Y-%m-%d %H:%M:%S'),'totest':totest[estado[7]],'compania':estado[10],'idcompania':estado[9]}
@@ -197,7 +204,7 @@ class ModelState():
 
         
     @classmethod       
-    def reporte1(self,db,fechainicio,fechafin):  
+    def reporte1(self,db,fechainicio,fechafin,company):  
         try:
             if fechainicio=="" and fechafin=="":
                 inicio=date.today().strftime('%Y-%m-%d')+" 00:00:00"
@@ -208,10 +215,9 @@ class ModelState():
             dict={}
             li=[]
             cursor = db.connection.cursor()
-            cursor.callproc('reporte1',(inicio,fin,1))
+            cursor.callproc('reporte1',(inicio,fin,company))
             results = list(cursor.fetchall())
-            id=0
-            user=User(0,None,None,None,None)
+            cursor.close()
             for result in results:
                 dict={'Date':result[6].strftime('%Y-%m-%d'),'Solvo id':result[1],'Name':result[2],'Last Name':result[3],'Supervisor':result[4],
                       'By':result[5],'Start Time':result[6].strftime('%Y-%m-%d %H:%M:%S'),'Final Time':result[7].strftime('%Y-%m-%d %H:%M:%S'),'State':result[8],'Time':round(result[9]/60)}
@@ -223,7 +229,7 @@ class ModelState():
 
     #definicion del metodo reporte 2(consolidado)
     @classmethod       
-    def reporte2(self,db,fechainicio):  
+    def reporte2(self,db,fechainicio,company):  
         try:
             #si la fecha esta vacia asigne la fecha actual + el rango de hora
             if fechainicio=="":
@@ -234,8 +240,9 @@ class ModelState():
                 inicio=fechainicio+" 00:00:00"
                 fin=fechainicio+" 23:59:59"
             cursor = db.connection.cursor()
-            cursor.callproc('reporte2',(inicio,fin,1))
+            cursor.callproc('reporte2',(inicio,fin,company))
             result = list(cursor.fetchall())
+            cursor.close()
             id=0
             di={}
             lis=[]

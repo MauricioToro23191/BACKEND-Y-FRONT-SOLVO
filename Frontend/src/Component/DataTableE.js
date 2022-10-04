@@ -56,7 +56,8 @@ export const DataTableE =() => {
           },
           body:JSON.stringify({
             FechaInicio:new Date(sessionStorage.getItem('startDate')).toISOString().split('T')[0],
-            Fechafin:new Date(sessionStorage.getItem('endDate')).toISOString().split('T')[0]
+            Fechafin:new Date(sessionStorage.getItem('endDate')).toISOString().split('T')[0],
+            company:sessionStorage.getItem('idComp')
           })
         })
         const data1 = await res.json();
@@ -74,7 +75,8 @@ export const DataTableE =() => {
               'Content-Type': 'application/json',
           },
           body:JSON.stringify({
-            FechaInicio:new Date(sessionStorage.getItem('startDate')).toISOString().split('T')[0]
+            FechaInicio:new Date(sessionStorage.getItem('startDate')).toISOString().split('T')[0],
+            company:sessionStorage.getItem('idComp')
           })
         })
         const data1 = await res.json();
@@ -98,7 +100,14 @@ export const DataTableE =() => {
             
     }
     const cambiComp=()=>{
-        sessionStorage.setItem('idComp',documemt.getElementById('listComp').value)
+        sessionStorage.setItem('idComp',document.getElementById('listComp').value)
+        if(ChangeStyle){
+            setColumns(Columns1);
+            obtenerDatosR2();
+        }else{
+            setColumns(Columns2);
+            obtenerDatos();
+        }
     } 
       
     const TitleChange = () => {
