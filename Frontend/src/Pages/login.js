@@ -11,22 +11,22 @@ const Login = () => {
     const [pass, setpass] = useState("");
     const [style, setStyle] = useState("sideL");
     const cambiarestado=async(id,u)=>{
-    const res =await fetch(`${API}/estados/changeState`,{
-      method: "POST",
-      headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-      },
-      body:JSON.stringify({
-          idestado:id,
-          user:u,
-          responsable:""
-      })
-    })
-    const data =await res.json()
-    console.log(data)
-    socket.emit('Cambio',{'message':data,'room':sessionStorage.getItem('idComp')});
-  }
+        const res =await fetch(`${API}/estados/changeState`,{
+        method: "POST",
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body:JSON.stringify({
+            idestado:id,
+            user:u,
+            responsable:""
+        })
+        })
+        const data =await res.json()
+        console.log(data)
+        socket.emit('Cambio',{'message':data,'room':sessionStorage.getItem('idComp')});
+    } 
         
     const Navigate = useNavigate();
     const changePageMenu = useCallback(() => Navigate('/Layout', { replace: true }), [Navigate]);
@@ -39,7 +39,6 @@ const Login = () => {
                 if(r['usuario']['idPerfil']==4){
                     console.log('interprete');
                     sessionStorage.setItem("user",JSON.stringify(r['usuario']));
-                    setUser(JSON.stringify(r['usuario']))
                     sessionStorage.setItem("perfil",r['usuario']['idPerfil']);
                     sessionStorage.setItem("idComp",r['usuario']['idCompany']);
                     cambiarestado(4,JSON.stringify(r['usuario']));

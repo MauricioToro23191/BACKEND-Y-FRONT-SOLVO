@@ -9,7 +9,6 @@ from flask_socketio import SocketIO,emit,join_room,leave_room
 
 # Models:
 from models.ModelState import ModelState
-from models.entities.User import User
 from init import init_app
 #asignacion de variables generales 
 app,db=init_app()
@@ -43,7 +42,6 @@ def reporte():
 
 @app.route('/reporte2',methods=['GET', 'POST'])
 def reporte2():
-    #request.json['FechaInicio']
     if request.method == 'POST':
         lista=ModelState.reporte2(db,request.json['FechaInicio'])
     else:

@@ -41,6 +41,7 @@ class ModelUser():
                 cursor.close()
 
         except Exception as ex: 
+            db.connection.closer()
             raise Exception(ex)
 
         
