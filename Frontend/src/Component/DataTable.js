@@ -89,7 +89,6 @@ export const DataTable = (props) => {
 
     const TitleChange = () =>{
         if(sessionStorage.getItem('perfil')==1){
-            console.log(true)
             return(
                 <><br/>
                 <strong style={{fontSize: "150%"}} > List Users </strong> <br/><br/>
@@ -100,7 +99,6 @@ export const DataTable = (props) => {
                 </select>
             </>)
         }else{
-            console.log(false)
 
             return (<><strong style={{fontSize: "150%"}} > List Users </strong> <br/><br/></>)
         }
@@ -145,7 +143,7 @@ export const DataTable = (props) => {
         document.getElementById('perfil').value=Perfil;
         setListSupervisor(listTeam)
         document.getElementById('sup').value='Team Leader'
-        setPerfil(listPerfil[0]['id'])
+        setPerfil(listPerfil[4]['id'])
         document.getElementById('company').value=1;
         setCompany(listCompanys[0]['id'])
         document.getElementById('city').value=1;
@@ -189,7 +187,6 @@ export const DataTable = (props) => {
 
     const Add = async ()=>{
         setSupervisor(document.getElementById('supervisor').value)
-        console.log({'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':parseInt(document.getElementById('supervisor').value), 'City':city, 'Company':Company})
         const respuesta = await fetch(`${API}/usuario/addUser`,{
         method: "POST",
         headers: {
@@ -206,7 +203,6 @@ export const DataTable = (props) => {
     }
 
     const Update = async ()=>{
-        console.log({'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':document.getElementById('supervisor').value, 'City':city, 'Company':Company})
         const respuesta = await fetch(`${API}/usuario/Update`,{
         method: "POST",
         headers: {
@@ -227,31 +223,25 @@ export const DataTable = (props) => {
         if (Perfil==1){
             document.getElementById('sup').style.display='None'
             document.getElementById('supervisor').style.display='None'
-            setSupervisor(0)
+            document.getElementById('supervisor').value=0
         } else {
             document.getElementById('sup').style.display='block'
             document.getElementById('supervisor').style.display='block'
         }
         if (Perfil==2){
             document.getElementById('sup').innerHTML="Administrador"
-            console.log(listAdmin)
             setListSupervisor(listAdmin)
         }else if(Perfil==3){
             document.getElementById('sup').innerHTML="Supervisor"
-            console.log(listSup)
-
             setListSupervisor(listSup)
         }else if(Perfil==4){
             document.getElementById('sup').innerHTML="Team Leader"
-            console.log(listTeam)
-
             setListSupervisor(listTeam)
         }
         document.getElementById('perfil').value=Perfil
     }
 
     function modal() {
-        console.log(Perfil)
         perfilValidator();
         document.getElementsByTagName('th')[0].style.position='static';
         document.getElementsByTagName('th')[1].style.position='static';
@@ -284,16 +274,30 @@ export const DataTable = (props) => {
                                 <label >Email</label>
                                 <input type="email" name="corpEmail" id="Email" className="inputs" onChange={(e) => setEmail(e.target.value)}/>
                                 <label >Perfil</label>
-                                <select className="inputs" id="perfil" onClick={perfilValidator} onChange={(e) => setPerfil(e.target.value)}>
-                                    {listPerfil.map(perfil =>
-                                        <option key={perfil['id']} value={perfil['id']}>{perfil['nombre']}</option>
+                                <select className="inputs" id="perfil" value={Perfil} onClick={perfilValidator} onChange={(e) => setPerfil(e.target.value)}>
+                                    <option key={0} value={0}>-</option>
+                                    {listPerfil.map(perfil =>{
+                                        if(sessionStorage.getItem('perfil')!=1){
+                                            if(perfil['id']==1){
+                                            }else{
+                                                return( <option key={perfil['id']} value={perfil['id']}>{perfil['nombre']}</option>)
+                                            }
+                                        }else{
+                                            return( <option key={perfil['id']} value={perfil['id']}>{perfil['nombre']}</option>)
+                                        }
+                                        
+                                        }
                                     )}
                                 </select>
 
                                 <label id="sup">Supervisor</label>
                                 <select className="inputs" id="supervisor" onChange={(e) => setSupervisor(e.target.value)}>
-                                    {ListaSupervisor.map(sup =>
-                                        <option key={sup['id']} value={sup['id']}>{sup['nombre']}</option>
+                                    <option key={0} value={0}>-</option>
+                                    {ListaSupervisor.map(sup =>{
+                                        if(sessionStorage.getItem('idComp')==sup['company']){
+                                            return(<option key={sup['id']} value={sup['id']}>{sup['nombre']}</option>)
+                                        }
+                                    }
                                     )}
                                 </select>
 

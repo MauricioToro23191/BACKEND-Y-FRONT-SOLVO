@@ -60,8 +60,6 @@ export default function Rta(){
             socket.off('Cambio');
         }
     }, [socket]);
-
-
     printh();
     socket.on('Cambio',(message)=>{
         let estado=message['estado']
@@ -116,23 +114,22 @@ export default function Rta(){
 })
 socket.on('logoutUser',(message)=>{
     let logout=message['logout']
-    let Lis=getLista()
     let id=message['id']
     let indexRemove=-1
     if(logout){  
-        const newlist=Lis.map((litem,index)=>{
+        const newlist=Lista.map((litem,index)=>{
             if(litem['id']==id){
-                indexRemove=index       
+                indexRemove=index     
             }else{
                 return litem
             }
         })
         if(indexRemove!=-1){
             newlist.pop(indexRemove)
-        }    
+        }
         setlista(newlist);
     }
-    printh
+    printh();
 
 })
 

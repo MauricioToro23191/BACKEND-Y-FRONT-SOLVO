@@ -28,13 +28,14 @@ export default function States() {
   })
   const data =await res.json()
   if(data['logout']){
+    socket.emit('logoutUser',{'message':{'logout':true,'id':JSON.parse(sessionStorage.getItem('user'))['id']},'room':sessionStorage.getItem('idComp')});
+    console.log('logout is true')
     clearInterval(sessionStorage.getItem('idinterval'))
    if(sessionStorage.getItem('user') != null){
-      socket.emit('logoutUser',{'message':{'logout':true,'id':JSON.parse(sessionStorage.getItem('user'))['id']},'room':sessionStorage.getItem('idComp')});
-      sessionStorage.removeItem('user');
       sessionStorage.clear();
       logOUT();
     }else{
+      sessionStorage.clear();
       logOUT();
     }
   }else{

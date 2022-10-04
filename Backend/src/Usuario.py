@@ -40,7 +40,8 @@ def listUser():
     db=getdb()
     if request.method == 'POST':
         idCompania = request.json['company']
-        users=ModelUser.ListUser(db, idCompania)
+        perfil = request.json['perfil']
+        users=ModelUser.ListUser(db, idCompania,perfil)
         admins = ModelUser.ListAdmin(db)
         perfils = ModelUser.perfil(db)
         sups = ModelUser.ListSup(db)

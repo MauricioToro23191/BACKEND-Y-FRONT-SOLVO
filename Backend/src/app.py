@@ -102,7 +102,7 @@ def test_disconnect():
 @app.route('/logout',methods=['GET', 'POST'])
 def logout():
     u =request.json['user']
-    ModelState.call_procedure(db,u,"",1)
+    ModelState.call_procedure(db,u['id'],u['Name'],1)
     return jsonify({'logout':True})
 
 @app.route('/logoutAdmin')

@@ -20,7 +20,8 @@ export default function Users(){
                 'Content-Type': 'application/json',
             },
             body:JSON.stringify({
-                'company': sessionStorage.getItem('idComp')
+                'company': sessionStorage.getItem('idComp'),
+                'perfil':sessionStorage.getItem('perfil')
             })}
         )
         const data = await res.json();

@@ -192,12 +192,12 @@ class ModelUser():
         try:
             admins = []
             cursor = db.connection.cursor()
-            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 1 and ESTADO = 1"
+            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS,ID_COMPANIA FROM usuario WHERE PERFIL = 1 and ESTADO = 1"
             cursor.execute(sql)
             lista = cursor.fetchall()
             cursor.close()
             for item in lista:
-                p = {"id": item[0], "nombre":item[1]+" "+item[2]}
+                p = {"id": item[0], "nombre":item[1]+" "+item[2],"company":item[3]}
                 admins.append(p)
             return admins
         except Exception as ex:
@@ -209,12 +209,12 @@ class ModelUser():
         try:
             Sups =[]
             cursor = db.connection.cursor()
-            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 2 and ESTADO = 1"
+            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS, ID_COMPANIA FROM usuario WHERE PERFIL = 2 and ESTADO = 1"
             cursor.execute(sql)
             lista = cursor.fetchall()
             cursor.close()
             for item in lista:
-                p = {"id": item[0], "nombre":item[1]+" "+item[2]}
+                p = {"id": item[0], "nombre":item[1]+" "+item[2],"company":item[3]}
                 Sups.append(p)
             return Sups
         except Exception as ex:
@@ -225,12 +225,12 @@ class ModelUser():
         try:
             Teams = []
             cursor = db.connection.cursor()
-            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS FROM usuario WHERE PERFIL = 3 and ESTADO = 1"
+            sql = "SELECT ID_USUARIO, NOMBRES, APELLIDOS, ID_COMPANIA FROM usuario WHERE PERFIL = 3 and ESTADO = 1"
             cursor.execute(sql)
             lista = cursor.fetchall()
             cursor.close()
             for item in lista:
-                p = {"id": item[0], "nombre":item[1]+" "+item[2]}
+                p = {"id": item[0], "nombre":item[1]+" "+item[2],"company":item[3]}
                 Teams.append(p)
             return Teams
         except Exception as ex:
@@ -310,25 +310,27 @@ class ModelUser():
             raise Exception(ex)
         
     @classmethod
-    def ListUser(self,db, idComp):
+    def ListUser(self,db, idComp,perfil):
         try:
             lUser=[]
             usuarios=[]
             cursor = db.connection.cursor()
-            sql = """SELECT u.ID_USUARIO, u.ID_SOLVO, u.NOMBRES, u.APELLIDOS, u.CORREO_SOLVO, u.ESTADO, 
-                    p.id_perfil, p.nombre_perfil, comp.id_compania, comp.nombre_compania, 
-                    ciu.id_ciudad, ciu.nombre_ciudad
-                    FROM usuario as u
-                    INNER JOIN perfiles as p ON u.PERFIL=p.ID_PERFIL
-                    INNER JOIN compania as comp ON u.ID_COMPANIA=comp.ID_COMPANIA
-                    INNER JOIN ciudad as ciu ON u.ID_CIUDAD=ciu.ID_CIUDAD
-                    WHERE u.PERFIL=1 and u.estado=1 and u.id_compania = {}""".format(idComp)
-            cursor.execute(sql)
-            usuarios=list(cursor.fetchall())#
-            for row in usuarios :
-                u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
-                'Company':row[9],'idCity':row[10],'City':row[11]}
-                lUser.append(u) 
+
+            if int(perfil)==1:
+                sql = """SELECT u.ID_USUARIO, u.ID_SOLVO, u.NOMBRES, u.APELLIDOS, u.CORREO_SOLVO, u.ESTADO, 
+                        p.id_perfil, p.nombre_perfil, comp.id_compania, comp.nombre_compania, 
+                        ciu.id_ciudad, ciu.nombre_ciudad
+                        FROM usuario as u
+                        INNER JOIN perfiles as p ON u.PERFIL=p.ID_PERFIL
+                        INNER JOIN compania as comp ON u.ID_COMPANIA=comp.ID_COMPANIA
+                        INNER JOIN ciudad as ciu ON u.ID_CIUDAD=ciu.ID_CIUDAD
+                        WHERE u.PERFIL=1 and u.estado=1 and u.id_compania = {}""".format(idComp)
+                cursor.execute(sql)
+                usuarios=list(cursor.fetchall())#
+                for row in usuarios :
+                    u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
+                    'Company':row[9],'idCity':row[10],'City':row[11]}
+                    lUser.append(u) 
             sql = """SELECT u.ID_USUARIO, u.ID_SOLVO, u.NOMBRES, u.APELLIDOS, u.CORREO_SOLVO, u.ESTADO, 
                     p.id_perfil, p.nombre_perfil, comp.id_compania, comp.nombre_compania, 
                     ciu.id_ciudad, ciu.nombre_ciudad, sup.id_usuario, sup.nombres 
