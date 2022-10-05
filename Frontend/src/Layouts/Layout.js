@@ -4,7 +4,10 @@ import '../styles/layout.scss';
 
 const API=process.env.REACT_APP_BACKEND
 
-const Layout = () => {
+const Layout = (props) => {
+    const {loge}=props
+    const {logueado}=props
+
     const[nombre,setNombre]=useState("");
     const Navigate = useNavigate(); 
     const logOUT = useCallback(() => Navigate('/', { replace: true }), [Navigate]);
@@ -14,9 +17,10 @@ const Layout = () => {
         if(res){
           if(sessionStorage.getItem('user') != null){
             sessionStorage.clear();
+            loge(false)
             logOUT();
           }else{
-            
+            loge(false)
             logOUT();
           }
         }else{
@@ -28,14 +32,21 @@ const Layout = () => {
         let l=JSON.parse(sessionStorage.getItem('user'))
         setNombre(l['Name']+" "+l['LastN'])
       },[])
-      
+      function onhiden(){
+        if(document.getElementById('btnss').style.display=='block'){
+          document.getElementById('btnss').style.display='none'
+        }else{ 
+          document.getElementById('btnss').style.display='block'
+        }
+      }
+
       
     return (
         <>
-            <div id="menu">
-                <button id="hidden"></button>
+            <div id="menu" onClick={onhiden}>
+                <button id="hidden"  ></button>
                 <button id="DESP"></button>
-                <div id="btnss">
+                <div id="btnss" style={{display:"none"}}>
                     <Link to="/Layout"><button id="USERS" className="querybtn"></button></Link>
                     <Link to="/Layout/Export"><button id="REP" className="querybtn"></button></Link>
                     <Link to="/Layout/RTA" id="RT1"><button id="RT" className="querybtn"></button></Link>

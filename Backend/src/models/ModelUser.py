@@ -5,8 +5,8 @@ class ModelUser():
 
     @classmethod
     def login(self,db,user):
+        print(user)
         try:
-            print(user)
             cursor = db.connection.cursor()
             sql = """SELECT u.ID_USUARIO, u.ID_SOLVO, u.NOMBRES, u.APELLIDOS, u.CORREO_SOLVO, u.ESTADO, 
                     p.id_perfil, p.nombre_perfil, comp.id_compania, comp.nombre_compania, 

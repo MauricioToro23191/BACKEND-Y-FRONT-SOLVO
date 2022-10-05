@@ -7,7 +7,9 @@ import '../styles/states.scss';
 import '../styles/animate.scss'
 const API=process.env.REACT_APP_BACKEND
 
-export default function States() {
+export default function States(props) {
+  const {loge}=props
+
   const socket=useContext(SocketContext);
   const Navigate = useNavigate();
   const logOUT = useCallback(() => Navigate('/', { replace: true }), [Navigate]);
@@ -33,9 +35,12 @@ export default function States() {
     clearInterval(sessionStorage.getItem('idinterval'))
    if(sessionStorage.getItem('user') != null){
       sessionStorage.clear();
+      loge(false)
       logOUT();
     }else{
       sessionStorage.clear();
+      loge(false)
+
       logOUT();
     }
   }else{

@@ -3,6 +3,8 @@ from flask import Flask
 from estados import estados
 from Usuario import usuarios
 from flask_mysqldb import MySQL
+
+
  
 
 def init_app():

@@ -190,6 +190,7 @@ export const DataTable = (props) => {
         const respuesta = await fetch(`${API}/usuario/addUser`,{
         method: "POST",
         headers: {
+            Authorization:sessionStorage.getItem('tocken'),
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
@@ -292,7 +293,6 @@ export const DataTable = (props) => {
 
                                 <label id="sup">Supervisor</label>
                                 <select className="inputs" id="supervisor" onChange={(e) => setSupervisor(e.target.value)}>
-                                    <option key={0} value={0}>-</option>
                                     {ListaSupervisor.map(sup =>{
                                         if(sessionStorage.getItem('idComp')==sup['company']){
                                             return(<option key={sup['id']} value={sup['id']}>{sup['nombre']}</option>)

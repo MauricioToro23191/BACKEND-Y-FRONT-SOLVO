@@ -16,6 +16,7 @@ export default function Users(){
         const res = await fetch(`${API}//usuario/ListUser`,{
             method: "POST",
             headers: {
+                Authorization:sessionStorage.getItem('tocken'),
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },

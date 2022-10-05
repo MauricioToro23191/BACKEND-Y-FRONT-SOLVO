@@ -1,4 +1,5 @@
-from flask import render_template, request,jsonify
+from lib2to3.pgen2 import token
+from flask import  request,jsonify
 #from flask_json import FlaskJSON
 import flask
 #controlador de configuracion 
@@ -6,6 +7,8 @@ import flask
 from models.ModelUser import ModelUser
 from models.ModelState import ModelState
 from models.ModelCompanyCity import ModelCompanyCity
+import function_jwt
+
 # Entities:
 #ruta raiz de la pagina
 usuarios=flask.Blueprint('Usuario',__name__,url_prefix="/usuario")
@@ -15,30 +18,32 @@ usuarios=flask.Blueprint('Usuario',__name__,url_prefix="/usuario")
 def login():
     from app import getdb
     db=getdb()
-    print("aaaaaaaaaaaaaaaaaaaaaaaaaa")
     if request.method == 'POST':
         # user = User(0, request.json['user'],None,None, request.json['pass'])
         user = {'email':request.json['user'], 'pass':request.json['pass']}
-        logged_user = ModelUser.login(db,user)
-        if logged_user != None:
-            if logged_user['pass']:
-                ModelState.call_procedure(db,logged_user,"",4)
-                return jsonify({'bool':True,'response':'Login succesfully','usuario':logged_user})
-            else:
-                #contraseña incorrecta
-                return jsonify({'bool':False,'response':'Invalid password...','usuario':None})
-        else:
-            #usuario no existe
-            return jsonify({'bool':False,'response':'User not found...','usuario':None})
+        json=function_jwt.authenticate(db,user)
+        return jsonify(json)
     else:
-        return render_template('proto_Solvo.html')
+        return jsonify({'bool':False,'response':'Is not posible connect','usuario':None})
 
+
+@usuarios.before_request
+def veryfy_tocken_middleware():
+    if request.method=='POST':
+        if request.headers['Authorization']!=None:
+            tocken=request.headers['Authorization']
+            function_jwt.validate_tocken(tocken,False)
+        else:
+            return jsonify({'response': 'Not fue Posible Conectar con el BAckend'})
 
 @usuarios.route('/ListUser', methods=['GET', 'POST'])
 def listUser():
     from app import getdb
     db=getdb()
     if request.method == 'POST':
+        tocken=request.headers['Authorization']
+        json=function_jwt.validate_tocken(tocken,True)
+        print(json['id'])
         idCompania = request.json['company']
         perfil = request.json['perfil']
         users=ModelUser.ListUser(db, idCompania,perfil)

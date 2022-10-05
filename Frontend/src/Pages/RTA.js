@@ -19,15 +19,17 @@ export default function Rta(){
     const [lstCompania,setlstCompania]=useState([])
 
     const obtenerDatos=async()=>{
+       
         const res = await fetch(`${API}/RTA`,{
-          method: "POST",
-          headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-          },
-          body:JSON.stringify({
-              compania:sessionStorage.getItem('idComp')
-          })
+            method: "POST",
+            headers: {
+                Authorization:sessionStorage.getItem('tocken'),
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+                compania:sessionStorage.getItem('idComp'),
+            })
         })
         const data = await res.json();
         setlista(data.listRTA);
@@ -39,6 +41,7 @@ export default function Rta(){
         const res =await fetch(`${API}/estados/changeStateRTA`,{
         method: "POST",
         headers: {
+            Authorization:sessionStorage.getItem('tocken'),
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },

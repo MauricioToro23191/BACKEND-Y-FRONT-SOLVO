@@ -5,6 +5,7 @@ from flask import redirect, url_for,jsonify,request,redirect,url_for
 from flask_cors import CORS
 #from flask_json import FlaskJSON
 from flask_socketio import SocketIO,emit,join_room,leave_room
+from dotenv import load_dotenv
 #controlador de Base de datos 
 
 # Models:
@@ -13,6 +14,7 @@ from init import init_app
 #asignacion de variables generales 
 app,db=init_app()
 CORS(app)
+
 #csrf = CSRFProtect(app)
 
 def getdb():
@@ -111,9 +113,10 @@ def logoutAdmin():
 
 #inicio de la pagina 
 if __name__ == '__main__':
-    socket.run(app,host='0.0.0.0',port=5000)
-    app.register_error_handler(401, status_401)
+    load_dotenv()
     app.register_error_handler(404, status_404)
+    app.register_error_handler(401, status_401)
+    socket.run(app,host='0.0.0.0',port=5000)
     
 
     

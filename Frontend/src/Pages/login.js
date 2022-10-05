@@ -1,11 +1,12 @@
-import React, { useState, useCallback,useContext} from "react";
+import React, { useState, useCallback,useContext, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/login.scss';
 import { SocketContext } from "../Context/socketio";
 import { useUsuario } from "../Context/ContextUser";
 
 const API=process.env.REACT_APP_BACKEND
-const Login = () => {
+const Login = (props) => {
+    const {loge}=props
     const socket=useContext(SocketContext);
     const [Email, setEmail] = useState("");
     const [pass, setpass] = useState("");
@@ -14,6 +15,7 @@ const Login = () => {
         const res =await fetch(`${API}/estados/changeState`,{
         method: "POST",
         headers: {
+            Authorization:sessionStorage.getItem('tocken'),
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
@@ -27,7 +29,7 @@ const Login = () => {
         console.log(data)
         socket.emit('Cambio',{'message':data,'room':sessionStorage.getItem('idComp')});
     } 
-        
+    
     const Navigate = useNavigate();
     const changePageMenu = useCallback(() => Navigate('/Layout', { replace: true }), [Navigate]);
     const changePageState = useCallback(() => Navigate('/states', { replace: true }), [Navigate]);
@@ -35,17 +37,22 @@ const Login = () => {
         e.preventDefault();
         if(Email!="" || pass!=""){
             const r= await login(Email,pass)
+            sessionStorage.setItem('tocken',r['tocken'])
             if(r['bool']){
+
                 if(r['usuario']['idPerfil']==4){
+                    loge(true)
                     console.log('interprete');
                     sessionStorage.setItem("user",JSON.stringify(r['usuario']));
                     sessionStorage.setItem("perfil",r['usuario']['idPerfil']);
                     sessionStorage.setItem("idComp",r['usuario']['idCompany']);
                     cambiarestado(4,JSON.stringify(r['usuario']));
                     sessionStorage.setItem('diferenciaState',0);
-                    //setStyle("sideLEX"); 
+                    setStyle("sideLEX"); 
+                    loge(true)
                     setTimeout(changePageState, 1500);
                 }else{
+                    loge(true)
                     console.log('admin');
                     sessionStorage.setItem("user", JSON.stringify(r['usuario']));
                     sessionStorage.setItem("perfil",r['usuario']['idPerfil']);
@@ -53,7 +60,7 @@ const Login = () => {
                     sessionStorage.setItem('startDate',new Date(Date.now()))
                     sessionStorage.setItem('endDate',new Date(Date.now()))
                     sessionStorage.setItem('reporte',true)
-                    //setStyle("sideLEX"); 
+                    setStyle("sideLEX"); 
                     setTimeout(changePageMenu, 1500);
                 }
             }else{
@@ -82,6 +89,7 @@ const Login = () => {
         const res=await fetch(`${API}/usuario/login`,{
             method: "POST",
             headers: {
+                Authorization:sessionStorage.getItem('tocken'),
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
@@ -95,7 +103,6 @@ const Login = () => {
         return data
 
     }
-
     return (
         <>
             <div id="Cont">
