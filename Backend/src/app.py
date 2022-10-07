@@ -10,9 +10,9 @@ from dotenv import load_dotenv
 
 # Models:
 from models.ModelState import ModelState
-from init import init_app
+from init import init_app2
 #asignacion de variables generales 
-app,db=init_app()
+app,db=init_app2()
 CORS(app)
 
 #csrf = CSRFProtect(app)
@@ -113,10 +113,18 @@ def logoutAdmin():
 
 #inicio de la pagina 
 if __name__ == '__main__':
-    load_dotenv()
-    app.register_error_handler(404, status_404)
-    app.register_error_handler(401, status_401)
-    socket.run(app,host='0.0.0.0',port=5000)
+    try:
+        load_dotenv()
+        app.register_error_handler(404, status_404)
+        app.register_error_handler(401, status_401)
+        socket.run(app,host='0.0.0.0',port=5000)
+    except EOFError:
+        print('Hello user it is EOF exception, please enter something and run me again')
+    except KeyboardInterrupt:
+        print('Hello user you have pressed ctrl-c button.')
+    else:
+        print('Hello user there is some format error')
+
     
 
     

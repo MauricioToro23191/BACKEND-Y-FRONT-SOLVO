@@ -10,6 +10,8 @@ export default function Users(){
     const [listTeam,setListTeam]=useState([])
     const [listPerfil,setListPerfil]=useState([])
     const [listCitys,setListCitys]=useState([])
+    const [listSites,setListSites]=useState([])
+
     const [listCompanys,setListCompanys]=useState([])
     const [listCitycompanys,setListCitycompanys]=useState([])
     const obtenerDatos=async()=>{
@@ -32,6 +34,7 @@ export default function Users(){
         setListTeam(data.Teams)
         setListPerfil(data.Perfils)
         setListCitys(data.Citys)
+        setListSites(data.Sites)
         setListCompanys(data.Companys)
         setListCitycompanys(data.Citycompanys)
        console.log(data)
@@ -41,7 +44,7 @@ export default function Users(){
     }, []);
     return(
         <div id="eje3">
-                <DataTable listUser={listUser} listSup={listSup} listAdmin={listAdmin} listTeam={listTeam} listPerfil={listPerfil} listCitys={listCitys} listCompanys={listCompanys} listCitycompanys={listCitycompanys} obtenerDatos={obtenerDatos}/>
+                <DataTable listUser={listUser} listSup={listSup} listAdmin={listAdmin} listTeam={listTeam} listPerfil={listPerfil} listCitys={listCitys} listCompanys={listCompanys} listCitycompanys={listCitycompanys} listSites={listSites} obtenerDatos={obtenerDatos}/>
         </div>
     )
 }

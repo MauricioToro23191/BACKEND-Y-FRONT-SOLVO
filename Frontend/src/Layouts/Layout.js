@@ -32,21 +32,14 @@ const Layout = (props) => {
         let l=JSON.parse(sessionStorage.getItem('user'))
         setNombre(l['Name']+" "+l['LastN'])
       },[])
-      function onhiden(){
-        if(document.getElementById('btnss').style.display=='block'){
-          document.getElementById('btnss').style.display='none'
-        }else{ 
-          document.getElementById('btnss').style.display='block'
-        }
-      }
-
       
+     
     return (
         <>
-            <div id="menu" onClick={onhiden}>
+            <div id="menu" >
                 <button id="hidden"  ></button>
                 <button id="DESP"></button>
-                <div id="btnss" style={{display:"none"}}>
+                <div id="btnss">
                     <Link to="/Layout"><button id="USERS" className="querybtn"></button></Link>
                     <Link to="/Layout/Export"><button id="REP" className="querybtn"></button></Link>
                     <Link to="/Layout/RTA" id="RT1"><button id="RT" className="querybtn"></button></Link>
@@ -57,8 +50,8 @@ const Layout = (props) => {
                     <p id="imaUser"></p>
                     <h2>{nombre}</h2>
                     <ul>
-                        <li>Perfil</li>
-                        <li onClick={logout}>Log Out</li>
+                        <li><a>Perfil</a></li>
+                        <li><a onClick={logout} style={{textDecoration:'none'}}>logout</a></li>
                     </ul>
                 </div>
                 <Outlet />

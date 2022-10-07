@@ -12,42 +12,54 @@ import {SocketContext,socket} from '../Context/socketio'
 export default function App() {
   const [logueado,setLogueado]=useState(false)
   const [inter,seboolinter]=useState(true)
-  const [dash,setbooldash]=useState(false)
+  const [movil,setMovil]=useState(false)
 
 
   useEffect(()=>{
+    let navegador = navigator.userAgent;
+    if (navegador.match(/Android/i) || navegador.match(/webOS/i) || navegador.match(/iPhone/i) || navegador.match(/iPad/i) || navegador.match(/iPod/i) || navegador.match(/BlackBerry/i) || navegador.match(/Windows Phone/i)) {
+        console.log("Estás usando un dispositivo móvil!!");
+        setMovil(false)
+        alert ("Do't is posible access to page")
+
+    } else {
+        console.log("No estás usando un móvil");
+        setMovil(true)
+    }
     if(sessionStorage.getItem('tocken')!=null){
       if(sessionStorage.getItem('perfil')!=4){
         seboolinter(false)
-        setbooldash(true)
       }else{
         seboolinter(false)
-        setbooldash(true)
       }
       setLogueado(true)
+      
     }
-},[logueado])
- 
-  return (
-    <SocketContext.Provider value={socket}>
-          <BrowserRouter >
-              <Routes>
-                    {logueado?<>
-                      <Route path='*' element={<p>Route is not found</p>}/>
-                      <Route path='/' element={<Login loge={setLogueado}/>}/>
+  },[logueado])
+  if(movil){
+    return (
+      <SocketContext.Provider value={socket}>
+            <BrowserRouter >
+                <Routes>
+                      {logueado?<>
+                        <Route path='*' element={<center><h1>404 Page not found</h1></center>}/>
+                        <Route path='/' element={<Login loge={setLogueado}/>}/>
 
-                      {inter? <Route path='/states' element={<States loge={setLogueado}/>}/>:
-                          <Route path='/Layout' element={<Layout loge={setLogueado} logueado={logueado}/>}>
-                          <Route index element={<Users />}/>
-                          <Route path='/Layout/Export' element={<Export/>}/>
-                          <Route path='/Layout/RTA' element={<Rta/>}/>
-                        </Route>
-                      } </> :<Route path='*' element={<Login loge={setLogueado}/>}/>
-                    }
-                  </Routes>
-          </BrowserRouter>
-      </SocketContext.Provider>
-  )
-  
+                        {inter? <Route path='/states' element={<States loge={setLogueado}/>}/>:
+                            <Route path='/Layout' element={<Layout loge={setLogueado} logueado={logueado}/>}>
+                            <Route index element={<Users />}/>
+                            <Route path='/Layout/Export' element={<Export/>}/>
+                            <Route path='/Layout/RTA' element={<Rta/>}/>
+                          </Route>
+                        } </> :<Route path='*' element={<Login loge={setLogueado}/>}/>
+                      }
+                    </Routes>
+            </BrowserRouter>
+        </SocketContext.Provider>
+    )
+  }else{
+    document.getElementsByTagName('body').backgroundColor= "rgb(255, 255, 255)";
+    return(<center><h1>404 Page not found</h1></center>)
+  }
 }
  

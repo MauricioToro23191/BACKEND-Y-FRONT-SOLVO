@@ -19,6 +19,7 @@ export const DataTable = (props) => {
     const {listCitys}=props
     const {listCompanys}=props
     const {listCitycompanys}=props
+    const {listSites}=props
 
     const [Id, setId] = useState(0)
     const [SolId, setSolId] = useState("")
@@ -29,11 +30,12 @@ export const DataTable = (props) => {
     const [ListaSupervisor, setListSupervisor] = useState([])
     const [Supervisor, setSupervisor] = useState(0)
     const [Company, setCompany] = useState(1)
+    const [site,setSite]=useState(0)
 
     const [city, setCity] = useState(1)
 
 
-    const Columns = ["SolID", "Name", "LastN", "Email", "Perfil", "Supervisor", "Company", "City", 
+    const Columns = ["SolID", "Name", "LastN", "Email", "Perfil", "Supervisor", "Company", "City", "Site",
     {
         name: "ACTION",
         options: {
@@ -62,7 +64,8 @@ export const DataTable = (props) => {
                     setCompany(listUser[dataIndex]['idCompany'])
                     document.getElementById('city').value=listUser[dataIndex]['idCity']
                     setCity(listUser[dataIndex]['idCity'])
-                        
+                    document.getElementById('Site').value=listUser[dataIndex]['idSite']
+                    setSite(listUser[dataIndex]['idSite'])
                     document.getElementById('add').style.display='none'
                     document.getElementById('update').style.display='block'
                     modal()
@@ -109,6 +112,7 @@ export const DataTable = (props) => {
         const respuesta = await fetch(`${API}/usuario/inactive`,{
             method: "POST",
             headers: {
+                Authorization:sessionStorage.getItem('tocken'),
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
@@ -130,6 +134,7 @@ export const DataTable = (props) => {
         document.getElementsByTagName('th')[6].style.position='sticky';
         document.getElementsByTagName('th')[7].style.position='sticky';
         document.getElementsByTagName('th')[8].style.position='sticky';
+        document.getElementsByTagName('th')[0].style.position='sticky';
         document.getElementById("Mymodal").style.display = 'none';
         
         document.getElementById('idSolvo').value="";
@@ -143,7 +148,7 @@ export const DataTable = (props) => {
         document.getElementById('perfil').value=Perfil;
         setListSupervisor(listTeam)
         document.getElementById('sup').value='Team Leader'
-        setPerfil(listPerfil[4]['id'])
+        setPerfil(4)
         document.getElementById('company').value=1;
         setCompany(listCompanys[0]['id'])
         document.getElementById('city').value=1;
@@ -195,7 +200,7 @@ export const DataTable = (props) => {
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':parseInt(document.getElementById('supervisor').value), 'City':city, 'Company':Company},
+            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':parseInt(document.getElementById('supervisor').value), 'City':city, 'Company':Company,'Site':site},
             perfil:Perfil
         })}
         )
@@ -207,11 +212,12 @@ export const DataTable = (props) => {
         const respuesta = await fetch(`${API}/usuario/Update`,{
         method: "POST",
         headers: {
+            Authorization:sessionStorage.getItem('tocken'),
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':document.getElementById('supervisor').value, 'City':city, 'Company':Company},
+            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':document.getElementById('supervisor').value, 'City':city, 'Company':Company,'site':site},
             perfil:Perfil
         })}
         )
@@ -253,6 +259,7 @@ export const DataTable = (props) => {
         document.getElementsByTagName('th')[6].style.position='static';
         document.getElementsByTagName('th')[7].style.position='static';
         document.getElementsByTagName('th')[8].style.position='static';
+        document.getElementsByTagName('th')[9].style.position='static';
         document.getElementById("Mymodal").style.display = 'block';
     }
 
@@ -266,6 +273,7 @@ export const DataTable = (props) => {
                         </div>
                         <div className="sideLe">
                             <form action="">
+                                <center><h1>Add User</h1></center>
                                 <label >SoLvoID</label>
                                 <input type="text" name="idSolvo" id="idSolvo" className="inputs" onChange={(e) => setSolId(e.target.value)}/>
                                 <label >First Name</label>
@@ -308,7 +316,6 @@ export const DataTable = (props) => {
                                     )}
                                 </select>
 
-                                <a href="#company" className="inputs">do you want add another account?</a>
                                 <label >Locaction</label>
                                 <select className="inputs" id="city" onChange={(e) => setCity(e.target.value)}>
                                     {listCitycompanys.map(Citycompanys =>{
@@ -316,6 +323,18 @@ export const DataTable = (props) => {
                                             return (
                                                 <option key={Citycompanys['ciudad']['id']} value={Citycompanys['ciudad']['id']}>{Citycompanys['ciudad']['nombre']}</option>
                                             )}
+                                        }
+                                    )}
+                                </select>
+                                <label >Sites</label>
+
+                                <select className="inputs" id="Site" value={site} onChange={(e) => setSite(e.target.value)}>
+                                    {listSites.map(site =>{
+                                        if (site['idCity'] == document.getElementById('city').value){
+                                            return (
+                                                <option key={site['id']} value={site['id']}>{site['nombre']}</option>
+                                            )
+                                        }
                                         }
                                     )}
                                 </select>

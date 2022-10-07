@@ -15,7 +15,7 @@ def init_app():
     app.config['MYSQL_HOST']='localhost'
     app.config['MYSQL_USER']='root'
     app.config['MYSQL_PASSWORD']=''
-    app.config['MYSQL_DB']='solvo'
+    app.config['MYSQL_DB']='solvo1'
     #se agregan los blueprints para segmentar las rutas de la pagina web 
     app.register_blueprint(estados)
     app.register_blueprint(usuarios)

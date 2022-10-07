@@ -10,7 +10,8 @@ def authenticate(db,user):
     logged_user = ModelUser.login(db,user)
     if logged_user != None:
         if logged_user['pass']:
-            ModelState.call_procedure(db,logged_user,"",4)
+            if(logged_user['idPerfil']==4):
+                ModelState.call_procedure(db,logged_user,"",4)
             tocken=write_tocken(logged_user)
             return {'bool':True,'response':'Login succesfully','usuario':logged_user,'tocken':tocken.decode("utf-8")}
         else:

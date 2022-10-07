@@ -141,6 +141,21 @@ class ModelCompanyCity():
         except Exception as ex:
             raise Exception(ex)
         
+    @classmethod
+    def ListSites(self, db):
+        try:
+            citys = []
+            cursor = db.connection.cursor()
+            sql = "SELECT * FROM Site "
+            cursor.execute(sql)
+            city = cursor.fetchall()
+            cursor.close()
+            for row in city:
+                citys.append({'id':row[0], 'nombre':row[1],'idCity':row[2]})
+            return citys
+        except Exception as ex:
+            raise Exception(ex)
+        
         
     @classmethod
     def EditCity(self, db, id):

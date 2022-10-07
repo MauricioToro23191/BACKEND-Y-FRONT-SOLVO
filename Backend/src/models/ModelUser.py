@@ -10,11 +10,13 @@ class ModelUser():
             cursor = db.connection.cursor()
             sql = """SELECT u.ID_USUARIO, u.ID_SOLVO, u.NOMBRES, u.APELLIDOS, u.CORREO_SOLVO, u.ESTADO, 
                     p.id_perfil, p.nombre_perfil, comp.id_compania, comp.nombre_compania, 
-                    ciu.ID_CIUDAD, ciu.nombre_ciudad, sup.ID_USUARIO, sup.nombres, u.CONTRASENA 
+                    ciu.ID_CIUDAD, ciu.nombre_ciudad, sup.ID_USUARIO, sup.nombres, u.CONTRASENA ,SITE.ID_SITE,SITE.NOMBRE_SITE
                     FROM usuario as u
                     INNER JOIN perfiles as p ON u.PERFIL=p.ID_PERFIL
                     INNER JOIN compania as comp ON u.ID_COMPANIA=comp.ID_COMPANIA
                     INNER JOIN ciudad as ciu ON u.ID_CIUDAD=ciu.ID_CIUDAD
+                    INNER JOIN SITE as SITE ON u.ID_SITE=SITE.ID_SITE
+
                     INNER JOIN usuario as sup ON u.id_supervisor=sup.ID_USUARIO
                     WHERE u.CORREO_SOLVO='{}'""".format(user['email'])
             cursor.execute(sql) 
@@ -22,22 +24,23 @@ class ModelUser():
             cursor.close()
             if row != None:
                 u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
-                    'Company':row[9],'idCity':row[10],'City':row[11],'idSupervisor':row[12], 'Supervisor':row[13], 'pass':User.check_password(row[14],user['pass'])}
+                    'Company':row[9],'idCity':row[10],'City':row[11],'idSupervisor':row[12], 'Supervisor':row[13], 'pass':User.check_password(row[14],user['pass']),'idSite':row[15],'Site':row[16]}
                 return u
             else:
                 sql = """SELECT u.ID_USUARIO, u.ID_SOLVO, u.NOMBRES, u.APELLIDOS, u.CORREO_SOLVO, u.ESTADO, 
                         p.id_perfil, p.nombre_perfil, comp.id_compania, comp.nombre_compania, 
-                        ciu.id_ciudad, ciu.nombre_ciudad, u.CONTRASENA FROM usuario as u
+                        ciu.id_ciudad, ciu.nombre_ciudad, u.CONTRASENA,,SITE.ID_SITE,SITE.NOMBRE_SITE FROM usuario as u
                         INNER JOIN perfiles as p ON u.PERFIL=p.ID_PERFIL
                         INNER JOIN compania as comp ON u.ID_COMPANIA=comp.ID_COMPANIA
                         INNER JOIN ciudad as ciu ON u.ID_CIUDAD=ciu.ID_CIUDAD
+                        INNER JOIN SITE as SITE ON u.ID_SITE=SITE.ID_SITE
                         WHERE u.CORREO_SOLVO='{}'""".format(user['email'])
                 cursor.execute(sql)
                 row = cursor.fetchone()
                 cursor.close()
                 if row != None:
                     u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
-                        'Company':row[9],'idCity':row[10],'City':row[11], 'pass':User.check_password(row[12],user['pass'])}
+                        'Company':row[9],'idCity':row[10],'City':row[11], 'pass':User.check_password(row[12],user['pass']),'idSite':row[13],'Site':row[14]}
                     return u
         except Exception as ex: 
             db.connection.close()
@@ -66,9 +69,9 @@ class ModelUser():
     def addAdmin(self, db, user):
         try:
             cursor = db.connection.cursor()
-            sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ESTADO)
+            sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ID_SITE,ESTADO)
                 VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],1))
+            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],14,1))
             db.connection.commit()
             cursor.close()
 
@@ -81,9 +84,9 @@ class ModelUser():
         try:
             print(user)
             cursor = db.connection.cursor()
-            sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ESTADO,ID_SUPERVISOR)
+            sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ID_SITE,ESTADO,ID_SUPERVISOR)
                 VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],1,int(user['Supervisor'])))
+            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],14,1,int(user['Supervisor'])))
             db.connection.commit() 
             cursor.close()
 
@@ -251,14 +254,15 @@ class ModelUser():
     @classmethod
     def UpdateSup(self, db, user):
         try:
+
             cursor = db.connection.cursor()
-            print(user['Supervisor'])
+            print(user)
             if int(user['Supervisor'])==0:
-                sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=NULL, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s WHERE ID_USUARIO=%s"
-                cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],user['Company'],user['City'],user['Perfil'],user['id']))
+                sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=NULL, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s ,ID_SITE=%s WHERE ID_USUARIO=%s"
+                cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],user['Company'],user['City'],user['Perfil'],int(user['site']),user['id']))
             else:
-                sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=%s, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s WHERE ID_USUARIO=%s"
-                cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],int(user['Supervisor']),user['Company'],user['City'],user['Perfil'],user['id']))
+                sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=%s, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s  ,ID_SITE=%s WHERE ID_USUARIO=%s"
+                cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],int(user['Supervisor']),user['Company'],user['City'],user['Perfil'],int(user['site']),user['id']))
             db.connection.commit()
             cursor.close()
 
@@ -319,25 +323,27 @@ class ModelUser():
             if int(perfil)==1:
                 sql = """SELECT u.ID_USUARIO, u.ID_SOLVO, u.NOMBRES, u.APELLIDOS, u.CORREO_SOLVO, u.ESTADO, 
                         p.id_perfil, p.nombre_perfil, comp.id_compania, comp.nombre_compania, 
-                        ciu.id_ciudad, ciu.nombre_ciudad
+                        ciu.id_ciudad, ciu.nombre_ciudad,site.id_site,site.nombre_site
                         FROM usuario as u
                         INNER JOIN perfiles as p ON u.PERFIL=p.ID_PERFIL
                         INNER JOIN compania as comp ON u.ID_COMPANIA=comp.ID_COMPANIA
                         INNER JOIN ciudad as ciu ON u.ID_CIUDAD=ciu.ID_CIUDAD
+                        INNER JOIN site as site on u.ID_SITE=site.id_site
                         WHERE u.PERFIL=1 and u.estado=1 and u.id_compania = {}""".format(idComp)
                 cursor.execute(sql)
                 usuarios=list(cursor.fetchall())#
                 for row in usuarios :
                     u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
-                    'Company':row[9],'idCity':row[10],'City':row[11]}
+                    'Company':row[9],'idCity':row[10],'City':row[11],'idSite':row[12],'Site':row[13]}
                     lUser.append(u) 
             sql = """SELECT u.ID_USUARIO, u.ID_SOLVO, u.NOMBRES, u.APELLIDOS, u.CORREO_SOLVO, u.ESTADO, 
                     p.id_perfil, p.nombre_perfil, comp.id_compania, comp.nombre_compania, 
-                    ciu.id_ciudad, ciu.nombre_ciudad, sup.id_usuario, sup.nombres 
+                    ciu.id_ciudad, ciu.nombre_ciudad, sup.id_usuario, sup.nombres ,site.id_site,site.nombre_site
                     FROM usuario as u
                     INNER JOIN perfiles as p ON u.PERFIL=p.ID_PERFIL
                     INNER JOIN compania as comp ON u.ID_COMPANIA=comp.ID_COMPANIA
                     INNER JOIN ciudad as ciu ON u.ID_CIUDAD=ciu.ID_CIUDAD
+                    INNER JOIN site as site on u.ID_SITE=site.id_site
                     INNER JOIN usuario as sup ON u.id_supervisor=sup.ID_USUARIO
                     WHERE u.PERFIL<>1 and u.estado=1 and u.id_compania = {}""".format(idComp)
             cursor.execute(sql)
@@ -345,7 +351,7 @@ class ModelUser():
             cursor.close()
             for row in usuarios :
                 u={'id':row[0], 'SolID':row[1], 'Name':row[2], 'LastN':row[3], 'Email':row[4], 'estado':row[5], 'idPerfil':row[6], 'Perfil':row[7], 'idCompany':row[8],
-                'Company':row[9],'idCity':row[10],'City':row[11], 'idSupervisor':row[12], 'Supervisor':row[13]}
+                'Company':row[9],'idCity':row[10],'City':row[11], 'idSupervisor':row[12], 'Supervisor':row[13],'idSite':row[14],'Site':row[15]}
                 lUser.append(u) 
             return lUser
         except Exception as ex:

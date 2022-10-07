@@ -43,21 +43,22 @@ def listUser():
     if request.method == 'POST':
         tocken=request.headers['Authorization']
         json=function_jwt.validate_tocken(tocken,True)
-        print(json['id'])
+        print()
         idCompania = request.json['company']
-        perfil = request.json['perfil']
-        users=ModelUser.ListUser(db, idCompania,perfil)
+        users=ModelUser.ListUser(db, idCompania,json['idPerfil'])
         admins = ModelUser.ListAdmin(db)
         perfils = ModelUser.perfil(db)
         sups = ModelUser.ListSup(db)
         teams = ModelUser.ListTeam(db)
         citys = ModelCompanyCity.ListCity(db)
+        Sites =ModelCompanyCity.ListSites(db)
         companys = ModelCompanyCity.ListCompany(db)
         citycompanys = ModelUser.getCompCiuTodos(db)
         if None==users:
             users=[]
-        return jsonify({'LisUser':users, 'Admins':admins, 'Perfils':perfils, 'Sups':sups, 'Teams':teams, 'Citys':citys, 'Companys':companys, 'Citycompanys':citycompanys})
-    
+        return jsonify({'LisUser':users, 'Admins':admins, 'Perfils':perfils, 'Sups':sups, 'Teams':teams, 'Citys':citys, 'Companys':companys, 'Citycompanys':citycompanys,'Sites':Sites})
+  
+
 @usuarios.route('/AdminUser',methods=['GET', 'POST'])
 def AdminUser():
     from app import getdb

@@ -2,7 +2,7 @@
     display: none;
     position: fixed;
     z-index: 1;
-    padding-top: 100px;
+    padding-top: 3%;
     left: 0;
     top: 0;
     width: 100vw;
@@ -14,7 +14,7 @@
 }
 
 .sideLe {
-    grid-area: sideLe;    
+    grid-area: sideLe;   
     height: 100%;
     height: 100%;
 }
@@ -26,22 +26,22 @@
 }
 
 #contm {
-    width: 40%;
-    height: 70vh;
+    width: 50%;
+    height: 80vh;
     padding: 0;
     margin: 0 auto;
     background: white;
     border-radius: 5px;
     display: grid;
     grid-template-areas: 'sideLe sideRi';
-    grid-template-columns: 90% 10%;
+    grid-template-columns: 97% 1%;
     box-shadow: 0 0 5px black;
     
     form label{
         display: block;
-        width: 60%;
+        width: 80%;
+        margin: auto;
         border-bottom: solid rgba(242,96, 0,1);
-        margin: 0 5%;
         padding: 0.5%;
         background: none;
     }
@@ -49,31 +49,46 @@
 }
 
 .inputs {
+    align-items: center;
     display: block;
-    width: 60%;
+    width: 80%;
     height: 3vh;
-    margin: 0.5% 5%;
+    margin: auto;
     background: none;
     border-color: rgba(168, 167, 175, 0.5);
 }
 
-#add, #update{
+#add{
     display: block;
-    width: 7vw;
+    width: 9vw;
     height: 5vh;
     background: rgba(242,96, 0,1);
     border-radius: 10px;
     border: none;
-    margin: 5% 30% ;
+    margin: auto;
+    margin-top: 1%;
+    cursor: pointer;
+
+}
+#update{
+    display: block;
+    width: 9vw;
+    height: 5vh;
+    background: rgba(242,96, 0,1);
+    border-radius: 10px;
+    border: none;
+    margin: auto;
+    margin-top: 1%;
     cursor: pointer;
 
 }
 
 .buttonClose {
-    width: 50%;
-    height: 5%;
-    margin: 0 50%;
+    width: 0%;
+    height: 0%;
+    margin: 0 35%;
     border: none;
+    font-size: 500;
     background: none;
     cursor: pointer;
 }
