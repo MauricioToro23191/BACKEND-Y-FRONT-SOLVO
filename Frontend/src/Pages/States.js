@@ -7,7 +7,9 @@ import '../styles/states.scss';
 import '../styles/animate.scss'
 const API=process.env.REACT_APP_BACKEND
 
-export default function States() {
+export default function States(props) {
+  const {loge}=props
+
   const socket=useContext(SocketContext);
   const Navigate = useNavigate();
   const logOUT = useCallback(() => Navigate('/', { replace: true }), [Navigate]);
@@ -23,18 +25,22 @@ export default function States() {
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:sessionStorage.getItem('user')
+            user:JSON.parse(sessionStorage.getItem('user'))
         })
   })
   const data =await res.json()
   if(data['logout']){
+    socket.emit('logoutUser',{'message':{'logout':true,'id':JSON.parse(sessionStorage.getItem('user'))['id']},'room':sessionStorage.getItem('idComp')});
+    console.log('logout is true')
     clearInterval(sessionStorage.getItem('idinterval'))
    if(sessionStorage.getItem('user') != null){
-      socket.emit('logoutUser',{'message':{'logout':true,'id':JSON.parse(sessionStorage.getItem('user'))['id']},'room':sessionStorage.getItem('idComp')});
-      sessionStorage.removeItem('user');
       sessionStorage.clear();
+      loge(false)
       logOUT();
     }else{
+      sessionStorage.clear();
+      loge(false)
+
       logOUT();
     }
   }else{
@@ -46,7 +52,7 @@ export default function States() {
  
   useEffect(()=>{
     let l=JSON.parse(sessionStorage.getItem('user'))
-    setNombre(l['nombres']+" "+l['apellidos'])
+    setNombre(l['Name']+" "+l['LastN'])
   },[])
   
   return (

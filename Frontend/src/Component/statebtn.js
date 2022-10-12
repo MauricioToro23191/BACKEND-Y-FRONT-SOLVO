@@ -19,13 +19,11 @@ export default function Statebtn() {
     getState();
     socket.emit('join',{'room':sessionStorage.getItem('idComp')});
     socket.on('ChangeStateSuptoUser',(message)=>{
-     
       let idUdser=message['iduser']
-      let idestado=message['newStateid']
       if(JSON.parse(sessionStorage.getItem('user')).id==parseInt(idUdser)){
-        console.log(message['responsable'])
-        cambiarestado(idestado,message['responsable'])
-        document.getElementById('changeState').innerHTML='the State has been change by '+ message['responsable'] 
+        document.getElementById('changeState').innerHTML='the State has been change by '+ message['responsable']
+        sessionStorage.setItem('diferenciaState',0)
+        getState();
         setTimeout(() => {
           document.getElementById('changeState').innerHTML=''
         }, 10000);
@@ -49,7 +47,7 @@ export default function Statebtn() {
  
   const cambiarestado=async(id,responsable)=>{
     if(responsable==""){
-      responsable=JSON.parse(sessionStorage.getItem('user'))['nombres']
+      responsable=JSON.parse(sessionStorage.getItem('user'))['Name']
     }
     const res =await fetch(`${API}/estados/changeState`,{
       method: "POST",
@@ -84,8 +82,8 @@ export default function Statebtn() {
       })
     })
     const data =await res.json()
-    console.log(data)
     response=data;
+
     cambio(response);
     return true
 

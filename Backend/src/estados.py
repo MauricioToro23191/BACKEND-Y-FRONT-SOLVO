@@ -13,23 +13,23 @@ def menu():
     response=None
     if request.method == 'POST':
         u = json.loads(request.json['user'])
-        usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
-        estadoactual=ModelState.estadoActual(db,usuario.id)
+        # usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
+        estadoactual=ModelState.estadoActual(db,u['id'])
         if(estadoactual!=None):
             state1=ModelState.get_by_id(db,estadoactual.id_estado)
         else:
-            ModelState.call_procedure(db,usuario,usuario.nombres,4)   
-            estadoactual=ModelState.estadoActual(db,usuario.id)
+            ModelState.call_procedure(db,u,"",4)   
+            estadoactual=ModelState.estadoActual(db,u['id'])
             state1=ModelState.get_by_id(db,estadoactual.id_estado)
-        totalStates=ModelState.totalStates(db,usuario.id)  
+        totalStates=ModelState.totalStates(db,u['id'])  
         response={
-            'estado':state1.__dict__,
+            'estado':state1,
             'estadoactual':estadoactual.__dict__,
             'totalStates':totalStates,
             'logout': False,
-            'room':usuario.compania['id'],
+            'room':u['idCompany'],
             'id':0,
-            'sup':usuario.namesupervisor
+            'sup':u['Supervisor']
             }  
 
         return jsonify(response)
@@ -39,25 +39,39 @@ def menu():
 def changeState():
     from app import getdb
     db=getdb()
-    response=None
+    response=""
     if request.method == 'POST':
         state=request.json['idestado'] 
         responsable=request.json['responsable'] 
         u = json.loads(request.json['user'])
-        usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
-        ModelState.call_procedure(db,usuario,responsable,state)
-        estadoactual=ModelState.estadoActual(db,usuario.id)
+        if responsable=="":
+            responsable=u['Name']
+        ModelState.call_procedure(db,u['id'],responsable,state)
+        estadoactual=ModelState.estadoActual(db,u['id'])
         if(estadoactual!=None):
             state1=ModelState.get_by_id(db,estadoactual.id_estado)
-        totalStates=ModelState.totalStates(db,usuario.id)  
+        totalStates=ModelState.totalStates(db,u['id'])  
         response={
-            'estado':state1.__dict__,
+            'estado':state1,
             'estadoactual':estadoactual.__dict__,
             'totalStates':totalStates,
             'logout': False,
-            'room':usuario.compania['id'],
+            'room':u['idCompany'],
             'id':0,
-            'sup':usuario.namesupervisor
+            'sup':u['Supervisor']
             }  
         return jsonify(response)
+    return None
+
+@estados.route('/changeStateRTA',methods=['POST'])
+def changeStateRTA():
+    from app import getdb
+    db=getdb()
+    response=""
+    if request.method == 'POST':
+        idUser=request.json['idUser']
+        state=request.json['idestado'] 
+        responsable=request.json['responsable'] 
+        bool=ModelState.call_procedure(db,idUser,responsable,state)
+        return jsonify({'changeState':bool})
     return None

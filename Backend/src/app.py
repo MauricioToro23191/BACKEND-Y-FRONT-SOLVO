@@ -5,16 +5,16 @@ from flask import redirect, url_for,jsonify,request,redirect,url_for
 from flask_cors import CORS
 #from flask_json import FlaskJSON
 from flask_socketio import SocketIO,emit,join_room,leave_room
-import json
+from dotenv import load_dotenv
 #controlador de Base de datos 
 
 # Models:
 from models.ModelState import ModelState
-from models.entities.User import User
 from init import init_app2
 #asignacion de variables generales 
 app,db=init_app2()
 CORS(app)
+
 #csrf = CSRFProtect(app)
 
 def getdb():
@@ -38,17 +38,19 @@ def RTA():
 
 @app.route('/reporte1',methods=['GET', 'POST'])
 def reporte():
-    lista=ModelState.reporte1(db,request.json['FechaInicio'],request.json['Fechafin'])
-    return jsonify({'listExport':lista})
+     if request.method == 'POST':
+        lista=ModelState.reporte1(db,request.json['FechaInicio'],request.json['Fechafin'],request.json['company'])
+        listComp=ModelState.listCompania(db)
+        return jsonify({'listExport':lista,'listcomp':listComp})
 
 @app.route('/reporte2',methods=['GET', 'POST'])
 def reporte2():
-    #request.json['FechaInicio']
     if request.method == 'POST':
-        lista=ModelState.reporte2(db,request.json['FechaInicio'])
+        lista=ModelState.reporte2(db,request.json['FechaInicio'],request.json['company'])
     else:
-        lista=ModelState.reporte2(db,"")
-    return jsonify({'listExport':lista})
+        lista=ModelState.reporte2(db,"",1)
+    listComp=ModelState.listCompania(db)
+    return jsonify({'listExport':lista,'listcomp':listComp})
 #Respuestas a error por no estar autorizado para acceder a la pagina   
 def status_401(error):
     return redirect(url_for('Usuario.login'))
@@ -101,9 +103,8 @@ def test_disconnect():
 #Cerrar sesion    
 @app.route('/logout',methods=['GET', 'POST'])
 def logout():
-    u = json.loads(request.json['user'])
-    usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
-    ModelState.call_procedure(db,usuario,usuario,1)
+    u =request.json['user']
+    ModelState.call_procedure(db,u['id'],u['Name'],1)
     return jsonify({'logout':True})
 
 @app.route('/logoutAdmin')
@@ -112,9 +113,18 @@ def logoutAdmin():
 
 #inicio de la pagina 
 if __name__ == '__main__':
-    socket.run(app,host='0.0.0.0',port=5000)
-    app.register_error_handler(401, status_401)
-    app.register_error_handler(404, status_404)
+    try:
+        load_dotenv()
+        app.register_error_handler(404, status_404)
+        app.register_error_handler(401, status_401)
+        socket.run(app,host='0.0.0.0',port=5000)
+    except EOFError:
+        print('Hello user it is EOF exception, please enter something and run me again')
+    except KeyboardInterrupt:
+        print('Hello user you have pressed ctrl-c button.')
+    else:
+        print('Hello user there is some format error')
+
     
 
     

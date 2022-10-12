@@ -2,7 +2,7 @@
     display: none;
     position: fixed;
     z-index: 1;
-    padding-top: 100px;
+    padding-top: 3%;
     left: 0;
     top: 0;
     width: 100vw;
@@ -10,83 +10,86 @@
     overflow: hidden;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.4);
+    justify-items: stretch ;
 }
 
-.sideLe{
-    grid-column: 1/2;
-    background-color: black;
+.sideLe {
+    grid-area: sideLe;   
+    height: 100%;
+    height: 100%;
 }
 
-.sideRi{
-    grid-column: 2/3;
-    background-color: #F26100;
+.sideRi {
+    grid-area: sideRi;
     height: 100%;
     width: 100%;
 }
 
-
 #contm {
-    width: 40%;
-    height: 70vh;
+    width: 50%;
+    height: 80vh;
     padding: 0;
     margin: 0 auto;
     background: white;
     border-radius: 5px;
     display: grid;
-    grid-template-rows: 100%;
-    grid-template-columns: 50% 50%;
+    grid-template-areas: 'sideLe sideRi';
+    grid-template-columns: 97% 1%;
     box-shadow: 0 0 5px black;
-
+    
     form label{
         display: block;
-        width: 20%;
+        width: 80%;
+        margin: auto;
         border-bottom: solid rgba(242,96, 0,1);
-        margin: 0 5%;
         padding: 0.5%;
         background: none;
     }
+
 }
 
-.infomodal {
-    width: 100%;
-    height: 50%;
-    color: #F26100;
-    justify-self: center;
-    align-self: center;
-    text-align: center;
-
-    h2 {
-        width: 100%;
-        height: 100%;
-        font-size: 20px;
-    }
-}
-.modalcont {
-    animation-duration: 0.5s;
-    animation-name: slidein;
-}
-
-@keyframes slidein {
-    from {
-        margin-top: 100%;
-        top: 300%;
-    }
-
-    to {
-        margin-top: 0%;
-        height: 100%;
-    }
-}
-.buttonClose{
-    background-color: red;
-    width: 20%;
-    height: 20%;
-    height: 100%;
-}
-.inputs{
+.inputs {
+    align-items: center;
     display: block;
-    width: 20%;height: 3vh;
-    margin: 0.5% 5%;
+    width: 80%;
+    height: 3vh;
+    margin: auto;
     background: none;
     border-color: rgba(168, 167, 175, 0.5);
 }
+
+#add{
+    display: block;
+    width: 9vw;
+    height: 5vh;
+    background: rgba(242,96, 0,1);
+    border-radius: 10px;
+    border: none;
+    margin: auto;
+    margin-top: 1%;
+    cursor: pointer;
+
+}
+#update{
+    display: block;
+    width: 9vw;
+    height: 5vh;
+    background: rgba(242,96, 0,1);
+    border-radius: 10px;
+    border: none;
+    margin: auto;
+    margin-top: 1%;
+    cursor: pointer;
+
+}
+
+.buttonClose {
+    width: 0%;
+    height: 0%;
+    margin: 0 35%;
+    border: none;
+    font-size: 500;
+    background: none;
+    cursor: pointer;
+}
+

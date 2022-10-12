@@ -4,7 +4,10 @@ import '../styles/layout.scss';
 
 const API=process.env.REACT_APP_BACKEND
 
-const Layout = () => {
+const Layout = (props) => {
+    const {loge}=props
+    const {logueado}=props
+
     const[nombre,setNombre]=useState("");
     const Navigate = useNavigate(); 
     const logOUT = useCallback(() => Navigate('/', { replace: true }), [Navigate]);
@@ -14,9 +17,10 @@ const Layout = () => {
         if(res){
           if(sessionStorage.getItem('user') != null){
             sessionStorage.clear();
+            loge(false)
             logOUT();
           }else{
-            
+            loge(false)
             logOUT();
           }
         }else{
@@ -26,14 +30,14 @@ const Layout = () => {
       }
       useEffect(()=>{
         let l=JSON.parse(sessionStorage.getItem('user'))
-        setNombre(l['nombres']+" "+l['apellidos'])
+        setNombre(l['Name']+" "+l['LastN'])
       },[])
       
-      
+     
     return (
         <>
-            <div id="menu">
-                <button id="hidden"></button>
+            <div id="menu" >
+                <button id="hidden"  ></button>
                 <button id="DESP"></button>
                 <div id="btnss">
                     <Link to="/Layout"><button id="USERS" className="querybtn"></button></Link>
@@ -46,8 +50,8 @@ const Layout = () => {
                     <p id="imaUser"></p>
                     <h2>{nombre}</h2>
                     <ul>
-                        <li>Perfil</li>
-                        <li onClick={logout}>Log Out</li>
+                        <li><a>Perfil</a></li>
+                        <li><a onClick={logout} style={{textDecoration:'none'}}>logout</a></li>
                     </ul>
                 </div>
                 <Outlet />

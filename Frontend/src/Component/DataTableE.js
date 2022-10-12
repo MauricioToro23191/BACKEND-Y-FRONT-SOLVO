@@ -13,7 +13,7 @@ const API=process.env.REACT_APP_BACKEND;
 
 export const DataTableE =() => {
     const [data,setdate]=useState("");
-    
+    const [listCompany,setlistCompany]=useState([])
     const [Columns,setColumns]=useState(Columns1);       
     const [ChangeStyle, setChangeStyle] = useState(sessionStorage.getItem('reporte'));
     const Option = {
@@ -56,11 +56,13 @@ export const DataTableE =() => {
           },
           body:JSON.stringify({
             FechaInicio:new Date(sessionStorage.getItem('startDate')).toISOString().split('T')[0],
-            Fechafin:new Date(sessionStorage.getItem('endDate')).toISOString().split('T')[0]
+            Fechafin:new Date(sessionStorage.getItem('endDate')).toISOString().split('T')[0],
+            company:sessionStorage.getItem('idComp')
           })
         })
         const data1 = await res.json();
         setdate(data1)
+        setlistCompany(data1['listcomp'])
         sessionStorage.setItem('reporte',false)
 
 
@@ -73,11 +75,13 @@ export const DataTableE =() => {
               'Content-Type': 'application/json',
           },
           body:JSON.stringify({
-            FechaInicio:new Date(sessionStorage.getItem('startDate')).toISOString().split('T')[0]
+            FechaInicio:new Date(sessionStorage.getItem('startDate')).toISOString().split('T')[0],
+            company:sessionStorage.getItem('idComp')
           })
         })
         const data1 = await res.json();
         setdate(data1)
+        setlistCompany(data1['listcomp'])
         sessionStorage.setItem('reporte',true)
 
     }
@@ -95,82 +99,55 @@ export const DataTableE =() => {
         }
             
     }
+    const cambiComp=()=>{
+        sessionStorage.setItem('idComp',document.getElementById('listComp').value)
+        if(ChangeStyle){
+            setColumns(Columns1);
+            obtenerDatosR2();
+        }else{
+            setColumns(Columns2);
+            obtenerDatos();
+        }
+    } 
       
-        const TitleChange = () => {
-            
-            const Consolidado = {
-          
-              backgroundColor: `${ChangeStyle ? "#F26100" : "#585858"}`,
-          
-              color: "white",
-          
-              border: "solid 1px black",
-          
-              width: "50%",
-          
-            };
-          
-          
-          
-            const OtroBtn = {
-          
-              backgroundColor: `${!ChangeStyle ? "#F26100" : "#585858"}`,
-          
-              color: "white",
-          
-              border: "solid 1px black",
-          
-              width: "50%",
-          
-            };
-          
-          
-          
-            const handleChange = () => {
-                let v=!ChangeStyle
-                setChangeStyle(!ChangeStyle);
-                if(v){
-                    console.log(v)
-                    setColumns(Columns1);
-                    obtenerDatosR2();
-                    
-                    sessionStorage.setItem('reporte',true)
-                }else{
-                    setColumns(Columns2);
-                    obtenerDatos();
-                    sessionStorage.setItem('reporte',false)
-                }
-          
-            };
-          
-            return (
-          
-              <>
-                
-                <Tooltip title="Change Report">
-                
-                  <ButtonGroup >
-                    <Button style={OtroBtn} onClick={handleChange}>
-                      Detallado
-                    </Button>
-          
-                    <Button style={Consolidado} onClick={handleChange}>
-          
-                      Consolidado
-          
-                    </Button>
-          
-                   
-                  </ButtonGroup>
-          
-                </Tooltip>
-          
-              </>
-          
-            );
-          
-          };
-        
+    const TitleChange = () => {
+        const Consolidado = {
+            backgroundColor: `${ChangeStyle ? "#F26100" : "#585858"}`,
+            color: "white",
+            border: "solid 1px black",
+            width: "50%",
+        };
+        const OtroBtn = {
+            backgroundColor: `${!ChangeStyle ? "#F26100" : "#585858"}`,
+            color: "white",
+            border: "solid 1px black",
+            width: "50%",
+        };
+        const handleChange = () => {
+            let v=!ChangeStyle
+            setChangeStyle(!ChangeStyle);
+            if(v){
+                console.log(v)
+                setColumns(Columns1);
+                obtenerDatosR2();
+                sessionStorage.setItem('reporte',true)
+            }else{
+                setColumns(Columns2);
+                obtenerDatos();
+                sessionStorage.setItem('reporte',false)
+            }
+        };
+        return(
+            <>
+            <Tooltip title="Change Report">
+                <ButtonGroup >
+                    <Button style={OtroBtn} onClick={handleChange}> Detallado </Button>
+                    <Button style={Consolidado} onClick={handleChange}>Consolidado</Button>
+                </ButtonGroup>
+            </Tooltip>
+            </>
+        )
+    };
         
         const CustomToolbar = () => {
             
@@ -182,45 +159,66 @@ export const DataTableE =() => {
                     obtenerDatosR2();
                 }
             }
+            if(sessionStorage.getItem('perfil')==1){
+                return (
+                    <>
+                        <div>
+                            <br/>
+                            <br/>
+                            <strong>change company:  </strong>
+                            <select value={sessionStorage.getItem('idComp')} id="listComp" onChange={cambiComp}>
+                                {listCompany.map(comp => 
+                                    <option key={comp['id']} value={comp['id']}>{comp['nombre']}</option>
+                                )}
+                            </select><br/><br/>
+                            <strong >Report:  </strong>
+                            <TitleChange/>
+                            <br/>
+                            <br/>
+                            <Button variant="contained" color="primary" style={{float:"left" ,position:"relative",backgroundColor:"#F26100" }}onClick={cambio}> Show </Button>
+                            <DatePicker style={{float:"left" ,position:"relative" }} show={ChangeStyle}/><br/>
+                        </div>
+                    </>
+                );
+        }else{
             return (
-                
-                <React.Fragment >
+                <>
                     <div>
                         <br/>
                         <br/>
-                        <strong >Report</strong>
-
-                        <TitleChange/>
-                        <br/>
-                        <br/>
-                        
-                        <Button variant="contained" color="primary" style={{float:"left" ,position:"relative",backgroundColor:"#F26100" }}onClick={cambio}> Show </Button>
-                        <DatePicker style={{float:"left" ,position:"relative" }} show={ChangeStyle}/>
-                            
-                    </div>
-                </React.Fragment>
-            );
-          
-          };
-
-
+                        <strong >Report:  </strong>
+                    <TitleChange/>
+                    <br/>
+                    <br/>
+                    <Button variant="contained" color="primary" style={{float:"left" ,position:"relative",backgroundColor:"#F26100" }}onClick={cambio}> Show </Button>
+                    <DatePicker style={{float:"left" ,position:"relative" }} show={ChangeStyle}/><br/>
+                    
+                </div>
+            </>
+        );
+        }
         
-        function close() {
-            var modal = document.getElementById("Mymodal");
-            var body = document.getElementsByTagName("body")[0];
-            modal.style.display = "none";
-            body.style.position = "inherit";
-            body.style.height = "auto";
+        };
+
+
+    
+    function close() {
+        var modal = document.getElementById("Mymodal");
+        var body = document.getElementsByTagName("body")[0];
+        modal.style.display = "none";
+        body.style.position = "inherit";
+        body.style.height = "auto";
             body.style.overflow = "visible";
         }
-        function modal() {
-            var modal = document.getElementById("Mymodal");
-            var body = document.getElementsByTagName("body")[0];
-            modal.style.display = "block";
-            body.style.position = "static";
-            body.style.height = "100%";
-            body.style.overflow = "hidden";
-        }
+    function modal() {
+        var modal = document.getElementById("Mymodal");
+        var body = document.getElementsByTagName("body")[0];
+        modal.style.display = "block";
+        body.style.position = "static";
+        body.style.height = "100%";
+        body.style.overflow = "hidden";
+    }
+        
         
     return (
         <>  

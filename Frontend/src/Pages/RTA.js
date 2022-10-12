@@ -17,39 +17,52 @@ export default function Rta(){
     const socket=useContext(SocketContext);
     const [Lista,setlista]=useState([]);
     const [lstCompania,setlstCompania]=useState([])
-    const [cont,setCont]=useState(0);
 
     const obtenerDatos=async()=>{
+       
         const res = await fetch(`${API}/RTA`,{
-          method: "POST",
-          headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-          },
-          body:JSON.stringify({
-              compania:sessionStorage.getItem('idComp')
-          })
+            method: "POST",
+            headers: {
+                Authorization:sessionStorage.getItem('tocken'),
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+                compania:sessionStorage.getItem('idComp'),
+            })
         })
-
         const data = await res.json();
-        console.log('recibido')
         setlista(data.listRTA);
         setlstCompania(data.companiList);
         socket.emit('join',{'room':sessionStorage.getItem('idComp')});
         return data.listRTA
     }
+    const cambiarestadoRTA=async(id,idUser,responsable)=>{
+        const res =await fetch(`${API}/estados/changeStateRTA`,{
+        method: "POST",
+        headers: {
+            Authorization:sessionStorage.getItem('tocken'),
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body:JSON.stringify({
+            idestado:id,
+            idUser:idUser,
+            responsable:responsable
+        })
+        })
+        const data =await res.json()
+        socket.emit('Cambio',{'message':data,'room':sessionStorage.getItem('idComp')});
+    } 
     
     
    useEffect(() => {
         obtenerDatos();
-        console.log("Hola")
         return () => {
             socket.off('logoutUser');
             socket.off('Cambio');
         }
     }, [socket]);
-
-
     printh();
     socket.on('Cambio',(message)=>{
         let estado=message['estado']
@@ -68,6 +81,7 @@ export default function Rta(){
             'id_solvo':user['id_solvo'],
             'idcompania':user['compania']['id'],
             'state':estado['nombre'],
+            'id estado':estado['id'],
             'time':'00:00:00',
             'totest':totes[estado['nombre']]}
         const newlist=Lis.map((litem)=>{
@@ -82,6 +96,7 @@ export default function Rta(){
                 'idcompania':user['compania']['id'],
                 'Name':litem['Name'],
                 'state':l['state'],
+                'id estado':l['id estado'],
                 'totest':l['totest'],
                 'time':l['time'],
                 'date':l['date']
@@ -102,23 +117,22 @@ export default function Rta(){
 })
 socket.on('logoutUser',(message)=>{
     let logout=message['logout']
-    let Lis=getLista()
     let id=message['id']
     let indexRemove=-1
     if(logout){  
-        const newlist=Lis.map((litem,index)=>{
+        const newlist=Lista.map((litem,index)=>{
             if(litem['id']==id){
-                indexRemove=index       
+                indexRemove=index     
             }else{
                 return litem
             }
         })
         if(indexRemove!=-1){
             newlist.pop(indexRemove)
-        }    
+        }
         setlista(newlist);
     }
-    printh
+    printh();
 
 })
 
@@ -137,7 +151,7 @@ const Option ={
     selectableRowsHideCheckboxes: true,
     rowsPerPage:100,
     responsive:'simple',
-    setRowProps: (row) => {
+    setRowProps: (row,dataIndex) => {
         function calcDif(date){
             let ini=new Date(convertFromStringToDate(date));
             let dif=new Date() - ini.getTime();
@@ -147,7 +161,7 @@ const Option ={
             let dif1 = ah.getTime() - ti.getTime();
             return dif1
         }
-        if (row[4] === "Lunch") {
+        if (Lista[dataIndex]['id estado'] === 6) {
             let d=calcDif(row[5])
             if(d>3600000){
                 return {
@@ -158,7 +172,7 @@ const Option ={
                     style: { backgroundColor: "#C8EBFF"}
                 }
             }
-        }else if(row[4] === "Break"){
+        }else if(Lista[dataIndex]['id estado']=== 5){
             let d=calcDif(row[5])
             if(d>900000){
                 return {
@@ -169,7 +183,7 @@ const Option ={
                     style: { backgroundColor: "#C8EBFF"}
                 }
             }
-        }else if(row[4]==="Not Available"){
+        }else if(Lista[dataIndex]['id estado']=== 4){
                 let d=calcDif(row[5])
                 if(d>900000){
                     return {
@@ -180,7 +194,7 @@ const Option ={
                         style: { backgroundColor: "#C8EBFF"}
                     }
                 }
-        }else if(row[4] === "Personal"){
+        }else if(Lista[dataIndex]['id estado'] === 9){
             let d=calcDif(row[5])
             if(d>900000){
                 return {
@@ -192,7 +206,7 @@ const Option ={
                 }
             }
         
-        }else if(row[4] === row[4] === "Team Meeting"){
+        }else if(Lista[dataIndex]['id estado'] === 7 ){
             let d=calcDif(row[5])
             if(d>7200000){
                 return {
@@ -204,7 +218,7 @@ const Option ={
                 }
             }
         
-        }else if(row[4] === "Coaching"){
+        }else if(Lista[dataIndex]['id estado'] === 8){
             let d=calcDif(row[5])
             if(d>900000){
                 return {
@@ -216,7 +230,7 @@ const Option ={
                 }
             }
             
-        }else{
+        }else if(Lista[dataIndex]['id estado']===2){
             return {
                 style: { backgroundColor: "#36FA0F"}
             }
@@ -311,13 +325,15 @@ const Option ={
         
        
     }
+    
     function updateStateUser(idState){
-        
         let a=confirm('Are you sure you want to change the status of this user?')
         if(a){
-           socket.emit('ChangeStateSuptoUser',{'message':{'iduser':document.getElementById('id1').value,'newStateid':idState,'responsable':JSON.parse(sessionStorage.getItem('user'))['nombres']},'room':sessionStorage.getItem('idComp')})
+            socket.emit('ChangeStateSuptoUser',{'message':{'iduser':document.getElementById('id1').value,'newStateid':idState,'responsable':JSON.parse(sessionStorage.getItem('user'))['Name']+"  "+JSON.parse(sessionStorage.getItem('user'))['Perfil']+ ' of your company'},'room':sessionStorage.getItem('idComp')})
+            cambiarestadoRTA(idState,document.getElementById('id1').value,JSON.parse(sessionStorage.getItem('user'))['Name'])
             alert('Updated successfully')
             close();
+            obtenerDatos();
         }else{
             alert('could not update')
         }
@@ -409,7 +425,7 @@ const Option ={
 
     function Actualizar(){
         socket.emit('leave',{'room':sessionStorage.getItem('idComp')})
-        let id=document.getElementById('lstCompania').value
+        let id=document.getElementById('listComp').value
         sessionStorage.setItem('idComp',id)
         obtenerDatos();
         if(sessionStorage.getItem('idLista')!=null){
@@ -417,19 +433,24 @@ const Option ={
         }
 
         //document.getElementById('RT').click()
-    }  
+    } 
+  
     const TitleChange = () =>{
-        return(
-        <>
-        <strong style={{fontSize: "150%"}}>RTA </strong>
-        <select id="lstCompania" value={sessionStorage.getItem('idComp')}onChange={Actualizar}>
-        {lstCompania.map(comp => 
-            <option key={comp['id']} value={comp['id']}>{comp['nombre']}</option>
-        )}
-        
-    </select>
-    </>
-    )
+
+        if(sessionStorage.getItem('perfil')==1){
+            return(
+                <><br/>
+                <strong style={{fontSize: "150%"}} >RTA</strong> <br/><br/>
+                <select value={sessionStorage.getItem('idComp')} id="listComp" onChange={Actualizar}>
+                    {lstCompania.map(comp => 
+                        <option key={comp['id']} value={comp['id']}>{comp['nombre']}</option>
+                    )}
+                </select>
+            </>)
+        }else{
+            return (<><strong style={{fontSize: "150%"}} > RTA </strong> <br/><br/></>)
+        }
+       
     }
     
     return(
