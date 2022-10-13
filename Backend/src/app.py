@@ -150,7 +150,7 @@ if __name__ == '__main__':
         load_dotenv()
         app.register_error_handler(404, status_404)
         app.register_error_handler(401, status_401)
-        socket.run(app,host='0.0.0.0',port=5000,debug=True)
+        socket.run(app,host='0.0.0.0',port=5000)
 
     except EOFError:
         print('Hello user it is EOF exception, please enter something and run me again')

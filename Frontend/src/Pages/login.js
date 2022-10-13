@@ -5,7 +5,8 @@ import { SocketContext } from "../Context/socketio";
 import { useUsuario } from "../Context/ContextUser";
 
 const API=process.env.REACT_APP_BACKEND
-const Login = () => {
+const Login = (props) => {
+    const {loge}=props;
     const socket=useContext(SocketContext);
     const [user, setuser] = useState("");
     const [pass, setpass] = useState("");
@@ -14,6 +15,7 @@ const Login = () => {
     const res =await fetch(`${API}/estados/changeState`,{
       method: "POST",
       headers: {
+            Authorization:sessionStorage.getItem('tocken'),
           Accept: 'application/json',
           'Content-Type': 'application/json',
       },
@@ -37,6 +39,7 @@ const Login = () => {
             const res=await fetch(`${API}/usuario/login`,{
                 method: "POST",
                 headers: {
+                    Authorization:sessionStorage.getItem('tocken'),
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
@@ -47,34 +50,34 @@ const Login = () => {
             })
             const r=await res.json();
             if(r['bool']){
-                if(r['usuario'].perfil==4){
+                sessionStorage.setItem('tocken',r['tocken'])
+                if(r['usuario']['idPerfil']==4){
                     console.log('interprete');
                     sessionStorage.setItem("user",JSON.stringify(r['usuario']));
-                    sessionStorage.setItem("perfil",r['usuario'].perfil);
-                    sessionStorage.setItem("idComp",r['usuario']['compania']['id']);
-                    cambiarestado(4,JSON.stringify(r['usuario']));
+                    sessionStorage.setItem("perfil",r['usuario']['idPerfil']);
+                    sessionStorage.setItem("idComp",r['usuario']['idCompany']);
                     sessionStorage.setItem('diferenciaState',0);
-                    //setStyle("sideLEX"); 
-                    setTimeout(changePageState, 1500);
+                    setStyle("sideLEX"); 
+                    loge(true);
+                    setTimeout(changePageState, 100);
                 }else{
                     console.log('admin');
                     sessionStorage.setItem("user", JSON.stringify(r['usuario']));
-                    sessionStorage.setItem("perfil",r['usuario'].perfil);
-                    sessionStorage.setItem("idComp",r['usuario']['compania']['id']);
+                    sessionStorage.setItem("perfil",r['usuario']['idPerfil']);
+                    sessionStorage.setItem("idComp",r['usuario']['idCompany']);
                     sessionStorage.setItem('startDate',new Date(Date.now()))
                     sessionStorage.setItem('endDate',new Date(Date.now()))
                     sessionStorage.setItem('reporte',true)
-                    //setStyle("sideLEX"); 
-                    setTimeout(changePageMenu, 1500);
+                    setStyle("sideLEX"); 
+                    loge(true);
+                    setTimeout(changePageMenu, 100);
                 }
             }else{
                 alert(r['response'])
             }
-            console.log(r);
         }else{
             alert("Faltan campos por llenar")
         }
-
 
     }
 

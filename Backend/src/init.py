@@ -10,7 +10,7 @@ import os
 def init_app():
     app=Flask(__name__)
     #configuracion de la app 
-    app.secret_key='mysecretkey'
+    app.secret_key='SOLVORWEDASDaasd'
     #configuracion de la Base de datos 
     app.config['MYSQL_HOST']='localhost'
     app.config['MYSQL_USER']='root'

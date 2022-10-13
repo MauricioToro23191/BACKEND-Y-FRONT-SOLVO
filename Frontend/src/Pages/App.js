@@ -30,7 +30,7 @@ export default function App() {
       if(sessionStorage.getItem('perfil')!=4){
         seboolinter(false)
       }else{
-        seboolinter(false)
+        seboolinter(true)
       }
       setLogueado(true)
       
