@@ -1,19 +1,29 @@
 # Controlador principal de la pagina web
 #importaciones necesarias de flask
 
-from flask import redirect, url_for,jsonify,request,redirect,url_for
+from distutils.log import debug
+from re import T
+from smtplib import SMTP_SSL
+import ssl
+from models.ModelUser import ModelUser
+from flask import redirect, url_for,jsonify,request,redirect,url_for,render_template
 from flask_cors import CORS
 #from flask_json import FlaskJSON
 from flask_socketio import SocketIO,emit,join_room,leave_room
 from dotenv import load_dotenv
+from email.message import EmailMessage
+import cryptocode
+import ssl
+
 #controlador de Base de datos 
 
 # Models:
 from models.ModelState import ModelState
-from init import init_app2
+from init import init_app
 #asignacion de variables generales 
-app,db=init_app2()
+app,db=init_app()
 CORS(app)
+
 
 #csrf = CSRFProtect(app)
 
@@ -92,6 +102,7 @@ def leave(room):
 
 @socket.on('connect')
 def test_connect():
+    
     print ("conectado")
     #emit('my response','Connected')
 
@@ -110,6 +121,28 @@ def logout():
 @app.route('/logoutAdmin')
 def logoutAdmin():
     return jsonify({'logout':True})
+    
+@app.route('/Mail',methods=['GET', 'POST'])
+def send_Mail():
+    Email=request.json['Email']
+    val=ModelUser.ExistsUser(db,Email)
+    if(val==True):
+        passw=ModelUser.getPassword(db,Email)
+        if(passw!=''):
+            passw=cryptocode.decrypt(passw, "Solvo#1056$?")
+            msg=EmailMessage()
+            msg['From']="RTA_SOLVO "
+            msg['To']=Email
+            msg['Subject']='RECORDER PASSWORD'
+            msg.set_content('This should be in the email body')
+            msg.add_alternative(render_template('email.html',user=Email, Password=passw),subtype='html')
+            context=ssl.create_default_context()
+            with SMTP_SSL('smtp.gmail.com',465,context=context) as smtp:
+                smtp.login(app.config['MAIL_USERNAME'],app.config['MAIL_PASSWORD'])
+                smtp.sendmail(app.config['MAIL_USERNAME'],Email,msg.as_bytes())
+            return jsonify({'send':True})
+    return jsonify({'send':False})
+    
 
 #inicio de la pagina 
 if __name__ == '__main__':
@@ -117,7 +150,8 @@ if __name__ == '__main__':
         load_dotenv()
         app.register_error_handler(404, status_404)
         app.register_error_handler(401, status_401)
-        socket.run(app,host='0.0.0.0',port=5000)
+        socket.run(app,host='0.0.0.0',port=5000,debug=True)
+
     except EOFError:
         print('Hello user it is EOF exception, please enter something and run me again')
     except KeyboardInterrupt:

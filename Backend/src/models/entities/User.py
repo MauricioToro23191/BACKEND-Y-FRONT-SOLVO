@@ -1,4 +1,5 @@
-from werkzeug.security import check_password_hash,generate_password_hash
+
+import cryptocode
 
 class User():
 
@@ -19,7 +20,10 @@ class User():
 
     @classmethod
     def check_password(self, hashed_password, password):
-        return check_password_hash(hashed_password, password)
+        if(cryptocode.decrypt(hashed_password, "Solvo#1056$?")==password):
+            return True
+        else: 
+            return False
     
     def __repr__(self):
        return "id: " + str(self.id) +",contrasena: " + str(self.contrasena) + ",id_solvo: " + str(self.id_solvo) + ", nombres: " + str(self.nombres)  + ", apellidos: " + str(self.apellidos) + ", correo: " + str(self.correo_solvo) + ", estado: " + str(self.estado)+ ", id_supervisor:" + str(self.id_supervisor) +",namesupervisor:"+str(self.namesupervisor)

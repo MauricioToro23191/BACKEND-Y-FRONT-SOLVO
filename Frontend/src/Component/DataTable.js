@@ -200,7 +200,7 @@ export const DataTable = (props) => {
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':parseInt(document.getElementById('supervisor').value), 'City':city, 'Company':Company,'Site':site},
+            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':parseInt(document.getElementById('supervisor').value), 'City':city, 'Company':Company,'site':site},
             perfil:Perfil
         })}
         )

@@ -103,18 +103,36 @@ const Login = (props) => {
         return data
 
     }
+    const recorder = async()=>{
+        const res=await fetch(`${API}/Mail`,{
+            method: "POST",
+            headers: {
+                Authorization:sessionStorage.getItem('tocken'),
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+                'Email':document.getElementById('Email').value
+            })
+        })
+        const data=await res.json()
+        if(data.send){
+            alert('Las credenciales han sido enviadas a su correo ')
+            handleLoginS()
+        }
+    }
     return (
         <>
             <div id="Cont">
                 <div id="Container">
                     <div className='formulario2' id="formulario2">
-                        <form className='form2'>
+                        <div className='form2' >
                             <label className='backLogin' onClick={handleLoginS} />
                             <label className='title'>Recovery Password</label>
                             <label className='textTitle'>Enter  your Email Adress</label>
-                            <input className='Email' placeholder='Email'></input>
-                            <button className='nextStep' />
-                        </form>
+                            <input className='Email' id="Email"placeholder='Email'></input>
+                            <button className='nextStep' onClick={recorder}/>
+                        </div>
                     </div>
                     <div id={style} >
                         <p></p>

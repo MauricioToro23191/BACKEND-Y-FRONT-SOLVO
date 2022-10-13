@@ -43,7 +43,6 @@ def listUser():
     if request.method == 'POST':
         tocken=request.headers['Authorization']
         json=function_jwt.validate_tocken(tocken,True)
-        print()
         idCompania = request.json['company']
         users=ModelUser.ListUser(db, idCompania,json['idPerfil'])
         admins = ModelUser.ListAdmin(db)
