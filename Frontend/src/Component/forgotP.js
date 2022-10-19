@@ -1,18 +1,15 @@
-import React from 'react'
+import React from "react";
 
-export default function ForgotP() {
-
+export default function ForgotP({ title, TextCont, func,back }) {
   return (
-    <div className='formulario2'>
-        <form className='form2'> 
-        <label className='backLogin'/>
-            <label className='title'>Recovery Password</label>
-            <label className='textTitle'>Enter  your Email Adress</label>
-            <input className='Email' placeholder='Email'></input>
-            <button className='nextStep'/>
-        </form>
+    <div id="formulario2">
+      <form className="form2">
+        <label className="backLogin" onClick={back}/>
+        <label className="title">{title}</label>
+        <label className="textTitle">{TextCont}</label>
+        <input className="Email" placeholder="Email"></input>
+        <button className="nextStep" onClick={func} />
+      </form>
     </div>
-  )
+  );
 }
- 
-
