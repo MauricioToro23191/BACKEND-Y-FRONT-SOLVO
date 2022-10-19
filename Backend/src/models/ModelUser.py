@@ -1,3 +1,4 @@
+from base64 import encode
 import cryptocode
 
 from .entities.User import User
@@ -77,8 +78,19 @@ class ModelUser():
         except Exception as ex:
             raise Exception(ex)
        
-        
-
+    @classmethod
+    def setPassword(self,db,correo_solvo,password):
+        try:
+            password=cryptocode.encrypt(password,"Solvo#1056$?")
+            cursor = db.connection.cursor()
+            sql = """UPDATE USUARIO SET contrasena = '{}' WHERE CORREO_SOLVO = '{}'""".format(password,correo_solvo) 
+            cursor.execute(sql)       
+            db.connection.commit()
+            cursor.close()
+            return True
+        except Exception as ex:
+            raise Exception(ex)
+       
     @classmethod
     def addAdmin(self, db, user):
         try:

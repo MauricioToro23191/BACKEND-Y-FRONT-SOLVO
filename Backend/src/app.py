@@ -141,6 +141,26 @@ def send_Mail():
                 return jsonify({'send':True})
         return jsonify({'send':False})
 
+@app.route('/EmailCode',methods=['GET', 'POST'])
+def EmailCode():
+    if request.method == 'POST':
+        Email=request.json['Email']
+        val=ModelUser.ExistsUser(db,Email)
+        if(val==True):
+            code=request.json['code']
+            msg=EmailMessage()
+            msg['From']="RTA_SOLVO "
+            msg['To']=Email
+            msg['Subject']='CODE CHANGE PASSWORD'
+            msg.set_content('This should be in the email body')
+            msg.add_alternative("Your verification code is as follows: "+ code,subtype='html')
+            context=ssl.create_default_context()
+            with SMTP_SSL('smtp.gmail.com',465,context=context) as smtp:
+                smtp.login(app.config['MAIL_USERNAME'],app.config['MAIL_PASSWORD'])
+                smtp.sendmail(app.config['MAIL_USERNAME'],Email,msg.as_bytes())
+            return jsonify({'send':True})
+        return jsonify({'send':False})
+
 
     
 

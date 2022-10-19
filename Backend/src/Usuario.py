@@ -1,3 +1,4 @@
+import email
 from flask import  request,jsonify
 import flask
 # Models:
@@ -111,6 +112,19 @@ def validarUser():
         Email=request.json['Email']
         val=ModelUser.ExistsUser(db,Email)
         return jsonify({'send':val})
+    else: 
+        return jsonify({'send':False})
+
+@usuarios.route('/ChangePassword',methods=['GET', 'POST'])
+def ChangePassword():
+    if request.method=="POST":
+        from app import getdb
+        db=getdb()
+        Email=request.json['Email']
+        password=request.json['password']
+        print(Email,password)
+        res=ModelUser.setPassword(db,Email,password)
+        return jsonify({'send':res})
     else: 
         return jsonify({'send':False})
 
