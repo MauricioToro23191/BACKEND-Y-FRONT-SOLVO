@@ -264,6 +264,18 @@ export const DataTable = (props) => {
         document.getElementsByTagName('th')[9].style.position='static';
         document.getElementById("Mymodal").style.display = 'block';
     }
+    function aleatorio(longitud){
+        let numeros="0123456789";
+        let letras="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let simbolos="-+*/}{[].,;:_¡?=)(&%$#!°|@<>";
+        let todo=numeros+letras+simbolos
+        let pass="";
+        for(let x=0;x<longitud;x++){
+          let aleatorio=Math.floor(Math.random()*todo.length);
+          pass+=todo.charAt(aleatorio);
+        }
+        return pass
+    }
 
     return (
         <>

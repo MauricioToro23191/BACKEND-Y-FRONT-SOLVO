@@ -1,9 +1,9 @@
-import React, { useState, useCallback,useContext} from "react";
+import React, { useState, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.scss";
 import { SocketContext } from "../Context/socketio";
-import jwt_decode from "jwt-decode";
-import { useUsuario } from "../Context/ContextUser";
+import ForgotP from "../Component/forgotP";
+import ShowLogin from "../Component/Login";
 
 const API=process.env.REACT_APP_BACKEND
 const Login = (props) => {
@@ -12,16 +12,18 @@ const Login = (props) => {
     const [user, setuser] = useState("");
     const [pass, setpass] = useState("");
     const [style, setStyle] = useState("sideL");
-    var code=false
-
+    const [showForgot, setForgot] = useState(false);
+    const [showLogin, setShow] = useState(true);
+    const [showChange, setChange] = useState(false);
+    var code=false;
 
     const cambiarestado=async(id,user)=>{
     const res =await fetch(`${API}/estados/changeState`,{
       method: "POST",
       headers: {
-            Authorization:sessionStorage.getItem('tocken'),
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+        Authorization:sessionStorage.getItem('tocken'),
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
       body:JSON.stringify({
           idestado:id,
@@ -36,8 +38,8 @@ const Login = (props) => {
     const Navigate = useNavigate();
     const changePageMenu = useCallback(() => Navigate('/Layout', { replace: true }), [Navigate]);
     const changePageState = useCallback(() => Navigate('/states', { replace: true }), [Navigate]);
-    const Handlesesion =async (e)=> {
-        e.preventDefault();
+    const Handlesesion =async ()=> {
+        console.log()
         if(user!="" || pass!=""){
             const res=await fetch(`${API}/usuario/login`,{
                 method: "POST",
@@ -53,7 +55,6 @@ const Login = (props) => {
             })
             const r=await res.json();
             if(r['bool']){
-                
                 sessionStorage.setItem('tocken',r['tocken'])
                 if(r['usuario']['idPerfil']==4){
                     console.log(r)
@@ -86,44 +87,35 @@ const Login = (props) => {
     }
 
     const handleForgot = () => {
-        document.getElementById("contForm").style.display = "none";
-        document.getElementById("formulario2").style.display = "flex";
-        document.getElementById('title').innerHTML="Recovery Password"
-        document.getElementById('textTitle').innerHTML="Enter  your Email Adress"
-        document.getElementById('Email').value=""
-        document.getElementById('Email').placeholder="Email"
-        document.getElementById('Email').type="email"
-        code=true
+        setShow(false);
         setStyle("sideLA");
     };
     
 
     const handleLoginS = () => {
-        document.getElementById("contForm").style.display = "flex";
-        document.getElementById("formulario2").style.display = "none";
+        setShow(true);
+        setForgot(false);
+        setChange(false);
         setStyle("sideL");
-    }
-    const handleCode=()=>{
-        if(code){
-            document.getElementById('title').innerHTML="Recovery Password"
-            document.getElementById('textTitle').innerHTML="Enter  code that was sent to your email "
-            document.getElementById('Email').value=""
-            document.getElementById('Email').placeholder="Code"
-            code=false
+      };
+      
+      const veriCode =async () => {
+        let num=document.getElementById('Email').value
+        if(!isNaN(parseInt(num))){
+            if(parseInt(num)==parseInt(sessionStorage.getItem('v'))){
+                setForgot(false);
+                setChange(true);
+            }else{
+                alert('no es correcto el valor ingresado')
+            }
         }else{
-            document.getElementById('title').innerHTML="Recovery Password"
-            document.getElementById('textTitle').innerHTML="Enter  your Email Adress"
-            document.getElementById('Email').value=""
-            document.getElementById('Email').placeholder="Email"
-            document.getElementById('Email').value=""
-
-            code=true
+            alert('no es correcto el valor ingresado')
         }
-    }
-    const validar = async()=>{
-        console.log(code)
-        if(code==false){
-            const res=await fetch(`${API}/usuario/validarUser`,{
+      }
+      const changePass = async() => {
+        let conf=confirm('sure you want to change your password');
+        if(conf){
+            const res=await fetch(`${API}/usuario/ChangePassword`,{
                 method: "POST",
                 headers: {
                     Authorization:sessionStorage.getItem('tocken'),
@@ -131,39 +123,64 @@ const Login = (props) => {
                     'Content-Type': 'application/json',
                 },
                 body:JSON.stringify({
-                    'Email':document.getElementById('Email').value
+                    'Email':sessionStorage.getItem('Email'),
+                    'password':document.getElementById('Email').value
                 })
             })
             const data=await res.json()
             if(data.send){
-                let a=aleatorio(6)
-                alert('A verification code has been sent to your email, please check your inbox and spam '+a)
-                sessionStorage.setItem('v',a)
-                document.getElementById('title').innerHTML="Recovery Password"
-                document.getElementById('textTitle').innerHTML="Enter  code that was sent to your email "
-                document.getElementById('Email').value=""
-                document.getElementById('Email').placeholder="Code"
-                document.getElementById('Email').type="number"
-
-                code=true
+                alert('Password changed succesfully ')
+                handleLoginS()
             }else{
-                alert('NO EXIST USER ')
+                alert('Password not changed')
+                
+            }
+            
+        }
+      };
+      const validar = async()=>{
+        sessionStorage.setItem('Email',document.getElementById('Email').value)
+        const res=await fetch(`${API}/usuario/validarUser`,{
+            method: "POST",
+            headers: {
+                Authorization:sessionStorage.getItem('tocken'),
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+                'Email':document.getElementById('Email').value
+            })
+        })
+        const data=await res.json()
+        if(data.send){
+            let a=aleatorio(6)
+            sessionStorage.setItem('v',a)
+            const res1=await fetch(`${API}/EmailCode`,{
+                method: "POST",
+                headers: {
+                    Authorization:sessionStorage.getItem('tocken'),
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    'Email':sessionStorage.getItem('Email'),
+                    'code':a
+                })
+            })
+            const data1=await res1.json()
+            if(data1.send){
+                alert('A verification code has been sent to your email, please check your inbox and spam ')
+                document.getElementById('Email').value=''
+                setShow(false)
+                setForgot(true);
+                setChange(false);
             }
         }else{
-            let num=document.getElementById('Email').value
-            if(!isNaN(parseInt(num))){
-                if(parseInt(num)==parseInt(sessionStorage.getItem('v'))){
-                    alert('validada la informacion')
-                }else{
-                    alert('no es correcto el valor ingresado')
-                }
-            }else{
-                alert('no es correcto el valor ingresado')
-            }
+            alert('NO EXIST USER ')
         }
+        
     }
     
-
     const recorder = async()=>{
         const res=await fetch(`${API}/Mail`,{
             method: "POST",
@@ -182,18 +199,7 @@ const Login = (props) => {
             handleLoginS()
         }
     }
-    function aleatorio1(longitud){
-        let numeros="0123456789";
-        let letras="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        let simbolos="-+*/}{[].,;:_¡?=)(&%$#!°|@<>";
-        let todo=numeros+letras+simbolos
-        let pass="";
-        for(let x=0;x<longitud;x++){
-          let aleatorio=Math.floor(Math.random()*todo.length);
-          pass+=todo.charAt(aleatorio);
-        }
-        return pass
-    }
+    
     function aleatorio(longitud){
         let numeros="0123456789";
         let pass="";
@@ -203,14 +209,65 @@ const Login = (props) => {
         }
         return pass
     }
+
+      return (
+        <>
+          <div id="Cont">
+            <div id="Container">
+              {showLogin ? (
+                <ShowLogin setuser={setuser}setpass={setpass} handleForgot={handleForgot}  Handlesesion={Handlesesion}
+                />
+              ) : (
+                ""
+              )}
+              {!showLogin && !showForgot && !showChange ? (
+                <ForgotP
+                  title={"Recovery PassWord"}
+                  TextCont={"Enter Your Email"}
+                  func={validar}
+                  back={handleLoginS}
+                  placeH={"Email"}
+                />
+              ) : showForgot ? (
+                <ForgotP
+                  title={"Verify Code"}
+                  TextCont={"enter the code sent to your email"}
+                  func={veriCode}
+                  back={handleLoginS}
+                  placeH={"Code"}
+                />
+              ) : (
+                ""
+              )}
+              {showChange ? (
+                <ForgotP
+                  title={"New PassWord"}
+                  TextCont={"enter the new Password"}
+                  func={changePass}
+                  back={handleLoginS}
+                  placeH={"New Password"}
+                />
+              ) : (
+                ""
+              )}
+              <div id={style}>
+                <p></p>
+              </div>
+            </div>
+          </div>
+        </>
+      );
     
-    return (
+    
+
+    
+    /*return (
         <>
             <div id="Cont">
                 <div id="Container">
                     <div className='formulario2' id="formulario2">
                         <div className='form2' >
-                            <label className='backLogin' id="backLogin" onClick={handleLoginS} />
+                        <label className='backLogin' id="backLogin" onClick={handleLoginS} />
                             <label className='title' id="title">Recovery Password</label>
                             <label className='textTitle' id="textTitle">Enter  your Email Adress</label>
                             <input className='Email' type="email" id="Email"placeholder='Email'></input>
@@ -232,7 +289,7 @@ const Login = (props) => {
                 </div>
             </div>
         </>
-    )
+    )*/
 }
 
 export default Login;
