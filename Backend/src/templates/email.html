@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: "Roboto", sans-serif;
+      }
+      
+      
+      td{
+        text-align: center;
+        color: black;
+        font-size: 25px;
+        background-color: none;
+        border-style: ridge ;
+        border-color:   rgb(0, 0, 0);
+        border-top: none;
+
+      }
+      th{
+        text-align: center;
+        color: black;
+        font-size: 25px;
+        background-color: none;
+        border-style: ridge ;
+        border-color:rgb(27, 27, 27);
+
+
+
+      }
+
+      table {
+        background-color: none;
+      }
+      .contenedor {
+        margin: 50px auto;
+        width: 100%;
+        height: 200px;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+        background-color: #ffffff;
+      }
+      
+      table {
+        position: absolute;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        padding: 2%;
+        background-color: #ffffff;
+        
+      }
+     
+    </style>
+  </head>
+  <body>
+    <div class="contenedor">
+        <h3>Recovery Password</h3>
+        <p> 
+          RTA SOLVO<br>
+          Te recordamos tus credenciales<br>
+
+        </p>
+        <table cellspacing="0" style="width: 100%;">
+          <tr>
+            <th style="width: 50%; border-right: none;color:#F56E00;">USER</th>
+            <th style="color:#F56E00;">PASSWORD</th>
+          </tr>
+          <tr>
+            <td style="border-right: none;">{{user}}</td>
+            <td>{{Password}}</td>
+          </tr>
+        </table>
+        <p>
+          Recuerda No compartir esta informacion con nadie<br>
+          En lo posible Elimina este corro
+        </p>
+    </div>
+  </body>
+</html>

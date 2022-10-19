@@ -186,7 +186,7 @@ class ModelState():
                 INNER JOIN ciudad AS ciu ON u.id_ciudad=ciu.id_ciudad
                 INNER JOIN compania as comp ON u.id_compania=comp.id_compania
                 INNER JOIN usuario AS sup ON u.id_supervisor=sup.id_usuario
-                WHERE h.TEMP_BOOLEAN = 1 and h.ID_ESTADO <> 1 and h.ID_ESTADO <> 3 and h.ID_ESTADO <> 4 and comp.id_compania={}""".format(compania)
+                WHERE h.TEMP_BOOLEAN = 1 and h.ID_ESTADO <> 1 and h.ID_ESTADO <> 3 and u.PERFIL = 4 and h.ID_ESTADO <> 4 and comp.id_compania={}""".format(compania)
             cursor.execute(sql)
             estados=list(cursor.fetchall())#
             cursor.close()
@@ -238,7 +238,7 @@ class ModelState():
             else:
             #sino asigne el rango a la de horas a la fecha 
                 inicio=fechainicio+" 00:00:00"
-                fin=fechainicio+" 23:59:59"
+                fin=fechainicio+" 23:59:50"
             cursor = db.connection.cursor()
             cursor.callproc('reporte2',(inicio,fin,company))
             result = list(cursor.fetchall())

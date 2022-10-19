@@ -1,6 +1,6 @@
+import cryptocode
 
 from .entities.User import User
-from werkzeug.security import generate_password_hash
 class ModelUser():
 
     @classmethod
@@ -62,6 +62,21 @@ class ModelUser():
                 return False
         except Exception as ex:
             raise Exception(ex)
+    @classmethod
+    def getPassword(self,db,correo_solvo):
+        try:
+            cursor = db.connection.cursor()
+            sql = """SELECT contrasena FROM usuario 
+                    WHERE CORREO_SOLVO = '{}'""".format(correo_solvo)        
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            cursor.close()
+            if row != None:
+                return row[0]
+            else:
+                return ''
+        except Exception as ex:
+            raise Exception(ex)
        
         
 
@@ -70,8 +85,8 @@ class ModelUser():
         try:
             cursor = db.connection.cursor()
             sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ID_SITE,ESTADO)
-                VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],14,1))
+                VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+            cursor.execute(sql,(user['Email'],user['Company'],user['City'],cryptocode.encrypt("password","Solvo#1056$?"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],user['site'],1))
             db.connection.commit()
             cursor.close()
 
@@ -85,8 +100,8 @@ class ModelUser():
             print(user)
             cursor = db.connection.cursor()
             sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ID_SITE,ESTADO,ID_SUPERVISOR)
-                VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(sql,(user['Email'],user['Company'],user['City'],generate_password_hash("password"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],14,1,int(user['Supervisor'])))
+                VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+            cursor.execute(sql,(user['Email'],user['Company'],user['City'],cryptocode.encrypt("password",'Solvo#1056$?'),user['SolID'],user['Name'],user['LastN'],user['Perfil'],user['site'],1,int(user['Supervisor'])))
             db.connection.commit() 
             cursor.close()
 
