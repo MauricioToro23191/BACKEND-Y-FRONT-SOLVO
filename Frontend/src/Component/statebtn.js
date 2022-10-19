@@ -1,6 +1,6 @@
 import React, { useState,useContext,useEffect } from "react";
-import { useFetcher } from "react-router-dom";
 import { SocketContext } from "../Context/socketio";
+import jwt_decode from "jwt-decode";
 
 const API=process.env.REACT_APP_BACKEND
 
@@ -9,24 +9,27 @@ export default function Statebtn() {
   const [stateS, setstateS] = useState("");
   const [classA, setClassA] = useState("Animation")
   var [response,setResponse]=useState({})
+  const{zonedTimeToUtc}=require('date-fns-tz')
   var tiempoInicio = null;
   var tiempoInicioActual=null;
   var tiempoAnterior = 0;
   var diferenciaTemporal = 0;
   
+
+  
   useEffect(()=>{
-    
     getState();
     socket.emit('join',{'room':sessionStorage.getItem('idComp')});
     socket.on('ChangeStateSuptoUser',(message)=>{
       let idUdser=message['iduser']
-      if(JSON.parse(sessionStorage.getItem('user')).id==parseInt(idUdser)){
+      if(jwt_decode(sessionStorage.getItem('tocken')).id==parseInt(idUdser)){
+        alert( 'the State has been change by '+ message['responsable'] )
         document.getElementById('changeState').innerHTML='the State has been change by '+ message['responsable']
         sessionStorage.setItem('diferenciaState',0)
         getState();
         setTimeout(() => {
           document.getElementById('changeState').innerHTML=''
-        }, 10000);
+        }, 15000);
       }
     })
     if(sessionStorage.getItem('AnimateDefault')!=null){
@@ -47,17 +50,18 @@ export default function Statebtn() {
  
   const cambiarestado=async(id,responsable)=>{
     if(responsable==""){
-      responsable=JSON.parse(sessionStorage.getItem('user'))['Name']
+      responsable=jwt_decode(sessionStorage.getItem('tocken'))['Name']
     }
     const res =await fetch(`${API}/estados/changeState`,{
       method: "POST",
       headers: {
+          Authorization:sessionStorage.getItem('tocken'),
           Accept: 'application/json',
           'Content-Type': 'application/json',
       },
       body:JSON.stringify({
           idestado:id,
-          user:sessionStorage.getItem('user'),
+          'user':jwt_decode(sessionStorage.getItem('tocken')),
           responsable:responsable
       })
     })
@@ -74,11 +78,12 @@ export default function Statebtn() {
     const res =await fetch(`${API}/estados/getState`,{
       method: "POST",
       headers: {
+          Authorization:sessionStorage.getItem('tocken'),
           Accept: 'application/json',
           'Content-Type': 'application/json',
       },
       body:JSON.stringify({
-          user:sessionStorage.getItem('user')
+          user:jwt_decode(sessionStorage.getItem('tocken'))
       })
     })
     const data =await res.json()
@@ -186,7 +191,7 @@ export default function Statebtn() {
     return `${agregarCeroSiEsNecesario(horas)}:${agregarCeroSiEsNecesario(minutos)}:${agregarCeroSiEsNecesario(segundos.toFixed())}`;
   };
   function refrescarTiempo () {
-    const ahora = new Date();
+    let  ahora=zonedTimeToUtc(new Date(),sessionStorage.getItem('tz'));
     const diferencia1=ahora.getTime()- tiempoInicioActual.getTime()
     const diferencia = ahora.getTime() - tiempoInicio.getTime();
     document.getElementById('hms').textContent=milisegundosAMinutosYSegundos(diferencia1)
@@ -197,13 +202,13 @@ export default function Statebtn() {
 
   function iniciar () {
       diferenciaTemporal += Number(tiempoAnterior);
-      const ahora = new Date();
+      let ahora=zonedTimeToUtc(new Date(),sessionStorage.getItem('tz'));
       tiempoInicio = new Date(ahora.getTime() - diferenciaTemporal);
       tiempoInicioActual=new Date(ahora.getTime());
       if(sessionStorage.getItem('diferenciaState')!=null){
         tiempoInicioActual=new Date(ahora.getTime() - parseInt(sessionStorage.getItem('diferenciaState')));
       }
-      if(sessionStorage.getItem('user') != null){
+      if(jwt_decode(sessionStorage.getItem('tocken')) != null){
         clearInterval(sessionStorage.getItem('idinterval'))}
       var idint=setInterval(refrescarTiempo, 1000);
       sessionStorage.setItem("idinterval",idint);
@@ -234,14 +239,18 @@ export default function Statebtn() {
     }
     if (response.estadoactual != null) {
         let actuesta = response.estadoactual;
-
-        let date = new Date(convertFromStringToDate(actuesta.hora_inicio));
-        diferenciaTemporal = new Date() - date.getTime();
+        const today=new Date(convertFromStringToDate(actuesta.hora_inicio))
+        let timeInBrisbane=today;
+        if(sessionStorage.getItem('tz')!=null){
+          timeInBrisbane=zonedTimeToUtc(today,sessionStorage.getItem('tz'));
+        }
+        let date = timeInBrisbane;
+        diferenciaTemporal = zonedTimeToUtc(new Date(),sessionStorage.getItem('tz')).getTime() - date.getTime();
     }
     if (response.totalStates === null) {
         totalStates = null;
         tiempoAnterior = 0;
-        console.log('no existen totales')
+        console.log('no existen totales')   
     } else {
         totalStates = response.totalStates
         if (totalStates[esta.nombre] === null) {

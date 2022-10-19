@@ -1,15 +1,11 @@
-from lib2to3.pgen2 import token
 from flask import  request,jsonify
-#from flask_json import FlaskJSON
 import flask
-#controlador de configuracion 
 # Models:
 from models.ModelUser import ModelUser
-from models.ModelState import ModelState
 from models.ModelCompanyCity import ModelCompanyCity
+#importar Validador de JWT
 import function_jwt
 
-# Entities:
 #ruta raiz de la pagina
 usuarios=flask.Blueprint('Usuario',__name__,url_prefix="/usuario")
     
@@ -41,10 +37,12 @@ def listUser():
     from app import getdb
     db=getdb()
     if request.method == 'POST':
-        tocken=request.headers['Authorization']
-        json=function_jwt.validate_tocken(tocken,True)
-        idCompania = request.json['company']
-        users=ModelUser.ListUser(db, idCompania,json['idPerfil'])
+        users=[]
+        if request.headers['Authorization']!=None:
+            tocken=request.headers['Authorization']
+            json=function_jwt.validate_tocken(tocken,True)
+            idCompania = request.json['company']
+            users=ModelUser.ListUser(db, idCompania,json['idPerfil'])
         admins = ModelUser.ListAdmin(db)
         perfils = ModelUser.perfil(db)
         sups = ModelUser.ListSup(db)
@@ -62,6 +60,7 @@ def listUser():
 def AdminUser():
     from app import getdb
     db=getdb()
+    
     sups = ModelUser.ListSup(db)
     admins = ModelUser.ListAdmin(db)
     teams = ModelUser.ListTeam(db)
@@ -79,18 +78,9 @@ def addUser():
     if request.method == 'POST':   
         u = request.json['user']
         logged_user = ModelUser.ExistsUser(db, u['Email'])
-        #validacion si intenta crear un interpreete o supervisor    
-        # if request.form['perfil']== "1":
-            # user = User(0,u['email'],u['comp'],u['ciu'],u['pass'],u['solvoid'],u['name']
-            #         ,u['lastname'],u['perfil'],"ACTIVO",0)
-            #Validacion si exite el Admin
-            # logged_user = ModelUser.ExistsUser(db, u['email'])
-            # relacion = compciu(u['comp'],u['ciu'])
-        #si existe el usuario, si no existe lo crea
         if logged_user == True:
             print("exists User")         
-            return jsonify({'AddUser':False})
-            # return redirect(url_for('Show'))
+            return jsonify({'AddUser':False,'message':'exists User'})
         else:
             print(int(u['Perfil']))
             #valida si el desea crear administrador, supervisor, team leader o interprete
@@ -99,51 +89,46 @@ def addUser():
                 ModelUser.addAdmin(db, u) 
                 #envia mensaje de confirmacion
                 print('Administrator created successfully')             
-                return jsonify({'AddUser':True})
+                return jsonify({'AddUser':True,'message':'Administrator created successfully'})
             elif int(u['Perfil'])==2 or int(u['Perfil'])==3 or int(u['Perfil'])==4:
                 #crea el supervisor
                 ModelUser.addSup(db, u) 
                 #envia mensaje de confirmacion
-                print('Supervisor created successfully')             
-                return jsonify({'AddUser':True})
+                print('User created successfully')             
+                return jsonify({'AddUser':True,'message':'User created successfully'})
             else: 
                 print('Error with profile or selected city with company')
-                return jsonify({'AddUser':False})
+                return jsonify({'AddUser':False,'message':'Error with profile or selected city with company'})
     else:
-        return jsonify({'AddUser':False})
+        return jsonify({'AddUser':False,'message':''})
 
-#Lleva a la vista de editar usuario
-@usuarios.route('/editUsers', methods=['GET', 'POST'])
-def editUsers(id): 
-    from app import getdb
-    db=getdb()
-    users = ModelUser.get_by_id(db, id)
-    ListSup = ModelUser.ListSup(db)
-    ListAdmin = ModelUser.ListAdmin(db)
-    ListTeam = ModelUser.ListTeam(db)
-    ListPerfil = ModelUser.perfil(db)
-    citys = ModelCompanyCity.ListCity(db)
-    companys = ModelCompanyCity.ListCompany(db)
-    return jsonify({'citys':citys, 'companys':companys, 'ListAdmin':ListAdmin, 'ListTeam':ListTeam, 'ListSup':ListSup, 'ListPerfil':ListPerfil, 'users':users})
-    
+
+@usuarios.route('/validarUser',methods=['GET', 'POST'])
+def validarUser():
+    if request.method=="POST":
+        from app import getdb
+        db=getdb()
+        Email=request.json['Email']
+        val=ModelUser.ExistsUser(db,Email)
+        return jsonify({'send':val})
+    else: 
+        return jsonify({'send':False})
+
 #Edita el usuario seleccionado en la vista
-
-
-
 @usuarios.route('/Update', methods=['GET', 'POST'])
 def Update():
-    from app import getdb
-    db=getdb()
     if request.method == 'POST':
+        from app import getdb
+        db=getdb()
         u = request.json['user']
         if u!=None:
             ModelUser.UpdateSup(db, u)
             print('User Interpreter edit successfuly')
-            return jsonify({'bool':True})
+            return jsonify({'bool':True,'message':'User edit successfuly'})
         else:
-            return jsonify({'bool':False})
+            return jsonify({'bool':False,'message':'User not updated'})
     else:
-        return jsonify({'bool':False})
+        return jsonify({'bool':False,'message':'User not updated'})
 
 #Valida que la compañía y ciudad estén relacionadas(Verifica que x compañía exista en x ciudad)
 def compciu(comp, ciu):

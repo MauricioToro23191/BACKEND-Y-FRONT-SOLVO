@@ -1,6 +1,7 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import React, { useCallback,useState,useEffect } from "react";
 import '../styles/layout.scss';
+import jwt_decode from "jwt-decode";
 
 const API=process.env.REACT_APP_BACKEND
 
@@ -13,9 +14,10 @@ const Layout = (props) => {
     const logOUT = useCallback(() => Navigate('/', { replace: true }), [Navigate]);
     const logout=async(e)=>{
         e.preventDefault();
-        const res=await fetch(`${API}/logoutAdmin`,{})
+        const res=await fetch(`${API}/    console.log('logout is true')
+        `,{})
         if(res){
-          if(sessionStorage.getItem('user') != null){
+          if(jwt_decode(sessionStorage.getItem('tocken'))!= ''){
             sessionStorage.clear();
             loge(false)
             logOUT();
@@ -24,12 +26,12 @@ const Layout = (props) => {
             logOUT();
           }
         }else{
-          console.log('false');
+          console.log(' false');
         }
         
       }
       useEffect(()=>{
-        let l=JSON.parse(sessionStorage.getItem('user'))
+        let l = jwt_decode(sessionStorage.getItem('tocken'));
         setNombre(l['Name']+" "+l['LastN'])
       },[])
       

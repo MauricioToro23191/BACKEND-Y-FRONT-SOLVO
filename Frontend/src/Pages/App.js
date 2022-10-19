@@ -21,9 +21,7 @@ export default function App() {
         console.log("Estás usando un dispositivo móvil!!");
         setMovil(false)
         alert ("Do't is posible access to page")
-
     } else {
-        console.log("No estás usando un móvil");
         setMovil(true)
     }
     if(sessionStorage.getItem('tocken')!=null){
@@ -33,7 +31,6 @@ export default function App() {
         seboolinter(true)
       }
       setLogueado(true)
-      
     }
   },[logueado])
   if(movil){

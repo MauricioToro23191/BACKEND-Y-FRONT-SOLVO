@@ -1,19 +1,18 @@
 import flask 
 from flask import  request,jsonify
 from models.ModelState import ModelState
-from models.entities.User import User
+import function_jwt
 estados=flask.Blueprint('menu',__name__,url_prefix='/estados')
-import json
 
-#direccionamiento a Pagina de estados 
+#consulta Cual es es estado actual de un usuario determinado 
 @estados.route('/getState',methods=['POST'])
 def menu():
     from app import getdb
     db=getdb()
     response=None
     if request.method == 'POST':
-        u = json.loads(request.json['user'])
-        # usuario=User(int(u['id']),u['correo_solvo'],u['compania'],u['ciudad'],None,u['id_solvo'],u['nombres'],u['apellidos'],int(u['perfil']),u['estado'],int(u['id_supervisor']),u['namesupervisor'])
+        tocken=request.headers['Authorization']
+        u=function_jwt.validate_tocken(tocken,True)
         estadoactual=ModelState.estadoActual(db,u['id'])
         if(estadoactual!=None):
             state1=ModelState.get_by_id(db,estadoactual.id_estado)
@@ -43,7 +42,8 @@ def changeState():
     if request.method == 'POST':
         state=request.json['idestado'] 
         responsable=request.json['responsable'] 
-        u = json.loads(request.json['user'])
+        tocken=request.headers['Authorization']
+        u=function_jwt.validate_tocken(tocken,True)
         if responsable=="":
             responsable=u['Name']
         ModelState.call_procedure(db,u['id'],responsable,state)
@@ -62,7 +62,7 @@ def changeState():
             }  
         return jsonify(response)
     return None
-
+#Cambio de estado desde La ventana del RTA
 @estados.route('/changeStateRTA',methods=['POST'])
 def changeStateRTA():
     from app import getdb

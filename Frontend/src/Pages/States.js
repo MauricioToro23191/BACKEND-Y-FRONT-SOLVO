@@ -2,6 +2,7 @@ import React, { useCallback,useState,useEffect,useContext} from 'react';
 import Statebtn from '../Component/statebtn';
 import { useNavigate } from 'react-router-dom';
 import { SocketContext } from "../Context/socketio";
+import jwt_decode from "jwt-decode";
 
 import '../styles/states.scss';
 import '../styles/animate.scss'
@@ -25,22 +26,20 @@ export default function States(props) {
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:JSON.parse(sessionStorage.getItem('user'))
+            user:jwt_decode(sessionStorage.getItem('tocken'))
         })
   })
   const data =await res.json()
   if(data['logout']){
-    socket.emit('logoutUser',{'message':{'logout':true,'id':JSON.parse(sessionStorage.getItem('user'))['id']},'room':sessionStorage.getItem('idComp')});
-    console.log('logout is true')
+    socket.emit('logoutUser',{'message':{'logout':true,'id':jwt_decode(sessionStorage.getItem('tocken'))['id']},'room':sessionStorage.getItem('idComp')});
     clearInterval(sessionStorage.getItem('idinterval'))
-   if(sessionStorage.getItem('user') != null){
+   if(jwt_decode(sessionStorage.getItem('tocken')) != ''){
       sessionStorage.clear();
       loge(false)
       logOUT();
     }else{
       sessionStorage.clear();
       loge(false)
-
       logOUT();
     }
   }else{
@@ -51,7 +50,7 @@ export default function States(props) {
   }
  
   useEffect(()=>{
-    let l=JSON.parse(sessionStorage.getItem('user'))
+    let l = jwt_decode(sessionStorage.getItem('tocken'));
     setNombre(l['Name']+" "+l['LastN'])
   },[])
   

@@ -37,7 +37,6 @@ export const DataTableE =() => {
                 useDisplayedRowsOnly: true,
             }
         },setCellProps:() => {
-            console.log("hhasd")
             return {
                 style: {
                     backgroundColor: "yellow"
@@ -127,7 +126,6 @@ export const DataTableE =() => {
             let v=!ChangeStyle
             setChangeStyle(!ChangeStyle);
             if(v){
-                console.log(v)
                 setColumns(Columns1);
                 obtenerDatosR2();
                 sessionStorage.setItem('reporte',true)

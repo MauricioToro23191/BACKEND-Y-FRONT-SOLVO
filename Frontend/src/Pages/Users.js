@@ -37,7 +37,6 @@ export default function Users(){
         setListSites(data.Sites)
         setListCompanys(data.Companys)
         setListCitycompanys(data.Citycompanys)
-       console.log(data)
     }
     useEffect(() => {
         obtenerDatos()

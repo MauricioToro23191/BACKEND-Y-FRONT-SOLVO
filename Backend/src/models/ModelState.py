@@ -1,16 +1,16 @@
-from http.client import INSUFFICIENT_STORAGE
-from unittest import result
 from .entities.State import State
 from .entities.Historial import Historial
-from .entities.User import User
 from models.ModelUser import ModelUser
 from datetime import datetime,date
+from pytz import timezone
+
 
 
 class ModelState():  
     @classmethod 
     def estadoActual(self,db,user):
         try:
+            mizona=timezone(self.getTZ(db,user)['id'])
             cursor = db.connection.cursor()
             sql = "SELECT h.ID_HISTORIAL,h.ID_USUARIO,h.RESPONSABLE,h.HORA_INICIO,h.ID_ESTADO FROM HISTORIAL as h where h.ID_USUARIO={} AND h.TEMP_BOOLEAN=1".format(user)
             cursor.execute(sql)
@@ -72,7 +72,8 @@ class ModelState():
     @classmethod       
     def call_procedure(self,db,idUser,responsable,estado):  
         try:
-            today = datetime.now()
+            bogota=timezone(ModelState.getTZ(db,idUser)['id'])
+            today=bogota.localize(datetime.now())
             cursor = db.connection.cursor()
             cursor.callproc('UPDATEHISTORIAL', (idUser,responsable,today,estado))
             results = list(cursor.fetchall())
@@ -86,7 +87,6 @@ class ModelState():
     @classmethod       
     def get_by_name(self,db,nombre):
         try:
-            
             cursor = db.connection.cursor()
             sql = "SELECT ID_ESTADO,NOMBRE_ESTADO FROM estados WHERE NOMBRE_ESTADO = '{}'".format(nombre)
             cursor.execute(sql)
@@ -97,6 +97,22 @@ class ModelState():
                 return estado
             else:
                 
+                return None
+        except Exception as ex:
+            raise Exception(ex)
+    @classmethod       
+    def getTZ(self,db,id):
+        try:
+            cursor = db.connection.cursor()
+            sql = """SELECT c.TIME_ZONE FROM USUARIO INNER JOIN CIUDAD as c ON USUARIO.ID_CIUDAD=c.ID_CIUDAD
+                WHERE USUARIO.ID_USUARIO={}""".format(id)
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            cursor.close()
+            if row != None:
+                estado={'id':row[0]}
+                return estado
+            else:
                 return None
         except Exception as ex:
             raise Exception(ex)
@@ -128,7 +144,8 @@ class ModelState():
             
             lHistor=[]
             estados=[]
-            today = datetime.now() 
+            bogota=timezone(ModelState.getTZ(db,userid)['id'])
+            today=bogota.localize(datetime.now())
             cursor = db.connection.cursor()
             sql = """SELECT ID_HISTORIAL,ID_USUARIO,RESPONSABLE,HORA_INICIO,HORA_FINAL,ID_ESTADO 
                     FROM historial
@@ -206,6 +223,7 @@ class ModelState():
     @classmethod       
     def reporte1(self,db,fechainicio,fechafin,company):  
         try:
+            
             if fechainicio=="" and fechafin=="":
                 inicio=date.today().strftime('%Y-%m-%d')+" 00:00:00"
                 fin=date.today().strftime('%Y-%m-%d')+" 23:59:59"

@@ -3,8 +3,9 @@ import '../styles/modalRTA.scss'
 //import DatatableRTA  from "../Component/DatatableRTA";
 import MUIDataTable from "mui-datatables";
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import DeleteIcon from '@mui/icons-material/Delete';
 //import clsx from 'clsx';
+import jwt_decode from "jwt-decode";
+
 
 import {SocketContext} from "../Context/socketio"
 
@@ -329,8 +330,8 @@ const Option ={
     function updateStateUser(idState){
         let a=confirm('Are you sure you want to change the status of this user?')
         if(a){
-            socket.emit('ChangeStateSuptoUser',{'message':{'iduser':document.getElementById('id1').value,'newStateid':idState,'responsable':JSON.parse(sessionStorage.getItem('user'))['Name']+"  "+JSON.parse(sessionStorage.getItem('user'))['Perfil']+ ' of your company'},'room':sessionStorage.getItem('idComp')})
-            cambiarestadoRTA(idState,document.getElementById('id1').value,JSON.parse(sessionStorage.getItem('user'))['Name'])
+            socket.emit('ChangeStateSuptoUser',{'message':{'iduser':document.getElementById('id1').value,'newStateid':idState,'responsable':jwt_decode(sessionStorage.getItem('tocken'))['Name']+"  "+jwt_decode(sessionStorage.getItem('tocken'))['Perfil']+ ' of your company'},'room':sessionStorage.getItem('idComp')})
+            cambiarestadoRTA(idState,document.getElementById('id1').value,jwt_decode(sessionStorage.getItem('tocken'))['Name'])
             alert('Updated successfully')
             close();
             obtenerDatos();

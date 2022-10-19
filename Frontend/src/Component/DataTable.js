@@ -204,6 +204,8 @@ export const DataTable = (props) => {
             perfil:Perfil
         })}
         )
+        const data= await respuesta.json()
+        alert(data['message'])
         props.obtenerDatos()
         close()
     }

@@ -5,7 +5,6 @@ class ModelUser():
 
     @classmethod
     def login(self,db,user):
-        print(user)
         try:
             cursor = db.connection.cursor()
             sql = """SELECT u.ID_USUARIO, u.ID_SOLVO, u.NOMBRES, u.APELLIDOS, u.CORREO_SOLVO, u.ESTADO, 
@@ -97,7 +96,6 @@ class ModelUser():
     @classmethod
     def addSup(self, db, user):
         try:
-            print(user)
             cursor = db.connection.cursor()
             sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ID_SITE,ESTADO,ID_SUPERVISOR)
                 VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
@@ -271,7 +269,6 @@ class ModelUser():
         try:
 
             cursor = db.connection.cursor()
-            print(user)
             if int(user['Supervisor'])==0:
                 sql = "UPDATE usuario SET ID_SOLVO=%s, NOMBRES=%s, APELLIDOS=%s, CORREO_SOLVO=%s, ID_SUPERVISOR=NULL, ID_COMPANIA=%s, ID_CIUDAD=%s, PERFIL=%s ,ID_SITE=%s WHERE ID_USUARIO=%s"
                 cursor.execute(sql,(user['SolID'],user['Name'],user['LastN'],user['Email'],user['Company'],user['City'],user['Perfil'],int(user['site']),user['id']))
