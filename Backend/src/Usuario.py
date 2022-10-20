@@ -1,18 +1,19 @@
-import email
 from flask import  request,jsonify
 import flask
 # Models:
 from models.ModelUser import ModelUser
 from models.ModelCompanyCity import ModelCompanyCity
+from models.email import send_Mail
 #importar Validador de JWT
 import function_jwt
-
+import os
 #ruta raiz de la pagina
 usuarios=flask.Blueprint('Usuario',__name__,url_prefix="/usuario")
     
 #Validacion de Inicio de sesion
 @usuarios.route('/login',methods=['GET', 'POST'])
 def login():
+    
     from app import getdb
     db=getdb()
     if request.method == 'POST':
@@ -77,7 +78,7 @@ def addUser():
     from app import getdb
     db=getdb()
     if request.method == 'POST':   
-        u = request.json['user']
+        u = request.json['user'] 
         logged_user = ModelUser.ExistsUser(db, u['Email'])
         if logged_user == True:
             print("exists User")         
@@ -89,13 +90,15 @@ def addUser():
                 #crea el administrador
                 ModelUser.addAdmin(db, u) 
                 #envia mensaje de confirmacion
-                print('Administrator created successfully')             
+                print('Administrator created successfully')   
+                #send_Mail(db,u['Email'],"edwin.toro@solvoglobal.com")          
                 return jsonify({'AddUser':True,'message':'Administrator created successfully'})
             elif int(u['Perfil'])==2 or int(u['Perfil'])==3 or int(u['Perfil'])==4:
                 #crea el supervisor
                 ModelUser.addSup(db, u) 
                 #envia mensaje de confirmacion
-                print('User created successfully')             
+                print('User created successfully')   
+                #send_Mail(db,u['Email'],"edwin.toro@solvoglobal.com")          
                 return jsonify({'AddUser':True,'message':'User created successfully'})
             else: 
                 print('Error with profile or selected city with company')
@@ -122,7 +125,6 @@ def ChangePassword():
         db=getdb()
         Email=request.json['Email']
         password=request.json['password']
-        print(Email,password)
         res=ModelUser.setPassword(db,Email,password)
         return jsonify({'send':res})
     else: 

@@ -12,7 +12,7 @@ const Columns = [
     label: "Firts Name"
     },
     {name:"lname",
-    label:"Last Name"
+    label:"Last Name" 
     },
 
     {name:"ciudad",

@@ -1,4 +1,3 @@
-from http.client import NotConnected
 from flask import Flask 
 from estados import estados
 from Usuario import usuarios
@@ -20,8 +19,8 @@ def init_app():
     app.config['MAIL_PORT']=465
     app.config['MAIL_USE_SSL']=False
     app.config['MAIL_USE_TLS']=True
-    app.config['MAIL_USERNAME']='pruebaappsolvo@gmail.com'
-    app.config['MAIL_PASSWORD']='kptpspqespgnnnrd'
+    app.config['MAIL_USERNAME']=os.environ.get('USER_EMAIL')
+    app.config['MAIL_PASSWORD']=os.environ.get('PASSWORD_EMAIL')
 
     #se agregan los blueprints para segmentar las rutas de la pagina web 
     app.register_blueprint(estados)

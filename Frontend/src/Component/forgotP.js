@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ForgotP ({ title, TextCont, func,back,placeH }) {
+export default function ForgotP ({ title, TextCont, func,back,placeH,type }) {
   return (
     <>
     <div className='formulario2' id="formulario2">
@@ -8,7 +8,7 @@ export default function ForgotP ({ title, TextCont, func,back,placeH }) {
           <label className='backLogin' id="backLogin" onClick={back} />
           <label className='title' id="title">{title}</label>
           <label className='textTitle' id="textTitle">{TextCont}</label>
-          <input className='Email' type="email" id="Email"placeholder={placeH}></input>
+          <input className='Email' type={type} id="Email"placeholder={placeH}></input>
           <button className='nextStep' onClick={func}/>
       </div>
     </div>

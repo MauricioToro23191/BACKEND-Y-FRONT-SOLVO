@@ -25,6 +25,8 @@ export const DataTableE =() => {
         selectableRows: 'multiple',
         selectableRowsOnClick: false,
         selectableRowsHideCheckboxes: true,
+        fixedSelectColumn:false,
+        viewColumns:false,
         responsive: "simple",
         fixedHeader: false,
         enableNestedDataAccess : ',',
@@ -124,7 +126,7 @@ export const DataTableE =() => {
         };
         const handleChange = () => {
             let v=!ChangeStyle
-            setChangeStyle(!ChangeStyle);
+            setChangeStyle(!ChangeStyle); 
             if(v){
                 setColumns(Columns1);
                 obtenerDatosR2();

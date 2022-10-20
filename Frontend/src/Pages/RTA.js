@@ -11,9 +11,6 @@ import {SocketContext} from "../Context/socketio"
 
 const API=process.env.REACT_APP_BACKEND;
 
-
-
-
 export default function Rta(){
     const socket=useContext(SocketContext);
     const [Lista,setlista]=useState([]);

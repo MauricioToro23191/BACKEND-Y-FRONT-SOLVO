@@ -157,10 +157,11 @@ export const DataTable = (props) => {
 
     const Option = {
         download: false,
-        filterType: "multiselect",
+        filterType: "multiselect", 
         print: false,
         searchPlaceholder: "Search..",
         selectableRows: 'multiple',
+        viewColumns:false,
         selectableRowsOnClick: false,
         fixedSelectColumn: false,
         selectableRowsHideCheckboxes: true,
@@ -200,7 +201,7 @@ export const DataTable = (props) => {
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':parseInt(document.getElementById('supervisor').value), 'City':city, 'Company':Company,'site':site},
+            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'password':aleatorio(8),'Supervisor':parseInt(document.getElementById('supervisor').value), 'City':city, 'Company':Company,'site':site},
             perfil:Perfil
         })}
         )
@@ -209,7 +210,7 @@ export const DataTable = (props) => {
         props.obtenerDatos()
         close()
     }
-
+    
     const Update = async ()=>{
         const respuesta = await fetch(`${API}/usuario/Update`,{
         method: "POST",
@@ -219,7 +220,7 @@ export const DataTable = (props) => {
             'Content-Type': 'application/json',
         },
         body:JSON.stringify({
-            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil, 'Supervisor':document.getElementById('supervisor').value, 'City':city, 'Company':Company,'site':site},
+            user:{'id':Id, 'SolID':SolId,'Name':Name, 'LastN':LastN, 'Email':Email, 'Perfil':Perfil,'Supervisor':document.getElementById('supervisor').value, 'City':city, 'Company':Company,'site':site},
             perfil:Perfil
         })}
         )

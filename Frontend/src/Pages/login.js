@@ -226,6 +226,7 @@ const Login = (props) => {
                   TextCont={"Enter Your Email"}
                   func={validar}
                   back={handleLoginS}
+                  type={"email"}
                   placeH={"Email"}
                 />
               ) : showForgot ? (
@@ -234,6 +235,7 @@ const Login = (props) => {
                   TextCont={"enter the code sent to your email"}
                   func={veriCode}
                   back={handleLoginS}
+                  type={"number"}
                   placeH={"Code"}
                 />
               ) : (
@@ -245,6 +247,7 @@ const Login = (props) => {
                   TextCont={"enter the new Password"}
                   func={changePass}
                   back={handleLoginS}
+                  type={"password"}
                   placeH={"New Password"}
                 />
               ) : (
@@ -257,39 +260,6 @@ const Login = (props) => {
           </div>
         </>
       );
-    
-    
-
-    
-    /*return (
-        <>
-            <div id="Cont">
-                <div id="Container">
-                    <div className='formulario2' id="formulario2">
-                        <div className='form2' >
-                        <label className='backLogin' id="backLogin" onClick={handleLoginS} />
-                            <label className='title' id="title">Recovery Password</label>
-                            <label className='textTitle' id="textTitle">Enter  your Email Adress</label>
-                            <input className='Email' type="email" id="Email"placeholder='Email'></input>
-                            <button className='nextStep' onClick={validar}/>
-                        </div>
-                    </div>
-                    <div id={style} >
-                        <p></p>
-                    </div>
-                    <div className="contForm" id="contForm">
-                        <form className="Formulario">
-                            <label>Log In</label>
-                            <input placeholder="User" type="email" id="user" onChange={(e) => setuser(e.target.value)}></input>
-                            <input type="password" id="pass" placeholder="Pass" onChange={(e) => setpass(e.target.value)}></input>
-                            <label id="forgePass" onClick={handleForgot}>Forgot your Password?</label>
-                            <input type="submit"onClick={Handlesesion} className="buttonEx" value="Login" />
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </>
-    )*/
 }
 
 export default Login;

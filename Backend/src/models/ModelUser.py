@@ -97,7 +97,7 @@ class ModelUser():
             cursor = db.connection.cursor()
             sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ID_SITE,ESTADO)
                 VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(sql,(user['Email'],user['Company'],user['City'],cryptocode.encrypt("password","Solvo#1056$?"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],user['site'],1))
+            cursor.execute(sql,(user['Email'],user['Company'],user['City'],cryptocode.encrypt(user['password'],"Solvo#1056$?"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],user['site'],1))
             db.connection.commit()
             cursor.close()
 
@@ -111,7 +111,7 @@ class ModelUser():
             cursor = db.connection.cursor()
             sql = """INSERT INTO USUARIO (ID_USUARIO,CORREO_SOLVO,ID_COMPANIA,ID_CIUDAD,CONTRASENA,ID_SOLVO,NOMBRES,APELLIDOS,PERFIL,ID_SITE,ESTADO,ID_SUPERVISOR)
                 VALUES (null,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(sql,(user['Email'],user['Company'],user['City'],cryptocode.encrypt("password",'Solvo#1056$?'),user['SolID'],user['Name'],user['LastN'],user['Perfil'],user['site'],1,int(user['Supervisor'])))
+            cursor.execute(sql,(user['Email'],user['Company'],user['City'],cryptocode.encrypt(user['password'],"Solvo#1056$?"),user['SolID'],user['Name'],user['LastN'],user['Perfil'],user['site'],1,int(user['Supervisor'])))
             db.connection.commit() 
             cursor.close()
 

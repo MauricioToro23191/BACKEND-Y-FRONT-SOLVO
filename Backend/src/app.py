@@ -19,6 +19,7 @@ from models.ModelUser import ModelUser
 #Metodos inicializar app
 from init import init_app
 import random
+import os
 #asignacion de variables generales 
 app,db=init_app()
 #Cors for permises from react
@@ -118,28 +119,6 @@ def logout():
 def logoutAdmin():
     return jsonify({'logout':True})
     
-#Route que permite enviar correo electronico con las credenciales de inicio de sesion de un usuario determinado 
-@app.route('/Mail',methods=['GET', 'POST'])
-def send_Mail():
-    if request.method == 'POST':
-        Email=request.json['Email']
-        val=ModelUser.ExistsUser(db,Email)
-        if(val==True):
-            passw=ModelUser.getPassword(db,Email)
-            if(passw!=''):
-                passw=cryptocode.decrypt(passw, "Solvo#1056$?")
-                msg=EmailMessage()
-                msg['From']="RTA_SOLVO "
-                msg['To']=Email
-                msg['Subject']='RECORDER PASSWORD'
-                msg.set_content('This should be in the email body')
-                msg.add_alternative(render_template('email.html',user=Email, Password=passw),subtype='html')
-                context=ssl.create_default_context()
-                with SMTP_SSL('smtp.gmail.com',465,context=context) as smtp:
-                    smtp.login(app.config['MAIL_USERNAME'],app.config['MAIL_PASSWORD'])
-                    smtp.sendmail(app.config['MAIL_USERNAME'],Email,msg.as_bytes())
-                return jsonify({'send':True})
-        return jsonify({'send':False})
 
 @app.route('/EmailCode',methods=['GET', 'POST'])
 def EmailCode():
@@ -178,3 +157,7 @@ if __name__ == '__main__':
         print('Hello user you have pressed ctrl-c button.')
     else:
         print('Hello user there is some format error')
+
+
+#Permite enviar correo electronico con las credenciales de inicio de sesion de un usuario determinado 
+
