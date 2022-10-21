@@ -28,7 +28,7 @@ export const DataTable = (props) => {
     const [Email, setEmail] = useState("")
     const [Perfil, setPerfil] = useState(4)
     const [ListaSupervisor, setListSupervisor] = useState([])
-    const [Supervisor, setSupervisor] = useState(0)
+    //const [Supervisor, setSupervisor] = useState(0)
     const [Company, setCompany] = useState(1)
     const [site,setSite]=useState(0)
 

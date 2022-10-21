@@ -39,11 +39,14 @@ def listUser():
     from app import getdb
     db=getdb()
     if request.method == 'POST':
+        #se crea una lista de usuarios que se enviara vacia o llena depende del caso de que No se reciba un tocken con la informacion del usuario
         users=[]
+        #Se valida que exista un tocken
         if request.headers['Authorization']!=None:
             tocken=request.headers['Authorization']
             json=function_jwt.validate_tocken(tocken,True)
             idCompania = request.json['company']
+            #depende del perfil del usuario que esta logueado se listan una cantidad u ortra de usuarios 
             users=ModelUser.ListUser(db, idCompania,json['idPerfil'])
         admins = ModelUser.ListAdmin(db)
         perfils = ModelUser.perfil(db)
@@ -62,29 +65,41 @@ def listUser():
 def AdminUser():
     from app import getdb
     db=getdb()
-    
+    #obtiene la lista de usuario que su perfil es supervisor 
     sups = ModelUser.ListSup(db)
+    #obtiene la lista de usuario que su perfil es Administrador 
     admins = ModelUser.ListAdmin(db)
+    #obtiene la lista de usuario que su perfil es Team lider 
     teams = ModelUser.ListTeam(db)
+    #obtiene la lista de perfiles 
     perfils = ModelUser.perfil(db)
+    #obtiene la lista de Las ciudades 
     citys = ModelCompanyCity.ListCity(db)
+    #obtiene la lista de las companias 
     companys = ModelCompanyCity.ListCompany(db)
+    #obtiene la lista de la relaciones que existen entre las companias y las ciudades  
     citycompanys = ModelUser.getCompCiuTodos(db)
+    #devuelve todas las listas hacia el servidor del Front manipulacion 
     return jsonify({'Sups':sups,'Admins':admins, 'Teams':teams, 'Perfils':perfils, 'Citys':citys, 'Companys':companys, 'Citycompanys':citycompanys})
  
     #creacion de usuario interprete y supervisor
 @usuarios.route('/addUser',methods=['GET', 'POST'])
 def addUser():
-    from app import getdb
-    db=getdb()
+    # valida que el llamado del metodo se haga por una peticion POST
     if request.method == 'POST':   
+         #obtiene la conneccion a la base de datos
+        from app import getdb
+        db=getdb()
+        #obtiene el diccionario del usuario que se desea agregar
         u = request.json['user'] 
+        #Se valida por el campo correo la existencia de el usuario 
         logged_user = ModelUser.ExistsUser(db, u['Email'])
+        #si existe el usuario muestre una aletra de que ya existe
         if logged_user == True:
             print("exists User")         
             return jsonify({'AddUser':False,'message':'exists User'})
         else:
-            print(int(u['Perfil']))
+            #sino existe el usuario creelo 
             #valida si el desea crear administrador, supervisor, team leader o interprete
             if int(u['Perfil'])==1 :
                 #crea el administrador
@@ -112,8 +127,11 @@ def validarUser():
     if request.method=="POST":
         from app import getdb
         db=getdb()
+        #Se recube el correo desde el servidor Front
         Email=request.json['Email']
+        #Se valida la existencia de el correo 
         val=ModelUser.ExistsUser(db,Email)
+        # Se envia la respuesta de la validacion hacia el servidor Front
         return jsonify({'send':val})
     else: 
         return jsonify({'send':False})
