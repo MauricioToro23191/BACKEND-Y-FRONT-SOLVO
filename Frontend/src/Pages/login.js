@@ -4,6 +4,8 @@ import "../styles/login.scss";
 import { SocketContext } from "../Context/socketio";
 import ForgotP from "../Component/forgotP";
 import ShowLogin from "../Component/Login";
+import jwt_encode from 'jwt-encode';
+import jwt_decode from "jwt-decode";
 
 const API=process.env.REACT_APP_BACKEND
 const Login = (props) => {
@@ -15,7 +17,6 @@ const Login = (props) => {
     const [showForgot, setForgot] = useState(false);
     const [showLogin, setShow] = useState(true);
     const [showChange, setChange] = useState(false);
-    var code=false;
 
     const cambiarestado=async(id,user)=>{
     const res =await fetch(`${API}/estados/changeState`,{
@@ -102,7 +103,7 @@ const Login = (props) => {
       const veriCode =async () => {
         let num=document.getElementById('Email').value
         if(!isNaN(parseInt(num))){
-            if(parseInt(num)==parseInt(sessionStorage.getItem('v'))){
+            if(parseInt(num)==parseInt(jwt_decode(sessionStorage.getItem('v')))){
                 setForgot(false);
                 setChange(true);
             }else{
@@ -154,7 +155,7 @@ const Login = (props) => {
         const data=await res.json()
         if(data.send){
             let a=aleatorio(6)
-            sessionStorage.setItem('v',a)
+            sessionStorage.setItem('v',jwt_encode(a,(process.env.SECRET_KEY+"")))
             const res1=await fetch(`${API}/EmailCode`,{
                 method: "POST",
                 headers: {
