@@ -3,14 +3,17 @@ import Statebtn from '../Component/statebtn';
 import { useNavigate } from 'react-router-dom';
 import { SocketContext } from "../Context/socketio";
 import jwt_decode from "jwt-decode";
-
+import "../styles/layoutModal.scss"
+import mot from"../Data/Motivation.json"
 import '../styles/states.scss';
 import '../styles/animate.scss'
 const API=process.env.REACT_APP_BACKEND
 
+
 export default function States(props) {
   const {loge}=props
 
+  let number=Math.floor(Math.random()*30)
   const socket=useContext(SocketContext);
   const Navigate = useNavigate();
   const logOUT = useCallback(() => Navigate('/', { replace: true }), [Navigate]);
@@ -48,6 +51,27 @@ export default function States(props) {
     }
     
   }
+  function getUser(){
+    let u =jwt_decode(sessionStorage.getItem('tocken'))
+    document.getElementById('idSolvo1').textContent=u['SolID'];
+    document.getElementById('Name1').textContent=u['Name'];
+    document.getElementById('lastN1').textContent=u['LastN'];
+    document.getElementById('Email1').textContent=u['Email'];
+    document.getElementById('perfil1').textContent=u['Perfil'];
+    document.getElementById('supervisor1').textContent=u['Supervisor'];
+    document.getElementById('company1').textContent=u['Company'];
+    document.getElementById('city1').textContent=u['City'];
+    document.getElementById('Site1').textContent=u['Site'];
+
+  }
+
+  function modal(){
+    getUser();
+    document.getElementById("Mymodallayout").style.display = 'block';
+  }
+  function close(){
+    document.getElementById("Mymodallayout").style.display = 'none';
+  }
  
   useEffect(()=>{
     let l = jwt_decode(sessionStorage.getItem('tocken'));
@@ -60,10 +84,10 @@ export default function States(props) {
         <div id="PerfilUsers">
           <p id='SolvIcon'></p>
           <h2>{nombre}</h2>
-          <p id='textCustom'>Time is Money Money Money Money</p>
+          <p id='textCustom'>{mot[number]["frase"]}</p>
           <center><strong id="changeState" style={{position:"absolute",top:"0",left:"30%",width:"40%", color:"red"}}></strong></center>
           <div id='OptionsBTN'>
-            <button id='PerfilU'></button>
+            <button id='PerfilU' onClick={modal}></button>
             <button id='Options'></button>
             <button id='Out' onClick={logout}></button>
           </div>
@@ -89,7 +113,41 @@ export default function States(props) {
         </div>
 
       </div>
+      <div id="Mymodallayout" className="modalcontlayout">
+                <div id="modal-contlayout">
+                    <div id="contmlayout">
+                        <div className="sideRi">
+                            <button className="buttonCloselayout" onClick={close} > X </button>
+                        </div>
+                        <div className="sideLe">
+                            <form>
+                                <center><h1>My User</h1>
+                                <strong><label >SoLvoID</label></strong>
+                                <label  name="idSolvo1" id="idSolvo1" className="inputslayout" />
+                                <strong><label >First Name</label></strong>
+                                <label  name="firstNAme" id="Name1" className="inputslayout" />
+                                <strong><label>Last Name</label></strong>
+                                <label  name="lastName" id="lastN1" className="inputslayout" />
+                                <strong><label>Email</label></strong>
+                                <label  name="corpEmail" id="Email1" className="inputslayout" />
+                                <strong><label >Perfil</label></strong>
+                                <label className="inputslayout" id="perfil1" />
+                                <strong><label id="sup">Supervisor</label></strong>
+                                <label className="inputslayout" id="supervisor1" />
+                                <strong><label >Account</label></strong>
+                                <label className="inputslayout" id="company1" />
+                                <strong><label >Locaction</label></strong>
+                                <label className="inputslayout" id="city1" />
+                                <strong><label >Sites</label></strong>
+                                <label className="inputslayout" id="Site1"></label>
+                                </center>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </div>
+    
   )
 }
 

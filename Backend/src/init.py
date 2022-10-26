@@ -15,13 +15,6 @@ def init_app():
     app.config['MYSQL_USER']='root'
     app.config['MYSQL_PASSWORD']=''
     app.config['MYSQL_DB']='solvo1'
-    app.config['MAIL_SERVER']='smtp.gmail.com'
-    app.config['MAIL_PORT']=465
-    app.config['MAIL_USE_SSL']=False
-    app.config['MAIL_USE_TLS']=True
-    app.config['MAIL_USERNAME']=os.environ.get('USER_EMAIL')
-    app.config['MAIL_PASSWORD']=os.environ.get('PASSWORD_EMAIL')
-
     #se agregan los blueprints para segmentar las rutas de la pagina web 
     app.register_blueprint(estados)
     app.register_blueprint(usuarios)
@@ -37,13 +30,6 @@ def init_app2():
     app.config['MYSQL_USER']='b7afd7e00fe41f'
     app.config['MYSQL_PASSWORD']='c73be9e7'
     app.config['MYSQL_DB']='heroku_1a91a1f56846f6f'
-    #Agregando servidor de correo 
-    app.config['MAIL_SERVER']='smtp.gmail.com'
-    app.config['MAIL_PORT']=25
-    app.config['MAIL_USE_SSL']=False
-    app.config['MAIL_USE_TLS']=True
-    app.config['MAIL_USERNAME']='pruebaappsolvo@gmail.com'
-    app.config['MAIL_PASSWORD']=os.environ.get('PASSWORD_EMAIL_CF')
     #se agregan los blueprints para segmentar las rutas de la pagina web 
     app.register_blueprint(estados)
     app.register_blueprint(usuarios)

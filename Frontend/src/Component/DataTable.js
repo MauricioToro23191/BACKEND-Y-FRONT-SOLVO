@@ -1,11 +1,9 @@
 import MUIDataTable from "mui-datatables";
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import Data from "../Dates/UsersTable.json";
 import DeleteOutlineTwoToneIcon from '@mui/icons-material/DeleteOutlineTwoTone';
 import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded';
 import React, {useState, useEffect} from 'react';
 import{ IconButton,Tooltip }from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import "../styles/tableUsers.scss"
 
 const API=process.env.REACT_APP_BACKEND
@@ -26,9 +24,9 @@ export const DataTable = (props) => {
     const [Name, setName] = useState("")
     const [LastN, setLastN] = useState("")
     const [Email, setEmail] = useState("")
+    const [supervisor,setSupervisor]=useState(0)
     const [Perfil, setPerfil] = useState(4)
     const [ListaSupervisor, setListSupervisor] = useState([])
-    //const [Supervisor, setSupervisor] = useState(0)
     const [Company, setCompany] = useState(1)
     const [site,setSite]=useState(0)
 
@@ -288,7 +286,7 @@ export const DataTable = (props) => {
                         </div>
                         <div className="sideLe">
                             <form action="">
-                                <center><h1>Add User</h1></center>
+                                <center><h1>Add User</h1>
                                 <label >SoLvoID</label>
                                 <input type="text" name="idSolvo" id="idSolvo" className="inputs" onChange={(e) => setSolId(e.target.value)}/>
                                 <label >First Name</label>
@@ -315,7 +313,7 @@ export const DataTable = (props) => {
                                 </select>
 
                                 <label id="sup">Supervisor</label>
-                                <select className="inputs" id="supervisor" onChange={(e) => setSupervisor(e.target.value)}>
+                                <select className="inputs" id="supervisor"  onChange={(e) => setSupervisor(e.target.value)}>
                                     {ListaSupervisor.map(sup =>{
                                         if(sessionStorage.getItem('idComp')==sup['company']){
                                             return(<option key={sup['id']} value={sup['id']}>{sup['nombre']}</option>)
@@ -355,6 +353,7 @@ export const DataTable = (props) => {
                                 </select>
                                 <input type="button" value="UPDATE" name="update" id="update" onClick={Update}/>
                                 <input type="button" value="ADD" name="add" id="add" onClick={Add}/>
+                                </center>
                             </form>
                         </div>
                     </div>

@@ -128,7 +128,7 @@ def EmailCode():
         if(val==True):
             code=request.json['code']
             msg=EmailMessage()
-            msg['From']="RTA_SOLVO "
+            msg['From']="RTA_SOLVO"
             msg['To']=Email
             msg['Subject']='CODE CHANGE PASSWORD'
             msg.set_content('This should be in the email body')
@@ -150,7 +150,7 @@ if __name__ == '__main__':
         app.register_error_handler(404, status_404)
         app.register_error_handler(401, status_401)
         #inicio de Hilos Socket
-        socket.run(app,host='0.0.0.0',port=5000,debug=True)
+        socket.run(app,host='0.0.0.0',port=5000)
     except EOFError:
         print('Hello user it is EOF exception, please enter something and run me again')
     except KeyboardInterrupt:

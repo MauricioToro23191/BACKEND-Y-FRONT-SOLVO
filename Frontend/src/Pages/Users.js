@@ -38,6 +38,7 @@ export default function Users(){
         setListCompanys(data.Companys)
         setListCitycompanys(data.Citycompanys)
     }
+    
     useEffect(() => {
         obtenerDatos()
     }, []);

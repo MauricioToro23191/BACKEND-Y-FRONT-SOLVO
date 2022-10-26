@@ -1,11 +1,7 @@
 import MUIDataTable from "mui-datatables";
-import { IconButton, Tooltip,Button,ButtonGroup } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import {  Tooltip,Button,ButtonGroup } from "@mui/material";
 import React,{useState,useEffect} from "react";
 import DatePicker from "./DatePicker";
-import subDays from "date-fns/subDays";
-
-
 import "../styles/tableUsers.scss"
 const Columns2 = ["Date","Solvo id","Name","Last Name","Supervisor","Start Time","Final Time","By","State","Time"]
 const Columns1 = ["Date","Solvo id","Name","Last Name","Supervisor","Available","Not Available","Break","Lunch","Team Meeting","Coaching"]
